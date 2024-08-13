@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_09_24_192408) do
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+ActiveRecord::Schema[7.1].define(version: 2023_11_14_170044) do
+  create_table "users", charset: "utf8mb3", force: :cascade do |t|
     t.string "name"
     t.string "phone"
     t.string "email", default: "", null: false
