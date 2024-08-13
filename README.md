@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="app/assets/images/admin/agua_na_caixa_logo.png" width="50%" alt="Logo da Agua na Caixa">
+  <img src="app/assets/images/admin/agua_na_caixa_logo.png" width="25%" alt="Logo da Agua na Caixa">
 </p>
 
 <h1 align="center">Painel Administrativo</h1>
