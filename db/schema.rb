@@ -10,31 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_14_170044) do
-  create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "kinds"
-    t.bigint "status"
-    t.text "requisition"
-    t.text "params"
-    t.text "xml_nota", size: :long
-    t.boolean "xml_sended", default: false
-    t.string "error"
-    t.string "status_code"
-    t.text "message", size: :long
-    t.string "exception"
-    t.string "classification"
-    t.string "cause"
-    t.string "url"
-    t.string "user"
-    t.integer "tiny_order_id"
-    t.integer "order_correios_id"
-    t.integer "id_nota_fiscal"
-    t.string "tracking"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "users", charset: "utf8mb3", force: :cascade do |t|
+ActiveRecord::Schema[7.1].define(version: 2023_09_24_192408) do
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.string "phone"
     t.string "email", default: "", null: false
