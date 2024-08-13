@@ -1,15 +1,12 @@
 .navbar-header {
-  position: relative;
-  background-color: #000000;
+  background-color: #ffffff;
   opacity: 1;
-  background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, #000000 20px ), repeating-linear-gradient( #13143155, #131431 );
-  height: 45px;
+  height: 52px;
   width: 100%;
   min-width: 768px;
   z-index: 1011;
-  border-bottom-style: outset;
-  border-color: grey;
 }
+
 @media only screen and (min-width: 768px) {
   .navbar-header {
     position: fixed;
@@ -27,7 +24,7 @@
   margin: 0;
 }
 .navbar-header .navbar-brand .brand-logo {
-  height: 43px;
+  height: 52px;
   width: 250px;
 }
 .navbar-header .navbar-brand .brand-logo img {
@@ -39,10 +36,10 @@
 .navbar-header .navbar-content {
   display: inline-block;
   float: left;
-  color: #FFF;
+  color: #000000;
   text-transform: uppercase;
   font-size: 14px;
-  padding: 12px 20px;
+  padding: 15px 23px;
 }
 .navbar-header .navbar-dropdowns {
   float: right;

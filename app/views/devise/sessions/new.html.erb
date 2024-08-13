@@ -5,42 +5,39 @@
     <div class="d3"></div>
     <div class="d4"></div>
   </div>
-  <div class="row d-flex justify-content-center" style="z-index: 99999; position: relative;">
-    <div class="col-10 col-sm-4 col-md-4 col-lg-4 mt-4 mb-4">
-      
-    </div>
-    <h2 class="d-flex justify-content-center" style="color: lightblue;">Acompanhamento de pedidos</h2>
-  </div>
-  <div class="row d-flex justify-content-center" style="z-index: 99999; position: relative;">
-    <div class="col-12 col-sm-4 col-md-4 col-lg-4">
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-        <div class="field">
-          <%= f.label 'Seu e-mail:' %><br />
-          <div class="input-group">
-            <div class="input-group-text"><i class="fas fa-envelope"></i></div>
-            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control' %>
-          </div>
-        </div>
-
-        <div class="field">
-          <%= f.label 'Sua senha:' %><br />
-          <div class="input-group">
-            <div class="input-group-text"><i class="fas fa-lock"></i></div>
-            <%= f.password_field :password, autocomplete: "current-password", class: 'form-control' %>
-          </div>
-        </div>
-
-        <% if devise_mapping.rememberable? %>
+  <div class="main_login">
+    <div class="login-text row d-flex justify-content-center">
+      <%= image_tag 'admin/agua_na_caixa_logo', style: 'width:25%;' %>
+      <div class="col-12">
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
           <div class="field">
-            <%= f.check_box :remember_me %>
-            <%= f.label :remember_me %>
+            <%= f.label 'Seu e-mail:', class: 'text-primary' %><br />
+            <div class="input-group">
+              <div class="input-group-text"><i class="fas fa-envelope"></i></div>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control' %>
+            </div>
+          </div>
+
+          <div class="field">
+            <%= f.label 'Sua senha:' ,class: 'text-primary' %><br />
+            <div class="input-group">
+              <div class="input-group-text"><i class="fas fa-lock"></i></div>
+              <%= f.password_field :password, autocomplete: "current-password", class: 'form-control' %>
+            </div>
+          </div>
+
+          <% if devise_mapping.rememberable? %>
+            <div class="field">
+              <%= f.check_box :remember_me %>
+              <%= f.label 'Lembrar-me' %>
+            </div>
+          <% end %>
+
+          <div class="actions">
+            <%= f.submit "Logar", class: 'btn btn-primary w-100' %>
           </div>
         <% end %>
-
-        <div class="actions">
-          <%= f.submit "Logar", class: 'btn btn-primary w-100' %>
-        </div>
-      <% end %>
+      </div>
     </div>
   </div>
 </div>
@@ -50,16 +47,20 @@
       display: none;
     }
   }
-  .main {
-    margin-left: -19em !important;
+  .login-text {
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 99999;
+    position: fixed;
+    padding: 3em;
+    top: 25%;
+    left: 30%;
+    min-width: 37%;
+    border-radius: 1em;
   }
+
   .login {
     margin-left: -19em !important;
     margin-top: 4em !important;
-  }
-
-  .wrapper {
-        background-image: repeating-radial-gradient(circle at 0px 0px, transparent 0px, rgb(0, 0, 0) 20px), repeating-linear-gradient(rgba(19, 20, 49, 0.333), rgb(19, 20, 49));
   }
 
   .luminoso {
@@ -102,8 +103,7 @@
 }
 .d3 {
   position: absolute;
-  background-image: url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80);
-  background-size: 2700px 1500px;
+  background-image: url("<%= asset_path('admin/back1.jpg') %>");
   overflow: hidden;
 
   height: 100vh;
@@ -121,8 +121,7 @@
 .d4 {
   position: absolute;
   overflow: hidden;
-  background-image: url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80);
-  background-size: 2700px 1500px;
+  background-image: url("<%= asset_path('admin/back2.png') %>");
 
   height: 80vh;
   width: 25vw;
