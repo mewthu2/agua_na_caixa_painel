@@ -7,9 +7,9 @@
   </div>
   <div class="main_login">
     <div class="login-text row d-flex justify-content-center">
+      <b><h5 class="text-primary page-header d-flex justify-content-center"></h5></b>
       <div class="col-4">
         <%= image_tag 'admin/agua_na_caixa_logo', style: 'width:65%;margin-top:7px;' %>
-        <b><h5 class="text-primary mt-2">Painel Administrativo <i class="fa-solid fa-solar-panel"></i></h5></b>
       </div>
       <div class="col-6">
         <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
@@ -54,7 +54,7 @@
     background-color: rgba(255, 255, 255, 0.7);
     z-index: 99999;
     position: fixed;
-    padding: 3em;
+    padding: 2em;
     top: 27%;
     left: 25%;
     min-width: 37%;

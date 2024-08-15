@@ -1,19 +1,27 @@
-<aside class="left-menu">
+<aside class="left-menu bg-dark">
   <div class="aside-inner">
     <div class="flex-shrink-0 p-3 text-white">
       <ul class="nav nav-pills flex-column mb-auto">
-        <a class="btn btn-dark text-info mb-3" href="/" role="button">
+        <a class="btn btn-secondary text-info mb-3" href="/" role="button">
           <i class="fa-regular fa-house"></i> <span class="name-button"> Home </span>
         </a>
 
-        <a class="btn btn-dark text-info mb-3" data-bs-toggle="collapse" href="#collase-dashboard" role="button" aria-expanded="false" aria-controls="collase-dashboard">
+        <a class="btn btn-secondary text-info mb-3" href="/" role="button">
+          <i class="fa-regular fa-gear"></i> <span class="name-button"> Administração </span>
+        </a>
+
+        <a class="btn btn-secondary text-info mb-3" href="/" role="button">
+          <i class="fa-regular fa-file-circle-plus"></i> <span class="name-button"> Pedidos </span>
+        </a>
+
+        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-dashboard" role="button" aria-expanded="false" aria-controls="collase-dashboard">
           <i class="justify-content-center fa-regular fa-concierge-bell"></i> <span class="name-button"> Dashboard </span><i class="fa fa-angle-down arrow"></i>
         </a>
         <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-dashboard">
           <div class="mb-3 col-icon"> 
             <%= link_to dashboard_index_path, class: 'text-light link' do %>
               <i class="fa-solid fa-binoculars text-info"></i>
-              <span class="name-col text-dark">
+              <span class="name-col text-white">
                 Teste
               </span>
             <% end %>
@@ -23,9 +31,6 @@
     </div>
   </div>
   <hr>
-  <div class="d-flex justify-content-center logo-agua-na-caixa" style="position: fixed; margin-top: 21em; margin-left: 6em;">
-    <small class="text-dark"> Agua na Caixa <i class="fas fa-registered"></i></small>
-  </div>
 </aside>
 <style>
   @media (max-width: 999px) {

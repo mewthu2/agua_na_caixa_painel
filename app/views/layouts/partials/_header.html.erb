@@ -1,17 +1,17 @@
-<header class="navbar-header">
+<header class="navbar-header bg-dark">
   <div class="navbar-brand">
-    <div class="brand-logo" style="background: white;">
-      <%= image_tag 'admin/agua_na_caixa_logo', style: 'width:20%;margin-top:4px;' %>
+    <div class="brand-logo bg-white">
+      <%= image_tag 'admin/agua_na_caixa_logo', style: 'width:20%;' %>
     </div>
   </div>
-  <div class="navbar-content">
+  <div class="navbar-content text-white">
     <%= yield :title %>
   </div>
   <div class="navbar-dropdowns">
     <nav class="navbar navbar-expand-sm">
       <div class="dropdown" style="margin-top: 12px; margin-right: -12em;">
         <%= image_tag 'admin/usuario-200x200', style: 'width:10%; border-radius: 50%;' %>
-        <strong class="text-dark"><%= current_user.name %></strong>
+        <strong class="text-white"><%= current_user.name %></strong>
         <%= link_to destroy_user_session_path(current_user), data: { turbo: :false } do %>Sair<% end %>
       </div>
     </nav>
