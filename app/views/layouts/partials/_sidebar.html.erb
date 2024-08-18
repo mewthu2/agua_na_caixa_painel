@@ -5,15 +5,7 @@
         <a class="btn btn-secondary text-info mb-3" href="/" role="button">
           <i class="fa-regular fa-house"></i> <span class="name-button"> Home </span>
         </a>
-
-        <a class="btn btn-secondary text-info mb-3" href="/" role="button">
-          <i class="fa-regular fa-gear"></i> <span class="name-button"> Administração </span>
-        </a>
-
-        <a class="btn btn-secondary text-info mb-3" href="/" role="button">
-          <i class="fa-regular fa-file-circle-plus"></i> <span class="name-button"> Pedidos </span>
-        </a>
-
+        
         <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-dashboard" role="button" aria-expanded="false" aria-controls="collase-dashboard">
           <i class="justify-content-center fa-regular fa-concierge-bell"></i> <span class="name-button"> Dashboard </span><i class="fa fa-angle-down arrow"></i>
         </a>
@@ -23,6 +15,62 @@
               <i class="fa-solid fa-binoculars text-info"></i>
               <span class="name-col text-white">
                 Teste
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-users" role="button" aria-expanded="false" aria-controls="collase-correios">
+          <i class="fa-regular fa-gear"></i> <span class="name-button">Administração </span> <i class="fa fa-angle-down arrow"></i>
+        </a>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-users">
+          <div class="mb-3 col-icon"> 
+            <%= link_to users_path, class: 'text-light link' do %>
+              <i class="fa-solid fa-user text-info link"></i>
+              <span class="name-col">
+                Usuários
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-users">
+          <div class="mb-3 col-icon"> 
+            <%= link_to profiles_path, class: 'text-light link' do %>
+              <i class="fa-solid fa-id-badge text-info link"></i>
+              <span class="name-col">
+                Perfis de usuário
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <a class="btn btn-secondary text-info mb-3" href="/" role="button">
+          <i class="fa-regular fa-file-circle-plus"></i> <span class="name-button"> Pedidos </span>
+        </a>
+
+        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-attempts" role="button" aria-expanded="false" aria-controls="collase-correios">
+          <i class="fa-regular fa-hourglass"></i> <span class="name-button">Histórico de Tentativas </span> <i class="fa fa-angle-down arrow"></i>
+        </a>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
+          <div class="mb-3 col-icon"> 
+            <%= link_to attempts_path(kinds: :create_order_tiny_1), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Criação pedidos no Tiny 1
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
+          <div class="mb-3 col-icon"> 
+            <%= link_to attempts_path(kinds: :create_order_tiny_2), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Criação pedidos no Tiny 2
               </span>
             <% end %>
           </div>

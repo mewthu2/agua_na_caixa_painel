@@ -10,8 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_14_170044) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_18_184453) do
+  create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "kinds"
+    t.bigint "status"
+    t.text "requisition"
+    t.text "params"
+    t.string "error"
+    t.string "status_code"
+    t.string "message"
+    t.string "exception"
+    t.string "classification"
+    t.string "cause"
+    t.string "url"
+    t.string "user"
+    t.integer "tiny_order_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "profiles", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "profile_id"
     t.string "name"
     t.string "phone"
     t.string "email", default: "", null: false
@@ -33,8 +58,10 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_14_170044) do
     t.datetime "updated_at", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["profile_id"], name: "index_users_on_profile_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "users", "profiles"
 end

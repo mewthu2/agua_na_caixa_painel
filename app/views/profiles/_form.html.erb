@@ -1,0 +1,28 @@
+<%= form_for(profile, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
+  <div class="bg-dark p-4">
+    <div class="page-header text-primary">
+      <h4>
+        <%= profile.new_record? ? "Criar Perfil" : "Atualizar Perfil" %>
+        <small class="text-secondary"> Informações do perfil</small>
+      </h4>
+    </div>
+
+    <div class="row">
+      <%= form.label :name, 'Nome', class: 'col-form-label text-secondary' %>
+      <div class="col-12">
+        <%= form.text_field :name, class: 'form-control', required: true %>
+      </div>
+    </div>
+
+    <div class="panel-buttons bg-secondary">
+      <%= link_to profiles_path, class: 'btn btn-dark btn-lg' do %>
+        <i class="fa fa-undo"></i> Voltar
+      <% end %>
+      <% unless read_only %>
+        <%= form.button class: 'btn btn-primary btn-lg', data: { disable_with: profile.new_record? ? 'Criando...' : 'Salvando...' } do %>
+          <i class="fa fa-save"></i> <%= profile.new_record? ? 'Criar Perfil' : 'Atualizar Perfil' %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

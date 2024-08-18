@@ -16,6 +16,7 @@
 .rubocop.yml
 /config/master.key
 log/development.log
+log/test.log
 app/assets/builds/*
 public/assets
 
