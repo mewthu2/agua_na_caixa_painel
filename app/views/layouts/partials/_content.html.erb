@@ -1,7 +1,9 @@
 <section>
   <div class="content-wrapper text-light">
     <div id="modal-holder"></div>
-    <%= render 'layouts/partials/messages' %>
+    <% if controller.controller_name != 'sessions' %>
+      <%= render 'layouts/partials/messages' %>
+    <% end %>
     <%= yield %>
   </div>
 </section>

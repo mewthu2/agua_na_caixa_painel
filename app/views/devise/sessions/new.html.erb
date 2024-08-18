@@ -12,6 +12,7 @@
         <%= image_tag 'admin/agua_na_caixa_logo', style: 'width:65%;margin-top:7px;' %>
       </div>
       <div class="col-6">
+        <%= render 'layouts/partials/messages' %>
         <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
           <div class="field">
             <%= f.label 'Seu e-mail:', class: 'text-primary' %><br />
