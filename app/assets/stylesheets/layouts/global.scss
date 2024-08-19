@@ -13,7 +13,12 @@ body {
   font-family: "Google Sans","Roboto", sans-serif;
   font-size: 13px;
   min-height: 100%;
-  color: #ffffff;
+  color: #1c599a;
+}
+.main-background {
+  background-image: url('assets/admin/dotted-vector.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .panel-container {
