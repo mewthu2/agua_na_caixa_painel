@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :orders
+  resources :orders, only: [:index]
 
   resources :users
   
