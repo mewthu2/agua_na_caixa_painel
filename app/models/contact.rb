@@ -31,7 +31,7 @@ class Contact < ApplicationRecord
   end
 
   # Metodos estaticos
-  def update_local_contacts(origin)
+  def self.update_local_contacts(origin)
     case origin
     when 'primeiros_passos'
       token = ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
