@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   resources :dashboard, only: [:index] do
     collection do
-
+      get :to_do
     end
   end
 
@@ -19,6 +19,10 @@ Rails.application.routes.draw do
   resources :users
   
   resources :profiles
+
+  resources :contacts
+
+  resources :products
 
   resources :attempts, only: [:index] do
     collection do

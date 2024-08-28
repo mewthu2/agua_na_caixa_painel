@@ -55,7 +55,7 @@
             <%= link_to attempts_path(kinds: :create_order_tiny_1), class: 'text-light link' do %>
               <i class="fa-solid fa-file-invoice text-info link"></i>
               <span class="name-col">
-                Criação pedidos no Tiny 1
+                Criação pedidos no Tiny - Primeiros Passos
               </span>
             <% end %>
           </div>
@@ -66,7 +66,7 @@
             <%= link_to attempts_path(kinds: :create_order_tiny_2), class: 'text-light link' do %>
               <i class="fa-solid fa-file-invoice text-info link"></i>
               <span class="name-col">
-                Criação pedidos no Tiny 2
+                Criação pedidos no Tiny - Água na Caixa
               </span>
             <% end %>
           </div>
@@ -99,6 +99,57 @@
             <% end %>
           </div>
         </div>
+
+        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-registrations" role="button" aria-expanded="false" aria-controls="collase-correios">
+          <i class="fa-regular fa-file-circle-plus"></i> 
+          <span class="name-button"> Cadastros Tiny </span>
+          <i class="fa fa-angle-down arrow"></i>
+        </a>
+
+         <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
+          <div class="mb-3 col-icon"> 
+            <%= link_to contacts_path(origin: 'primeiros_passos'), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Contatos - Primeiros Passos
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
+          <div class="mb-3 col-icon"> 
+            <%= link_to contacts_path(origin: 'agua_na_caixa'), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Contatos - Água na Caixa
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
+          <div class="mb-3 col-icon"> 
+            <%= link_to products_path(origin: 'primeiros_passos'), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Produtos - Primeiros Passos
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+         <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
+          <div class="mb-3 col-icon"> 
+            <%= link_to products_path(origin: 'agua_na_caixa'), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Produtos - Água na Caixa
+              </span>
+            <% end %>
+          </div>
+        </div>
+
       </ul>
     </div>
   </div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_18_184453) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_28_052929) do
   create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -27,6 +27,66 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_18_184453) do
     t.integer "tiny_order_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "contacts", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "origin"
+    t.string "codigo"
+    t.string "nome"
+    t.string "fantasia"
+    t.string "tipo_pessoa"
+    t.string "cpf_cnpj"
+    t.string "endereco"
+    t.string "numero"
+    t.string "complemento"
+    t.string "bairro"
+    t.string "cep"
+    t.string "cidade"
+    t.string "uf"
+    t.string "email"
+    t.string "fone"
+    t.integer "id_lista_preco"
+    t.integer "id_vendedor"
+    t.string "nome_vendedor"
+    t.string "situacao"
+    t.datetime "data_criacao"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "order_products", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "order_id"
+    t.bigint "product_id"
+    t.integer "quantidade"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_products_on_order_id"
+    t.index ["product_id"], name: "index_order_products_on_product_id"
+  end
+
+  create_table "orders", charset: "utf8mb3", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "products", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "origin"
+    t.bigint "contact_id"
+    t.datetime "data_criacao"
+    t.string "nome"
+    t.string "codigo"
+    t.decimal "preco", precision: 10, scale: 2, default: "0.0"
+    t.decimal "preco_promocional", precision: 10, scale: 2, default: "0.0"
+    t.string "unidade"
+    t.string "gtin"
+    t.string "tipoVariacao"
+    t.string "localizacao"
+    t.decimal "preco_custo", precision: 10, scale: 2, default: "0.0"
+    t.decimal "preco_custo_medio", precision: 10, scale: 2, default: "0.0"
+    t.string "situacao"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_products_on_contact_id"
   end
 
   create_table "profiles", charset: "utf8mb3", force: :cascade do |t|
@@ -63,5 +123,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_18_184453) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "order_products", "orders"
+  add_foreign_key "order_products", "products"
+  add_foreign_key "products", "contacts"
   add_foreign_key "users", "profiles"
 end
