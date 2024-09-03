@@ -1,8 +1,8 @@
 class OrderPayment < ApplicationRecord
   # Callbacks
   # Associacoes
-  belongs :order
-  belongs :order_payment_type
+  belongs_to :order
+  belongs_to :order_payment_type
   # Validacoes
 
   # Escopos
