@@ -1,6 +1,4 @@
-class Attempt < ApplicationRecord
-  enum status: [:fail, :error, :success]
-  enum kinds: [:agua_na_caixa, :primeiros_passos]
+class OrderPaymentType < ApplicationRecord
   # Callbacks
   # Associacoes
 
@@ -8,10 +6,10 @@ class Attempt < ApplicationRecord
 
   # Escopos
   add_scope :search do |value|
-    where('attempts.tiny_order_id LIKE :valor OR
-           attempts.error LIKE :valor OR
-           attempts.message LIKE :valor OR
-           attempts.id LIKE :valor', valor: "#{value}%")
+    where('
+      order_payment_types.payment_method LIKE :value OR
+      order_payment_types.payment_channel LIKE :value
+    ', value: "%#{value}%")
   end
   # Metodos estaticos
   # Metodos publicos

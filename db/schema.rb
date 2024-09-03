@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_28_052929) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_03_000654) do
   create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -54,6 +54,26 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_28_052929) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "order_payment_types", charset: "utf8mb3", force: :cascade do |t|
+    t.string "payment_method", null: false
+    t.string "payment_channel", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "order_payments", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "order_payment_types_id"
+    t.bigint "order_id"
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.integer "days", null: false
+    t.date "date", null: false
+    t.string "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_payments_on_order_id"
+    t.index ["order_payment_types_id"], name: "index_order_payments_on_order_payment_types_id"
+  end
+
   create_table "order_products", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "order_id"
     t.bigint "product_id"
@@ -65,8 +85,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_28_052929) do
   end
 
   create_table "orders", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "contact_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "destiny", default: 0, null: false
+    t.index ["contact_id"], name: "index_orders_on_contact_id"
   end
 
   create_table "products", charset: "utf8mb3", force: :cascade do |t|
@@ -123,8 +146,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_28_052929) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "order_payments", "order_payment_types", column: "order_payment_types_id"
+  add_foreign_key "order_payments", "orders"
   add_foreign_key "order_products", "orders"
   add_foreign_key "order_products", "products"
+  add_foreign_key "orders", "contacts"
   add_foreign_key "products", "contacts"
   add_foreign_key "users", "profiles"
 end

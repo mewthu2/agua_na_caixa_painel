@@ -41,9 +41,15 @@
         <% @users.each do |user| %>
           <tr>
             <td class="text-center">
-              <%= link_to edit_user_path(user), class: 'btn btn-sm btn-primary text-light' do %> 
-                <i class="fa fa-pencil-alt"></i>
-              <% end %>
+              <div class="btn-group" role="group" aria-label="Ações do usuário">
+                <%= link_to edit_user_path(user), class: 'btn btn-sm btn-primary text-light' do %> 
+                  <i class="fa fa-pencil-alt"></i>
+                <% end %>
+
+                <%= link_to user_path(user), class: 'btn btn-sm btn-secondary text-light' do %> 
+                  <i class="fa fa-eye"></i>
+                <% end %>
+              </div>
             </td>
             <td class="text-center"><%= user.id %></td>
             <td class="text-center"><%= user.name %></td>

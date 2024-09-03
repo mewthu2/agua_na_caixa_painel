@@ -43,9 +43,10 @@
 }
 .navbar-header .navbar-dropdowns {
   float: right;
+  max-width: 14em;
 }
 .navbar-header .navbar-dropdowns .navbar {
-  padding: 0;
+  padding: 14px;
 }
 .navbar-header .navbar-dropdowns .user-settings > a {
   padding: 5px 20px;

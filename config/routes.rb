@@ -14,7 +14,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :orders, only: [:index]
+  resources :orders do
+    collection do
+      get :tiny_orders
+      get :search_contacts
+    end
+  end
 
   resources :users
   
@@ -23,6 +28,8 @@ Rails.application.routes.draw do
   resources :contacts
 
   resources :products
+
+  resources :order_payment_types
 
   resources :attempts, only: [:index] do
     collection do

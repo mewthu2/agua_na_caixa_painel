@@ -1,0 +1,34 @@
+<%= form_for(@order, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
+  <div class="bg-dark p-4">
+    <div class="page-header text-primary">
+      <h4>
+        <%= @order.new_record? ? "Criar Pedido" : "Atualizar Pedido" %>
+        <small class="text-secondary"> Informações do pedido</small>
+      </h4>
+    </div>
+
+    <div class="row">
+      <%= form.label :destiny, 'Destinação', class: 'col-form-label text-secondary' %>
+      <div class="col-12">
+        <%= form.select :destiny, options_for_select(
+          [
+            ['Pedido Água na Caixa', 'agua_na_caixa'],
+            ['Pedido Primeiros Passos', 'primeiros_passos']
+          ],
+          @order.destiny
+        ), class: 'form-select form-select-lg mb-3', aria: { label: 'Destinação' }, required: true %>
+      </div>
+    </div>
+
+    <div class="panel-buttons bg-secondary">
+      <%= link_to orders_path, class: 'btn btn-dark btn-lg' do %>
+        <i class="fa fa-undo"></i> Voltar
+      <% end %>
+      <% unless read_only %>
+        <%= form.button class: 'btn btn-primary btn-lg', data: { disable_with: @order.new_record? ? 'Criando...' : 'Salvando...' } do %>
+          <i class="fa fa-save"></i> <%= @order.new_record? ? 'Criar Pedido' : 'Atualizar Pedido' %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

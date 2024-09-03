@@ -1,0 +1,78 @@
+<div class="row">
+  <% title 'Tipos de Pagamento' %>
+</div>
+
+<%= link_to new_order_payment_type_path, class: 'btn btn-sm btn-primary text-light mb-lg' do %>
+  <i class="fa fa-plus"></i> Novo tipo de pagamento
+<% end %>
+
+<%= form_tag(order_payment_types_path, method: 'get') do %>
+  <%= hidden_field_tag :origin, params[:origin] %>
+  <div class="card mb-lg advanced-search-form bg-dark text-light" id="filters">
+    <div class="card-header text-info">
+      Pesquisa avançada
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-12">
+          <%= label_tag :search, 'Procurar' %>
+          <%= text_field_tag :search, params[:search], class: 'form-control', placeholder: 'Pesquise por dias, valor ou outros detalhes' %>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <%= button_tag class: 'btn btn-secondary text-info', name: '' do %><i class="fa fa-search text-info"></i> Pesquisar<% end %>
+    </div>
+  </div>
+<% end %>
+
+  <%= will_paginate @order_payment_types, list_classes: %w[pagination justify-content-center mt-lg], inner_window: 1 %>
+
+<div class="row">
+  <div class="col-12">
+    <table class="table table-dark table-hover table-responsive" style="overflow-x: scroll;" id="order-payment-types-table">
+      <thead>
+        <tr>
+          <th width="140" class="text-center"><i class="fa fa-ellipsis-v"></i></th>
+          <th class="text-center"><%= 'ID' %></th>
+          <th class="text-center"><%= OrderPaymentType.human_attribute_name :payment_method %></th>
+          <th class="text-center"><%= OrderPaymentType.human_attribute_name :payment_channel %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order_payment_types.each do |order_payment_type| %>
+          <tr>
+            <td class="text-center">
+              <div class="btn-group" role="group">
+                <%= link_to edit_order_payment_type_path(order_payment_type), class: 'btn btn-sm btn-primary text-light' do %> 
+                  <i class="fa fa-pencil-alt"></i>
+                <% end %>
+
+                <%= button_to order_payment_type_path(order_payment_type), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Are you sure?" } do %>
+                  <i class="fa fa-times"></i>
+                <% end %>
+
+                <%= link_to order_payment_type_path(order_payment_type), class: 'btn btn-sm btn-secondary text-light' do %> 
+                  <i class="fa fa-eye"></i>
+                <% end %>
+              </div>
+            </td>
+            <td class="text-center"><%= order_payment_type.id %></td>
+            <td class="text-center"><%= order_payment_type.payment_method %></td>
+            <td class="text-center"><%= order_payment_type.payment_channel %></td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="8">
+            <%= page_entries_info @order_payment_types %>
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<%= will_paginate @order_payment_types, list_classes: %w[pagination justify-content-center mt-lg], inner_window: 1 %>
+

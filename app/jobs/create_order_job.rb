@@ -40,24 +40,6 @@ class CreateOrderJob < ActiveJob::Base
             }
           }
         end,
-        'marcadores' => [
-          {
-            'marcador' => {
-              'descricao' => 'abcdef'
-            }
-          },
-          {
-            'marcador' => {
-              'id' => '1234',
-              'descricao' => ''
-            }
-          },
-          {
-            'marcador' => {
-              'id' => '1234'
-            }
-          }
-        ],
         'parcelas' => [
           {
             'parcela' => {
@@ -86,23 +68,7 @@ class CreateOrderJob < ActiveJob::Base
               'obs' => 'Obs Parcela 3'
             }
           }
-        ],
-        'nome_transportador' => 'transportador teste',
-        'forma_pagamento' => 'multiplas',
-        'frete_por_conta' => 'E',
-        'valor_frete' => '35.00',
-        'valor_desconto' => '35.00',
-        'numero_ordem_compra' => '',
-        'numero_pedido_ecommerce' => '123',
-        'situacao' => 'Aberto',
-        'obs' => 'Observações do Pedido',
-        'forma_envio' => 'c',
-        'forma_frete' => 'PAC',
-        'intermediador' => {
-          'nome' => 'Intermediador Teste',
-          'cnpj' => '00.000.000/0000-00',
-          'cnpjPagamento' => '00.000.000/0000-00'
-        }
+        ]
       }
     }
   end
