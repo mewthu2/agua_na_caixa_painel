@@ -1,26 +1,31 @@
-<%= form_for(order, html: { autocomplete: 'off' }) do |form| %>
+<%= form_for(@order_payment_type, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
   <div class="bg-dark p-4">
     <div class="page-header text-primary">
       <h4>
-        <%= order.new_record? ? "Criar Pedido" : "Atualizar Pedido" %>
-        <small class="text-secondary"> Informações do pedido</small>
+        <%= @order_payment_type.new_record? ? "Criar Tipo de Pagamento do Pedido" : "Atualizar Tipo de Pagamento do Pedido" %>
+        <small class="text-secondary"> Informações do tipo de pagamento</small>
       </h4>
     </div>
 
     <div class="row">
-      <%= form.label :destiny, 'Destinação', class: 'col-form-label text-secondary' %>
-      <div class="col-12">
-        <%= form.select :destiny, Order.destiny.keys.map { |k| [Order.human_enum_name(:destiny, k), k] }, { prompt: 'Selecione a destinação' }, class: 'form-select form-select-lg mb-3' %>
+      <div class="col-md-6">
+        <%= form.label :payment_method, 'Forma de Pagamento', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :payment_method, class: 'form-control', required: true %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :payment_channel, 'Meio de Pagamento', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :payment_channel, class: 'form-control', required: true %>
       </div>
     </div>
 
-    <div class="panel-buttons bg-secondary">
-      <%= link_to orders_path, class: 'btn btn-dark btn-lg' do %>
+    <div class="panel-buttons bg-secondary mt-3">
+      <%= link_to order_payment_types_path, class: 'btn btn-dark btn-lg' do %>
         <i class="fa fa-undo"></i> Voltar
       <% end %>
       <% unless read_only %>
-        <%= form.button class: 'btn btn-primary btn-lg', data: { disable_with: order.new_record? ? 'Criando...' : 'Salvando...' } do %>
-          <i class="fa fa-save"></i> <%= order.new_record? ? 'Criar Pedido' : 'Atualizar Pedido' %>
+        <%= form.button class: 'btn btn-primary btn-lg', data: { disable_with: @order_payment_type.new_record? ? 'Criando...' : 'Salvando...' } do %>
+          <i class="fa fa-save"></i> <%= @order_payment_type.new_record? ? 'Criar Tipo de Pagamento' : 'Atualizar Tipo de Pagamento' %>
         <% end %>
       <% end %>
     </div>
