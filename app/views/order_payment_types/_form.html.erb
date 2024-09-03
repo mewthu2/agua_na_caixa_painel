@@ -1,5 +1,5 @@
 <%= form_for(@order_payment_type, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
-  <div class="bg-dark p-4">
+  <div class="bg-dark p-4 mt-4">
     <div class="page-header text-primary">
       <h4>
         <%= @order_payment_type.new_record? ? "Criar Tipo de Pagamento do Pedido" : "Atualizar Tipo de Pagamento do Pedido" %>

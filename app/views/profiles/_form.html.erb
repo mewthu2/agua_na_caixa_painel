@@ -1,5 +1,5 @@
 <%= form_for(profile, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
-  <div class="bg-dark p-4">
+  <div class="bg-dark p-4 mt-4">
     <div class="page-header text-primary">
       <h4>
         <%= profile.new_record? ? "Criar Perfil" : "Atualizar Perfil" %>

@@ -1,5 +1,5 @@
 <%= form_for(@order, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
-  <div class="bg-dark p-4">
+  <div class="bg-dark p-4 mt-4">
     <div class="page-header text-primary">
       <h4>
         <%= @order.new_record? ? "Criar Pedido" : "Atualizar Pedido" %>
