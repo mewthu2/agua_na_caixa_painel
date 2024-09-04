@@ -2,6 +2,7 @@ class Order < ApplicationRecord
   enum destiny: [:primeiros_passos, :agua_na_caixa]
   # Callbacks
   # Associacoes
+  belongs_to :contact
   has_many :order_products, dependent: :destroy
   has_one :order_payment
 
