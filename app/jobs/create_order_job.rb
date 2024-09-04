@@ -1,13 +1,15 @@
 class CreateOrderJob < ActiveJob::Base
   def perform(origin)
-    create_note(origin)
+    origin == 'agua_na_caixa' ? ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA') : ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
+
+    create_order(origin, token)
   end
 
-  def create_order(kind)
-    orders = Tiny::Orders.get_all_orders('faturado')
+  def create_order(_origin, token)
+    order = Tiny::Orders.create_order(token, pedido)
   end
 
-  def mount_note(order)
+  def mount_order(order)
     {
       'pedido' => {
         'data_pedido' => order.created_at.strftime('%d/%m/%Y'),
@@ -43,29 +45,12 @@ class CreateOrderJob < ActiveJob::Base
         'parcelas' => [
           {
             'parcela' => {
-              'dias' => '30',
-              'data' => '29/11/2014',
-              'valor' => '53.84',
-              'obs' => 'Obs Parcela 1',
-              'forma_pagamento' => 'boleto',
-              'meio_pagamento' => 'Bradesco X'
-            }
-          },
-          {
-            'parcela' => {
-              'dias' => '60',
-              'data' => '29/12/2014',
-              'valor' => '53.83',
-              'obs' => 'Obs Parcela 2',
-              'forma_pagamento' => 'dinheiro'
-            }
-          },
-          {
-            'parcela' => {
-              'dias' => '90',
-              'data' => '27/01/2015',
-              'valor' => '53.83',
-              'obs' => 'Obs Parcela 3'
+              'dias' => op.order_payment.days,
+              'data' => op.order_payment.date,
+              'valor' => op.order_payment.amount,
+              'obs' => op.order_payment.note,
+              'forma_pagamento' => op.order_payment.order_payment_type.payment_method,
+              'meio_pagamento' => op.order_payment.order_payment_type.payment_channel
             }
           }
         ]

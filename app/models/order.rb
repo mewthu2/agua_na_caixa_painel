@@ -3,7 +3,8 @@ class Order < ApplicationRecord
   # Callbacks
   # Associacoes
   has_many :order_products, dependent: :destroy
-  has_many :order_payments
+  has_one :order_payment
+
   # Validacoes
   accepts_nested_attributes_for :order_products, allow_destroy: true
   # Escopos
