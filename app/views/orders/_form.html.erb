@@ -21,14 +21,13 @@
           </div>
 
           <div class="ml-2 align-self-end">
-            <a href="#" id="edit_contact_link" class="btn btn-secondary" target="_blank">
+            <a href="#" id="edit_contact_link" class="btn btn-secondary" target="_blank" style="display: none;">
               <i class="fa fa-edit"></i> Editar
             </a>
           </div>
         </div>
       </div>
     </div>
-
 
     <div class="container" id="div_contact" style="display: none;">
       <div class="row d-flex justify-content-center">
@@ -176,8 +175,12 @@
       }
     }
 
-    contactSelect.addEventListener('change', updateEditLink);
+    if (contactSelect.classList.contains('select2')) {
+      $(contactSelect).on('select2:select', updateEditLink);
+    } else {
+      contactSelect.addEventListener('change', updateEditLink);
+    }
 
-    updateEditLink(); // Atualiza o link ao carregar a página
+    updateEditLink();
   });
 </script>
