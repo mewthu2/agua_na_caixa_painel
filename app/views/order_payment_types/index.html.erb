@@ -48,12 +48,12 @@
                   <i class="fa fa-pencil-alt"></i>
                 <% end %>
 
-                <%= button_to order_payment_type_path(order_payment_type), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Are you sure?" } do %>
-                  <i class="fa fa-times"></i>
-                <% end %>
-
                 <%= link_to order_payment_type_path(order_payment_type), class: 'btn btn-sm btn-secondary text-light' do %> 
                   <i class="fa fa-eye"></i>
+                <% end %>
+
+                <%= button_to order_payment_type_path(order_payment_type), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Are you sure?" } do %>
+                  <i class="fa fa-times"></i>
                 <% end %>
               </div>
             </td>

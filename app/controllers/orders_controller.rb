@@ -1,14 +1,10 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: %i[show edit update destroy]
-  before_action :load_form_references, only: [:index]
+  before_action :load_references, only: %i[new edit]
 
   def index
     @orders = Order.search(params[:search])
                    .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
-  end
-
-  def search_contacts
-    Contact.search(params[:search])
   end
 
   def tiny_orders
@@ -37,7 +33,7 @@ class OrdersController < ApplicationController
     if @order.save
       redirect_to orders_path, notice: 'Pedido criado com sucesso.'
     else
-      render :new
+      redirect_to orders_path, notice: "Não foi possível criar o pedido: #{ @order.errors.full_messages.join(', ') }"
     end
   end
 
@@ -61,10 +57,16 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:destiny)
+    params.require(:order).permit(:contact_id, :use_contact_order, :endereco, :numero, :complemento, :bairro, :cep, :uf,
+                                  order_products_attributes: [:id, :product_id, :quantidade, :_destroy],
+                                  order_payments_attributes: [:id, :order_payment_type_id, :date, :note, :_destroy])
   end
 
-  def load_form_references; end
+  def load_references
+    @products = Product.distinct(:codigo)
+    @payment_types = OrderPaymentType.all
+    @contacts = Contact.distinct(:cpf_cnpj)
+  end
 
   def fetch_all_orders(token)
     orders = Tiny::Orders.get_all_orders('', token)
@@ -72,7 +74,7 @@ class OrdersController < ApplicationController
     return orders[:pedidos] unless orders[:numero_paginas].present? && orders[:numero_paginas] != 1 && orders['pedidos'].present?
 
     all_orders = []
-    orders[:numero_paginas].times do |page|
+    orders[:numero_paginas].times do
       page_orders = Tiny::Orders.get_orders('', 1, token)
       page_orders[:pedidos].each do |order|
         all_orders << order

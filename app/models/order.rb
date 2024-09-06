@@ -4,10 +4,11 @@ class Order < ApplicationRecord
   # Associacoes
   belongs_to :contact
   has_many :order_products, dependent: :destroy
-  has_one :order_payment
+  has_many :order_payments, dependent: :destroy
 
   # Validacoes
   accepts_nested_attributes_for :order_products, allow_destroy: true
+  accepts_nested_attributes_for :order_payments, allow_destroy: true
   # Escopos
   add_scope :search do |value|
     where('

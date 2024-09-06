@@ -1,5 +1,6 @@
 class OrderPaymentType < ApplicationRecord
   # Callbacks
+  has_many :order_payments
   # Associacoes
 
   # Validacoes

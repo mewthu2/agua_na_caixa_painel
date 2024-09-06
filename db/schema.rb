@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_04_165216) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_06_055057) do
   create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -62,16 +62,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_04_165216) do
   end
 
   create_table "order_payments", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "order_payment_types_id"
+    t.bigint "order_payment_type_id"
     t.bigint "order_id"
-    t.decimal "amount", precision: 10, scale: 2, null: false
-    t.integer "days", null: false
+    t.decimal "amount", precision: 10
+    t.decimal "days", precision: 10
     t.date "date", null: false
     t.string "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_order_payments_on_order_id"
-    t.index ["order_payment_types_id"], name: "index_order_payments_on_order_payment_types_id"
+    t.index ["order_payment_type_id"], name: "index_order_payments_on_order_payment_type_id"
   end
 
   create_table "order_products", charset: "utf8mb3", force: :cascade do |t|
@@ -86,6 +86,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_04_165216) do
 
   create_table "orders", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "contact_id"
+    t.integer "tiny_order_id"
     t.boolean "use_contact_order", default: true
     t.string "endereco"
     t.string "numero"
@@ -153,7 +154,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_04_165216) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
-  add_foreign_key "order_payments", "order_payment_types", column: "order_payment_types_id"
+  add_foreign_key "order_payments", "order_payment_types"
   add_foreign_key "order_payments", "orders"
   add_foreign_key "order_products", "orders"
   add_foreign_key "order_products", "products"

@@ -7,17 +7,96 @@
       </h4>
     </div>
 
-    <div class="row">
-      <%= form.label :destiny, 'Destinação', class: 'col-form-label text-secondary' %>
-      <div class="col-12">
-        <%= form.select :destiny, options_for_select(
-          [
-            ['Pedido Água na Caixa', 'agua_na_caixa'],
-            ['Pedido Primeiros Passos', 'primeiros_passos']
-          ],
-          @order.destiny
-        ), class: 'form-select form-select-lg mb-3', aria: { label: 'Destinação' }, required: true %>
+    <div class="row mb-3 justify-content-center">
+      <div class="col-6">
+        <%= form.label :contact_id, 'Cliente:' %>
+        <%= form.select :contact_id,
+              options_for_select(@contacts.map { |t| ["#{t.nome} - CPF/CNPJ:#{t.cpf_cnpj}", t.id] }, form.object.contact_id),
+              {},
+              class: 'form-control select2' %>
+        <div class="form-check mt-2">
+          <%= form.check_box :use_contact_order, class: 'form-check-input', id: 'use_contact_order' %>
+          <%= form.label :use_contact_order, 'Usar endereço do contato', class: 'form-check-label text-secondary' %>
+        </div>
       </div>
+    </div>
+
+    <div class="container" id="div_contact" style="display: none;">
+      <div class="row d-flex justify-content-center">
+        <div class="col-md-12">
+          <div class="page-header text-primary">
+            <h4>
+              <small class="text-secondary"> Endereço de entrega</small>
+            </h4>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3 d-flex justify-content-center">
+        <div class="col-md-4">
+          <%= form.label :endereco, 'Endereço', class: 'col-form-label text-secondary' %>
+          <%= form.text_field :endereco, class: 'form-control form-control-lg' %>
+        </div>
+        <div class="col-md-4">
+          <%= form.label :numero, 'Número', class: 'col-form-label text-secondary' %>
+          <%= form.text_field :numero, class: 'form-control form-control-lg' %>
+        </div>
+        <div class="col-md-4">
+          <%= form.label :complemento, 'Complemento', class: 'col-form-label text-secondary' %>
+          <%= form.text_field :complemento, class: 'form-control form-control-lg' %>
+        </div>
+      </div>
+      <div class="row mb-3 d-flex justify-content-center">
+        <div class="col-md-4">
+          <%= form.label :bairro, 'Bairro', class: 'col-form-label text-secondary' %>
+          <%= form.text_field :bairro, class: 'form-control form-control-lg' %>
+        </div>
+        <div class="col-md-4">
+          <%= form.label :cep, 'CEP', class: 'col-form-label text-secondary' %>
+          <%= form.text_field :cep, class: 'form-control form-control-lg' %>
+        </div>
+        <div class="col-md-4">
+          <%= form.label :uf, 'UF', class: 'col-form-label text-secondary' %>
+          <%= form.text_field :uf, class: 'form-control form-control-lg' %>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-header text-primary mt-4">
+      <h4>
+        <small class="text-secondary"> Itens do pedido</small>
+      </h4>
+    </div>
+
+    <div id="order_products">
+      <%= form.fields_for :order_products do |pi| %>
+        <%= render 'order_product_fields', f: pi %>
+      <% end %>
+      <% if params[:action] != 'show' %>
+        <div class="links">
+          <%= link_to_add_association form, :order_products, class: 'btn btn-primary' do %>
+            <i class="fa fa-plus"></i> Adicionar produto
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="page-header text-primary mt-4">
+      <h4>
+        <small class="text-secondary"> Parcelas do pedido</small>
+      </h4>
+    </div>
+
+    <div id="order_payments">
+      <%= form.fields_for :order_payments do |pi| %>
+        <%= render 'order_payment_fields', f: pi %>
+      <% end %>
+      <% if params[:action] != 'show' %>
+        <div class="links" style="display:none;">
+          <%= link_to_add_association form, :order_payments, class: 'btn btn-primary', id:'add_order_payment' do %>
+            <i class="fa fa-plus"></i> Adicionar parcela
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
     <div class="panel-buttons bg-secondary">
@@ -32,3 +111,45 @@
     </div>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+
+      var addPaymentButton = document.getElementById('add_order_payment');
+  if (addPaymentButton) {
+    addPaymentButton.click();
+  }
+    const contactCheckbox = document.getElementById('use_contact_order');
+    const contactDiv = document.getElementById('div_contact');
+
+    function toggleContactDiv() {
+      if (contactCheckbox.checked) {
+        contactDiv.style.display = 'none';
+      } else {
+        contactDiv.style.display = 'block';
+      }
+    }
+
+    contactCheckbox.addEventListener('change', toggleContactDiv);
+
+    toggleContactDiv();
+  });
+
+  $('#order_products').on('cocoon:after-insert', function(e, added_task) {
+    $("select.select2").select2({
+      language: "pt-BR",
+      placeholder: " ",
+      width: '100%',
+      allowClear: true      
+    });
+  });
+
+  $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
+    $("select.select2").select2({
+      language: "pt-BR",
+      placeholder: " ",
+      width: '100%',
+      allowClear: true      
+    });
+  });
+</script>

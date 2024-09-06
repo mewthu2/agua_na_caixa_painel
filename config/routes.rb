@@ -17,7 +17,6 @@ Rails.application.routes.draw do
   resources :orders do
     collection do
       get :tiny_orders
-      get :search_contacts
     end
   end
 

@@ -15,6 +15,9 @@ gem 'rest-client'
 # Ruby internationalization and localization (i18n) solution.
 gem 'i18n'
 
+# Faker is a port of Perl's Data::Faker library. It's a library for generating fake data such as names, addresses, and phone numbers.
+gem 'faker'
+
 # Simple, efficient background processing for Ruby.
 gem "sidekiq", "~> 7.2"
 

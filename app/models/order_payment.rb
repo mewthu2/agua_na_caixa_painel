@@ -1,17 +1,23 @@
 class OrderPayment < ApplicationRecord
   # Callbacks
-  # Associacoes
-  belongs_to :order
+  after_commit :calculate_days, on: [:create, :update]
+  after_commit :calculate_amount, on: [:create, :update]
+
+  # Associações
+  belongs_to :order, optional: true
   belongs_to :order_payment_type
-  # Validacoes
 
-  # Escopos
+  # Métodos públicos
 
-  # Metodos estaticos
-  # Metodos publicos
-  # Metodos GET
-  # Metodos SET
+  def calculate_days
+    return if date.nil?
 
-  # Nota: os metodos somente utilizados em callbacks ou utilizados somente por essa
-  #       propria classe deverao ser privados (remover essa anotacao)
+    days_difference = (date - Date.today).to_i
+    update_column(:days, days_difference)
+  end
+
+  def calculate_amount
+    total_amount = order.order_products.joins(:product).sum('products.preco')
+    update_column(:amount, total_amount)
+  end
 end

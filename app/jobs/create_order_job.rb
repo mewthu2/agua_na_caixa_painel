@@ -1,59 +1,67 @@
 class CreateOrderJob < ActiveJob::Base
-  def perform(origin)
-    origin == 'agua_na_caixa' ? ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA') : ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
+  def perform(order)
+    order.destiny == 'agua_na_caixa' ? token = ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA') : token = ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
 
-    create_order(origin, token)
+    attempt = Attempt.create(kinds: :create_order)
+
+    create_order(token, order)
   end
 
-  def create_order(_origin, token)
-    order = Tiny::Orders.create_order(token, pedido)
+  def create_order(token, order)
+    pedido = mount_order(order)
+
+    begin
+      order = Tiny::Orders.create_order(token, pedido)
+    rescue StandardError => e
+      attempt.update(error: e, status: :error)
+    end
   end
 
   def mount_order(order)
     {
       'pedido' => {
         'data_pedido' => order.created_at.strftime('%d/%m/%Y'),
-        'data_prevista' => order.preview_date.strftime('%d/%m/%Y'),
+        'data_prevista' => '',
         'cliente' => {
           'codigo' => order.contact.codigo,
           'nome' => order.contact.nome,
           'nome_fantasia' => order.contact.fantasia,
           'tipo_pessoa' => order.contact.tipo_pessoa,
           'cpf_cnpj' => order.contact.cpf_cnpj,
-          'ie' => order.contact.ie,
+          'ie' => '',
           'rg' => '',
-          'endereco' => order.contact.endereco,
-          'numero' => order.contact.numero,
-          'complemento' => order.contact.complemento,
-          'bairro' => order.contact.bairro,
-          'cep' => order.contact.cep,
-          'cidade' => order.contact.cidade,
-          'uf' => order.contact.uf,
+          'endereco' => order.use_contact_order ? order.contact.endereco : order.endereco,
+          'numero' => order.use_contact_order ? order.contact.numero : order.numero,
+          'complemento' => order.use_contact_order ? order.contact.complemento : order.complemento,
+          'bairro' => order.use_contact_order ? order.contact.bairro : order.bairro,
+          'cep' => order.use_contact_order ? order.contact.cep : order.cep,
+          'cidade' => order.use_contact_order ? order.contact.cidade : order.cidade,
+          'uf' => order.use_contact_order ? order.contact.uf : order.uf,
           'fone' => order.contact.fone
         },
         'itens' => order.order_products.map do |op|
           {
             'item' => {
-              'codigo' => op.codigo,
-              'descricao' => op.descricao,
-              'unidade' => op.unidade,
-              'quantidade' => op.quantidade,
-              'valor_unitario' => op.valor_unitario
+              'codigo' => op.product.codigo,
+              'descricao' => op.product.nome,
+              'unidade' => op.product.unidade,
+              'quantidade' => op.quantidade&.to_s,
+              'valor_unitario' => op.product.preco
             }
           }
         end,
-        'parcelas' => [
+        'parcelas' => order.order_payments.map do |op|
           {
             'parcela' => {
-              'dias' => op.order_payment.days,
-              'data' => op.order_payment.date,
-              'valor' => op.order_payment.amount,
-              'obs' => op.order_payment.note,
-              'forma_pagamento' => op.order_payment.order_payment_type.payment_method,
-              'meio_pagamento' => op.order_payment.order_payment_type.payment_channel
+              'dias' => op.days,
+              'data' => op.date&.to_s,
+              'valor' => op.amount,
+              'obs' => op.note,
+              'forma_pagamento' => op.order_payment_type.payment_method,
+              'meio_pagamento' => op.order_payment_type.payment_channel
             }
           }
-        ]
+        end
       }
     }
   end
