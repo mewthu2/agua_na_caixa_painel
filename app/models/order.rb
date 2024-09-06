@@ -1,5 +1,6 @@
 class Order < ApplicationRecord
   enum destiny: [:primeiros_passos, :agua_na_caixa]
+  after_commit :calculate_destiny, on: [:create, :update]
   # Callbacks
   # Associacoes
   belongs_to :contact
@@ -16,6 +17,14 @@ class Order < ApplicationRecord
     ', value: "%#{value}%")
   end
   # Metodos estaticos
+  def calculate_destiny
+    case use_contact_order
+    when true
+      update_column(:destiny, contact&.uf == 'SP' ? :agua_na_caixa : :primeiros_passos)
+    when false
+      update_column(:destiny, uf == 'SP' ? :agua_na_caixa : :primeiros_passos)
+    end
+  end
   # Metodos publicos
   # Metodos GET
   # Metodos SET
