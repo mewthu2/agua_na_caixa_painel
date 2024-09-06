@@ -1,0 +1,108 @@
+<%= form_for(@contact, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
+  <div class="bg-dark p-4 mt-4">
+    <div class="page-header text-primary">
+      <h4>
+        <%= @contact.new_record? ? "Criar Contato" : "Atualizar Contato" %>
+        <small class="text-secondary"> Informações do contato</small>
+      </h4>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <%= form.label :codigo, 'Código', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :codigo, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :nome, 'Nome', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :nome, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :fantasia, 'Fantasia', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :fantasia, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :tipo_pessoa, 'Tipo Pessoa', class: 'col-form-label text-secondary' %>
+        <%= form.select :tipo_pessoa, options_for_select([['Física', 'fisica'], ['Jurídica', 'juridica']], form.object.tipo_pessoa), {}, class: 'form-control select2' %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <%= form.label :cpf_cnpj, 'CPF/CNPJ', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :cpf_cnpj, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :email, 'Email', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :email, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :fone, 'Fone', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :fone, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :uf, 'UF', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :uf, class: 'form-control form-control-lg' %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <%= form.label :endereco, 'Endereço', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :endereco, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :numero, 'Número', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :numero, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :complemento, 'Complemento', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :complemento, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :bairro, 'Bairro', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :bairro, class: 'form-control form-control-lg' %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <%= form.label :cep, 'CEP', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :cep, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :cidade, 'Cidade', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :cidade, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :id_lista_preco, 'ID Lista de Preço', class: 'col-form-label text-secondary' %>
+        <%= form.number_field :id_lista_preco, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-3">
+        <%= form.label :id_vendedor, 'ID Vendedor', class: 'col-form-label text-secondary' %>
+        <%= form.number_field :id_vendedor, class: 'form-control form-control-lg' %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <%= form.label :nome_vendedor, 'Nome do Vendedor', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :nome_vendedor, class: 'form-control form-control-lg' %>
+      </div>
+      <div class="col-md-6">
+        <%= form.label :situacao, 'Situação', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :situacao, class: 'form-control form-control-lg' %>
+      </div>
+    </div>
+
+    <div class="panel-buttons bg-secondary">
+      <%= link_to contacts_path(origin: form.object.origin), class: 'btn btn-dark btn-lg' do %>
+        <i class="fa fa-undo"></i> Voltar
+      <% end %>
+      <% unless read_only %>
+        <%= form.button class: 'btn btn-primary btn-lg', data: { disable_with: @contact.new_record? ? 'Criando...' : 'Salvando...' } do %>
+          <i class="fa fa-save"></i> <%= @contact.new_record? ? 'Criar Contato' : 'Atualizar Contato' %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

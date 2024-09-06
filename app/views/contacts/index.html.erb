@@ -56,18 +56,19 @@
         <% @contacts.each do |contact| %>
           <tr>
             <td class="text-center">
-              <%= link_to to_do_dashboard_index_path, class: 'btn btn-sm btn-primary text-light' do %> 
-                <i class="fa fa-pencil-alt"></i>
-              <% end %>
-              <%= link_to to_do_dashboard_index_path, class: 'btn btn-sm btn-success text-light' do %> 
-                <i class="fa fa-redo"></i>
-              <% end %>
-              <%= link_to to_do_dashboard_index_path, method: :delete, data: { confirm: 'Você tem certeza?' }, class: 'btn btn-sm btn-danger text-light' do %> 
-                <i class="fa fa-trash"></i>
-              <% end %>
-              <%= link_to to_do_dashboard_index_path, class: 'btn btn-sm btn-secondary text-light' do %> 
-                <i class="fa fa-eye"></i>
-              <% end %>
+              <div class="btn-group" role="group" aria-label="Ações do pedido">
+                <%= link_to edit_contact_path(contact), class: 'btn btn-sm btn-primary text-light' do %>
+                  <i class="fa fa-pencil-alt"></i>
+                <% end %>
+
+                <%= link_to contact_path(contact), class: 'btn btn-sm btn-secondary text-light' do %> 
+                  <i class="fa fa-eye"></i>
+                <% end %>
+
+                <%= button_to contact_path(contact), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Are you sure?" } do %>
+                  <i class="fa fa-times"></i>
+                <% end %>
+              </div>
             </td>
             <td class="text-center"><%= contact.id %></td>
             <td class="text-center"><%= contact.codigo %></td>
