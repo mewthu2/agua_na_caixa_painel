@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: %i[show edit update destroy]
-  before_action :load_references, only: %i[new edit]
+  before_action :load_references, only: %i[new edit show]
 
   def integrate_orders
     order = Order.find(params[:order_id])
