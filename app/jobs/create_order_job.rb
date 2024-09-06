@@ -4,16 +4,46 @@ class CreateOrderJob < ActiveJob::Base
 
     attempt = Attempt.create(kinds: :create_order)
 
-    create_order(token, order)
+    create_order(token, order, attempt)
   end
 
-  def create_order(token, order)
+  def create_order(token, order, attempt)
     pedido = mount_order(order)
 
+    attempt.update(requisition: pedido)
     begin
       order = Tiny::Orders.create_order(token, pedido)
     rescue StandardError => e
       attempt.update(error: e, status: :error)
+    end
+
+    match = order.match(/<status_processamento>(\d+)<\/status_processamento>/)
+
+    status_processamento = match ? match[1].to_i : nil
+
+    case status_processamento
+    when 2
+      message = 'Status de Processamento é 2. Executando ação específica para status 2.'
+      puts message
+
+      attempt.update(status_code: '403', message:)
+
+      2
+    when 3
+      message = 'Status de Processamento é 3. Executando ação específica para status 3.'
+      puts message
+
+      attempt.update(status_code: '200', message:)
+
+      # TODO: adicionar o id do tiny tanto no attempt quanto na order
+      3
+    else
+      message = 'Status de Processamento não reconhecido ou não encontrado.'
+      puts message
+
+      attempt.update(status_code: '500', message:)
+
+      4
     end
   end
 

@@ -72,11 +72,7 @@ class Tiny::Orders
     end
 
     def create_order(token, pedido)
-      response = JSON.parse(HTTParty.post(ENV.fetch('INCLUIR_PEDIDO'),
-                                         query: { token:,
-                                                  formato: 'string',
-                                                  pedido: }))
-      response.with_indifferent_access[:retorno]
+      HTTParty.post(ENV.fetch('INCLUIR_PEDIDO'), body: { token:, formato: 'string', pedido: pedido.to_json })
     end
   end
 end

@@ -43,6 +43,12 @@
           <tr>
             <td class="text-center">
               <div class="btn-group" role="group" aria-label="Ações do pedido">
+                <% if !order.tiny_order_id.present? %>
+                  <%= link_to integrate_orders_orders_path(order_id: order.id), class: 'btn btn-sm btn-success text-light' do %>
+                    <i class="fas fa-link"></i>
+                  <% end %>
+                <% end %>
+
                 <%= link_to edit_order_path(order), class: 'btn btn-sm btn-primary text-light' do %>
                   <i class="fa fa-pencil-alt"></i>
                 <% end %>

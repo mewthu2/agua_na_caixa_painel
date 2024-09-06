@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   resources :orders do
     collection do
       get :tiny_orders
+      get :integrate_orders
     end
   end
 

@@ -2,9 +2,18 @@ class OrdersController < ApplicationController
   before_action :set_order, only: %i[show edit update destroy]
   before_action :load_references, only: %i[new edit]
 
-  def index
-    @orders = Order.search(params[:search])
-                   .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
+  def integrate_orders
+    order = Order.find(params[:order_id])
+    result = CreateOrderJob.perform_now(order)
+
+    case result
+    when 2
+      redirect_to orders_path, notice: 'Pedido já criado no Tiny, não é possível recriar.'
+    when 3
+      redirect_to orders_path, notice: 'Pedido criado com sucesso!'
+    when 4
+      redirect_to orders_path, alert: 'Aconteceu algum erro inesperado, por favor entre em contato com o suporte!'
+    end
   end
 
   def tiny_orders
@@ -18,6 +27,11 @@ class OrdersController < ApplicationController
     end
 
     @all_orders = fetch_all_orders(token)
+  end
+
+  def index
+    @orders = Order.search(params[:search])
+                   .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
   def show; end
