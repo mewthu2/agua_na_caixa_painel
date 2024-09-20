@@ -12,12 +12,13 @@ class CreateOrderJob < ActiveJob::Base
 
     attempt.update(requisition: pedido)
     begin
-      order = Tiny::Orders.create_order(token, pedido)
+      tiny_order = Tiny::Orders.create_order(token, pedido)
     rescue StandardError => e
       attempt.update(error: e, status: :error)
     end
 
-    match = order.match(/<status_processamento>(\d+)<\/status_processamento>/)
+    match = tiny_order.match(/<status_processamento>(\d+)<\/status_processamento>/)
+    tiny_order_id = tiny_order.match(/<id>(\d+)<\/id>/)[1].to_i
 
     status_processamento = match ? match[1].to_i : nil
 
@@ -34,7 +35,7 @@ class CreateOrderJob < ActiveJob::Base
       puts message
 
       attempt.update(status_code: '200', message:)
-
+      order.update(tiny_order_id:)
       # TODO: adicionar o id do tiny tanto no attempt quanto na order
       3
     else
@@ -91,7 +92,8 @@ class CreateOrderJob < ActiveJob::Base
               'meio_pagamento' => op.order_payment_type.payment_channel
             }
           }
-        end
+        end,
+        'obs' => order.observation
       }
     }
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_06_055057) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_06_185018) do
   create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -87,6 +87,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_06_055057) do
   create_table "orders", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "contact_id"
     t.integer "tiny_order_id"
+    t.integer "observation"
     t.boolean "use_contact_order", default: true
     t.string "endereco"
     t.string "numero"

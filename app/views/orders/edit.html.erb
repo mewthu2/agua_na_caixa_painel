@@ -1,3 +1,5 @@
 <% title "Editar Pedido: #{@order.id}" %>
 
+<%= render 'errors', order: @order %>
+
 <%= render 'form', order: @order, read_only: false %>

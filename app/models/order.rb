@@ -1,7 +1,9 @@
 class Order < ApplicationRecord
   enum destiny: [:primeiros_passos, :agua_na_caixa]
-  after_commit :calculate_destiny, on: [:create, :update]
+
   # Callbacks
+  after_commit :calculate_destiny, on: [:create, :update]
+
   # Associacoes
   belongs_to :contact
   has_many :order_products, dependent: :destroy
@@ -16,6 +18,7 @@ class Order < ApplicationRecord
       orders.destiny LIKE :value
     ', value: "%#{value}%")
   end
+
   # Metodos estaticos
   def calculate_destiny
     case use_contact_order

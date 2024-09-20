@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: %i[show edit update destroy]
-  before_action :load_references, only: %i[new edit show]
+  before_action :load_references, only: %i[new edit show update]
 
   def integrate_orders
     order = Order.find(params[:order_id])
@@ -17,14 +17,14 @@ class OrdersController < ApplicationController
   end
 
   def tiny_orders
-    redirect_to root_path, alert: 'Parâmetro não permitido.' unless ['primeiros_passos', 'agua_na_caixa'].include?(params[:kinds])
+    redirect_to root_path, alert: 'Parâmetro não permitido.' unless %w[primeiros_passos agua_na_caixa].include?(params[:kinds])
 
-    case params[:kinds]
-    when 'primeiros_passos'
-      token = ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
-    when 'agua_na_caixa'
-      token = ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA')
-    end
+    token = case params[:kinds]
+            when 'primeiros_passos'
+              ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
+            when 'agua_na_caixa'
+              ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA')
+            end
 
     @all_orders = fetch_all_orders(token)
   end
@@ -44,15 +44,16 @@ class OrdersController < ApplicationController
 
   def create
     @order = Order.new(order_params)
-    if @order.save
+
+    if validate_amounts(params[:order]) && @order.save
       redirect_to orders_path, notice: 'Pedido criado com sucesso.'
     else
-      redirect_to orders_path, notice: "Não foi possível criar o pedido: #{ @order.errors.full_messages.join(', ') }"
+      redirect_to orders_path, notice: "Não foi possível criar o pedido: #{@order.errors.full_messages.join(', ')}"
     end
   end
 
   def update
-    if @order.update(order_params)
+    if validate_amounts(params[:order]) && @order.update(order_params)
       redirect_to orders_path, notice: 'Pedido atualizado com sucesso.'
     else
       render :edit
@@ -66,14 +67,42 @@ class OrdersController < ApplicationController
 
   private
 
+  def validate_amounts(order_params)
+    product_amount = order_params[:order_products_attributes].values.sum do |op|
+      quantidade = op['quantidade'].to_f
+      product = Product.find(op['product_id'])
+      quantidade * product.preco
+    end
+
+    order_payment_amount = order_params[:order_payments_attributes].values.sum { |op| op['amount'].to_f }
+
+    if product_amount != order_payment_amount
+      @order.errors.add(:base, "O valor total dos pagamentos (#{order_payment_amount}) deve ser igual ao valor total dos produtos (#{product_amount}).")
+      false
+    else
+      true
+    end
+  end
+
   def set_order
     @order = Order.find(params[:id])
   end
 
   def order_params
-    params.require(:order).permit(:contact_id, :use_contact_order, :endereco, :numero, :complemento, :bairro, :cep, :uf,
-                                  order_products_attributes: [:id, :product_id, :quantidade, :_destroy],
-                                  order_payments_attributes: [:id, :order_payment_type_id, :date, :note, :_destroy])
+    params.require(:order).permit(
+      :contact_id,
+      :use_contact_order,
+      :tiny_order_id,
+      :observation,
+      :endereco,
+      :numero,
+      :complemento,
+      :bairro,
+      :cep,
+      :uf,
+      order_products_attributes: [:id, :product_id, :quantidade, :_destroy],
+      order_payments_attributes: [:id, :order_payment_type_id, :date, :note, :amount, :_destroy]
+    )
   end
 
   def load_references

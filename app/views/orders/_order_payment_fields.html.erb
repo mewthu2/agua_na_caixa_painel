@@ -7,12 +7,16 @@
              {},
              class: 'form-control select2' %>
     </div>
+    <div class="col-2">
+      <%= f.label :amount, 'Valor (R$)' %>
+      <%= f.text_field :amount, class: 'form-control', value: f.object.amount, required: true %>
+    </div>
     <div class="col-3">
       <%= f.label :date, 'Data' %>
       <%= f.date_field :date, class: 'form-control', value: f.object.date || Date.today %>
     </div>
-    <div class="col-5">
-      <%= f.label :note, 'Nota' %>
+    <div class="col-3">
+      <%= f.label :note, 'Observação' %>
       <%= f.text_field :note, class: 'form-control', value: f.object.note %>
     </div>
     <div class="col-1">
