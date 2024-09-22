@@ -48,7 +48,7 @@ class OrdersController < ApplicationController
     if validate_amounts(params[:order]) && @order.save
       redirect_to orders_path, notice: 'Pedido criado com sucesso.'
     else
-      redirect_to orders_path, notice: "Não foi possível criar o pedido: #{@order.errors.full_messages.join(', ')}"
+      render :edit
     end
   end
 
@@ -76,12 +76,10 @@ class OrdersController < ApplicationController
 
     order_payment_amount = order_params[:order_payments_attributes].values.sum { |op| op['amount'].to_f }
 
-    if product_amount != order_payment_amount
-      @order.errors.add(:base, "O valor total dos pagamentos (#{order_payment_amount}) deve ser igual ao valor total dos produtos (#{product_amount}).")
-      false
-    else
-      true
-    end
+    return true if product_amount == order_payment_amount
+
+    @order.errors.add(:base, "O valor total dos pagamentos (#{order_payment_amount}) deve ser igual ao valor total dos produtos (#{product_amount}).")
+    false
   end
 
   def set_order

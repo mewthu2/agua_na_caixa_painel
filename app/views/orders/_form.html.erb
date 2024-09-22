@@ -6,7 +6,7 @@
         <small class="text-secondary"> Informações do pedido</small>
       </h4>
     </div>
-
+    <h4 style="float:right;">Total do Pedido: R$ <span id="total_order"></span></h4>
     <div class="row mb-3 justify-content-center">
       <div class="col-6 d-flex">
         <div class="flex-grow-1">
@@ -88,10 +88,22 @@
       <% end %>
     </div>
 
+    <div class="col-2 mt-4">
+      <%= form.label :valor_total, 'Valor Total (R$)' %>
+      <input type="text" id="order-total" class="form-control" readonly>
+    </div>
+
     <div class="page-header text-primary mt-4">
       <h4>
         <small class="text-secondary"> Parcelas do pedido</small>
       </h4>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <%= label_tag 'payment_installments', 'Valores das Parcelas (separados por vírgula)' %>
+        <%= text_field_tag 'payment_installments', '', class: 'form-control', placeholder: 'Ex: 10,25,35', id: 'payment_installments' %>
+      </div>
     </div>
 
     <div id="order_payments">
@@ -178,5 +190,70 @@
     }
 
     updateEditLink();
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const paymentInstallmentsField = document.getElementById('payment_installments');
+    const orderPaymentsContainer = document.getElementById('order_payments');
+
+    function updateOrderPayments() {
+      const values = paymentInstallmentsField.value.split(',').map(value => parseInt(value.trim())).filter(value => !isNaN(value));
+
+      const currentFields = orderPaymentsContainer.querySelectorAll('.nested-fields');
+      currentFields.forEach(field => field.remove());
+
+      values.forEach((days, index) => {
+        const newField = document.createElement('div');
+        newField.classList.add('nested-fields');
+
+        const installmentDate = new Date();
+        installmentDate.setDate(installmentDate.getDate() + days);
+        const formattedDate = installmentDate.toISOString().split('T')[0];
+
+        newField.innerHTML = `
+          <div class="row">
+            <div class="col-3">
+              <label for="order_payment_type_id">Tipo de Pagamento</label>
+              <select class="form-control select2" name="order[order_payments_attributes][${index}][order_payment_type_id]">
+                <!-- opções de pagamento -->
+                ${getPaymentTypesOptions()}
+              </select>
+            </div>
+            <div class="col-2">
+              <label for="amount">Valor (R$)</label>
+              <input type="text" name="order[order_payments_attributes][${index}][amount]" class="form-control" required>
+            </div>
+            <div class="col-3">
+              <label for="date">Data</label>
+              <input type="date" name="order[order_payments_attributes][${index}][date]" class="form-control" value="${formattedDate}">
+            </div>
+            <div class="col-3">
+              <label for="note">Observação</label>
+              <input type="text" name="order[order_payments_attributes][${index}][note]" class="form-control">
+            </div>
+            <div class="col-1">
+              <button type="button" class="btn btn-danger remove-order-payment" style="margin-top: 2rem !important;"><i class="fa fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+        orderPaymentsContainer.appendChild(newField);
+      });
+    }
+
+    function getPaymentTypesOptions() {
+      return `<% @payment_types.each do |t| %>
+                <option value="<%= t.id %>"><%= "#{t.payment_method} - #{t.payment_channel}" %></option>
+              <% end %>`;
+    }
+
+    paymentInstallmentsField.addEventListener('input', updateOrderPayments);
+
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('remove-order-payment')) {
+        event.target.closest('.nested-fields').remove();
+      }
+    });
   });
 </script>
