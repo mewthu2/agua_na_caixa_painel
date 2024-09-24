@@ -104,7 +104,34 @@ class OrdersController < ApplicationController
   end
 
   def load_references
-    @products = Product.distinct(:codigo)
+    @products = Product.where(id: [
+                                      699209952,
+                                      748360188,
+                                      744662967,
+                                      752754424,
+                                      753265993,
+                                      754738936,
+                                      754742848,
+                                      590475173,
+                                      754447889,
+                                      726141299,
+                                      742667645,
+                                      753544247,
+                                      754393155,
+                                      726142138,
+                                      754778220,
+                                      726141666,
+                                      752764639,
+                                      752764722,
+                                      755259574,
+                                      747561604,
+                                      755259571,
+                                      747560612,
+                                      747561660,
+                                      755259581,
+                                      747561649,
+                                      755259577
+                                    ])
     @payment_types = OrderPaymentType.all
     @contacts = Contact.distinct(:cpf_cnpj)
   end
