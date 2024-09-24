@@ -1,14 +1,14 @@
 <%= form_for(@order, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
   <div class="bg-dark p-4 mt-4">
     <div class="page-header text-primary">
+      <h4 class="text-light" style="float:right;">Total do Pedido: <span class="badge bg-primary">R$ <span id="total_order"></span></span></h4>
       <h4>
         <%= @order.new_record? ? "Criar Pedido" : "Atualizar Pedido" %>
         <small class="text-secondary"> Informações do pedido</small>
       </h4>
     </div>
-    <h4 style="float:right;">Total do Pedido: <span class="badge bg-primary">R$ <span id="total_order"></span></span></h4>
     <div class="row mb-3 justify-content-center">
-      <div class="col-6 d-flex">
+      <div class="col-10 d-flex">
         <div class="flex-grow-1">
           <%= form.label :contact_id, 'Cliente:' %>
           <%= form.select :contact_id,
@@ -19,13 +19,12 @@
             <%= form.check_box :use_contact_order, class: 'form-check-input', id: 'use_contact_order' %>
             <%= form.label :use_contact_order, 'Usar endereço do contato', class: 'form-check-label text-secondary' %>
           </div>
-
-          <div class="ml-2 align-self-end">
-            <a href="#" id="edit_contact_link" class="btn btn-secondary" target="_blank" style="display: none;">
-              <i class="fa fa-edit"></i> Editar
-            </a>
-          </div>
         </div>
+      </div>
+      <div class="col-2 mt-4">
+        <a href="#" id="edit_contact_link" class="btn btn-secondary" target="_blank" style="display: none;">
+          <i class="fa fa-edit"></i> Editar
+        </a>
       </div>
     </div>
 
@@ -114,6 +113,17 @@
       <% end %>
     </div>
 
+    <div class="page-header text-primary mt-4">
+      <h4>
+        <small class="text-secondary"> Observações do Pedido</small>
+      </h4>
+    </div>
+
+    <div class="col-md-12">
+      <%= form.label :observation, 'Observação', class: 'col-form-label text-secondary' %>
+      <%= form.text_area :observation, class: 'form-control form-control-lg' %>
+    </div>
+
     <div class="panel-buttons bg-secondary">
       <%= link_to orders_path, class: 'btn btn-dark btn-lg' do %>
         <i class="fa fa-undo"></i> Voltar
@@ -127,6 +137,7 @@
   </div>
 <% end %>
 
+<!-- Contact div -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
 
@@ -188,17 +199,17 @@
   });
 </script>
 
+<!-- Preenchimento das parcelas -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const paymentInstallmentsField = document.getElementById('payment_installments');
     const orderPaymentsContainer = document.getElementById('order_payments');
-    const totalOrderField = document.getElementById('total_order'); // Campo do total do pedido
+    const totalOrderField = document.getElementById('total_order');
 
     function updateOrderPayments() {
       const values = paymentInstallmentsField.value.split(',').map(value => parseInt(value.trim())).filter(value => !isNaN(value));
-      const totalOrder = parseFloat(totalOrderField.textContent.replace('R$', '').trim()); // Obtém o valor total como número
+      const totalOrder = parseFloat(totalOrderField.textContent.replace('R$', '').trim());
 
-      // Remove os campos de pagamento existentes
       const currentFields = orderPaymentsContainer.querySelectorAll('.nested-fields');
       currentFields.forEach(field => field.remove());
 
@@ -206,13 +217,11 @@
         const newField = document.createElement('div');
         newField.classList.add('nested-fields');
 
-        // Calcula a data para cada parcela
         const installmentDate = new Date();
         installmentDate.setDate(installmentDate.getDate() + days);
         const formattedDate = installmentDate.toISOString().split('T')[0];
 
-        // Calcula o valor de cada parcela
-        const installmentAmount = (totalOrder / values.length).toFixed(2); // Valor dividido por número de parcelas
+        const installmentAmount = (totalOrder / values.length).toFixed(2);
 
         newField.innerHTML = `
           <div class="row">
@@ -255,13 +264,13 @@
     document.addEventListener('click', function(event) {
       if (event.target.classList.contains('remove-order-payment')) {
         event.target.closest('.nested-fields').remove();
-        updateOrderPayments(); // Atualiza as parcelas ao remover
+        updateOrderPayments();
       }
     });
   });
 </script>
 
-
+<!-- Cálculo dos valores -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     function calculateTotal() {
@@ -269,13 +278,18 @@
 
       document.querySelectorAll('.nested-fields').forEach(function(container) {
         const quantidadeInput = container.querySelector('.quantidade');
-        const produtoSelect = container.querySelector('.product-select');
+        const priceInput = container.querySelector('.price');
+        const precoCaixaInput = container.querySelector('.preco-caixa');
 
-        if (quantidadeInput && produtoSelect) {
+        if (quantidadeInput && priceInput) {
           const quantidade = parseFloat(quantidadeInput.value) || 0;
-          const preco = parseFloat(produtoSelect.selectedOptions[0]?.dataset.price) || 0;
+          const preco = parseFloat(priceInput.value) || 0;
 
           total += quantidade * preco;
+
+          if (precoCaixaInput) {
+            precoCaixaInput.value = (preco * 12).toFixed(2);
+          }
         }
       });
 
@@ -286,13 +300,13 @@
     }
 
     document.addEventListener('change', function(event) {
-      if (event.target.matches('.product-select') || event.target.matches('.quantidade')) {
+      if (event.target.matches('.price') || event.target.matches('.quantidade')) {
         calculateTotal();
       }
     });
 
     document.addEventListener('input', function(event) {
-      if (event.target.matches('.quantidade')) {
+      if (event.target.matches('.quantidade') || event.target.matches('.price')) {
         calculateTotal();
       }
     });
@@ -310,3 +324,4 @@
     calculateTotal();
   });
 </script>
+

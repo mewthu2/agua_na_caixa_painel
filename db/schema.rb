@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_06_185018) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_24_172435) do
   create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -78,6 +78,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_06_185018) do
     t.bigint "order_id"
     t.bigint "product_id"
     t.integer "quantidade"
+    t.string "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_order_products_on_order_id"

@@ -98,7 +98,7 @@ class OrdersController < ApplicationController
       :bairro,
       :cep,
       :uf,
-      order_products_attributes: [:id, :product_id, :quantidade, :_destroy],
+      order_products_attributes: [:id, :product_id, :quantidade, :price, :_destroy],
       order_payments_attributes: [:id, :order_payment_type_id, :date, :note, :amount, :_destroy]
     )
   end
