@@ -6,7 +6,7 @@
         <small class="text-secondary"> Informações do pedido</small>
       </h4>
     </div>
-    <h4 style="float:right;">Total do Pedido: R$ <span id="total_order"></span></h4>
+    <h4 style="float:right;">Total do Pedido: <span class="badge bg-primary">R$ <span id="total_order"></span></span></h4>
     <div class="row mb-3 justify-content-center">
       <div class="col-6 d-flex">
         <div class="flex-grow-1">
@@ -86,11 +86,6 @@
           <% end %>
         </div>
       <% end %>
-    </div>
-
-    <div class="col-2 mt-4">
-      <%= form.label :valor_total, 'Valor Total (R$)' %>
-      <input type="text" id="order-total" class="form-control" readonly>
     </div>
 
     <div class="page-header text-primary mt-4">
@@ -197,10 +192,13 @@
   document.addEventListener('DOMContentLoaded', function() {
     const paymentInstallmentsField = document.getElementById('payment_installments');
     const orderPaymentsContainer = document.getElementById('order_payments');
+    const totalOrderField = document.getElementById('total_order'); // Campo do total do pedido
 
     function updateOrderPayments() {
       const values = paymentInstallmentsField.value.split(',').map(value => parseInt(value.trim())).filter(value => !isNaN(value));
+      const totalOrder = parseFloat(totalOrderField.textContent.replace('R$', '').trim()); // Obtém o valor total como número
 
+      // Remove os campos de pagamento existentes
       const currentFields = orderPaymentsContainer.querySelectorAll('.nested-fields');
       currentFields.forEach(field => field.remove());
 
@@ -208,9 +206,13 @@
         const newField = document.createElement('div');
         newField.classList.add('nested-fields');
 
+        // Calcula a data para cada parcela
         const installmentDate = new Date();
         installmentDate.setDate(installmentDate.getDate() + days);
         const formattedDate = installmentDate.toISOString().split('T')[0];
+
+        // Calcula o valor de cada parcela
+        const installmentAmount = (totalOrder / values.length).toFixed(2); // Valor dividido por número de parcelas
 
         newField.innerHTML = `
           <div class="row">
@@ -223,7 +225,7 @@
             </div>
             <div class="col-2">
               <label for="amount">Valor (R$)</label>
-              <input type="text" name="order[order_payments_attributes][${index}][amount]" class="form-control" required>
+              <input type="text" name="order[order_payments_attributes][${index}][amount]" class="form-control" value="${installmentAmount}" required>
             </div>
             <div class="col-3">
               <label for="date">Data</label>
@@ -253,7 +255,58 @@
     document.addEventListener('click', function(event) {
       if (event.target.classList.contains('remove-order-payment')) {
         event.target.closest('.nested-fields').remove();
+        updateOrderPayments(); // Atualiza as parcelas ao remover
       }
     });
+  });
+</script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function calculateTotal() {
+      let total = 0;
+
+      document.querySelectorAll('.nested-fields').forEach(function(container) {
+        const quantidadeInput = container.querySelector('.quantidade');
+        const produtoSelect = container.querySelector('.product-select');
+
+        if (quantidadeInput && produtoSelect) {
+          const quantidade = parseFloat(quantidadeInput.value) || 0;
+          const preco = parseFloat(produtoSelect.selectedOptions[0]?.dataset.price) || 0;
+
+          total += quantidade * preco;
+        }
+      });
+
+      const totalOrderElement = document.getElementById('total_order');
+      if (totalOrderElement) {
+        totalOrderElement.textContent = total.toFixed(2);
+      }
+    }
+
+    document.addEventListener('change', function(event) {
+      if (event.target.matches('.product-select') || event.target.matches('.quantidade')) {
+        calculateTotal();
+      }
+    });
+
+    document.addEventListener('input', function(event) {
+      if (event.target.matches('.quantidade')) {
+        calculateTotal();
+      }
+    });
+
+    document.addEventListener('click', function(event) {
+      if (event.target.closest('.remove_fields')) {
+        setTimeout(calculateTotal, 0);
+      }
+    });
+
+    document.addEventListener('cocoon:after-insert', function() {
+      calculateTotal();
+    });
+
+    calculateTotal();
   });
 </script>
