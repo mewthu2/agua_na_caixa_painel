@@ -1,23 +1,23 @@
 <div class="nested-fields" id="order-product-container">
   <div class="row" data-tag-id="<%= f.object.id %>">
-    <div class="col-2">
-      <%= f.label :quantidade, 'Quantidade' %>
-      <%= f.number_field :quantidade, class: 'form-control quantidade', min: 1, value: f.object.quantidade || 1 %>
-    </div>
-    <div class="col-2">
-      <%= f.label :price, 'Preço uni R$' %>
-      <%= f.text_field :price, class: 'form-control price', value: f.object.price, required: true %>
-    </div>
-    <div class="col-2">
-      <%= label_tag :preco_caixa, 'Preço caixa (12 uni) R$' %>
-      <%= text_field_tag :preco_caixa, nil, class: 'form-control preco-caixa', readonly: true %>
-    </div>
     <div class="col-5">
       <%= f.label :product_id, 'Produto' %>
       <%= f.select :product_id,
                     options_for_select(@products.map { |v| ["#{v.nome}", v.id] }, f.object.product_id),
                     { include_blank: 'Selecione o Produto' },
                     class: 'form-control product-select' %>
+    </div>
+    <div class="col-2">
+      <%= f.label :quantidade, 'Quantidade' %>
+      <%= f.number_field :quantidade, class: 'form-control quantidade', min: 1, value: f.object.quantidade || 1 %>
+    </div>
+    <div class="col-2">
+      <%= label_tag :preco_caixa, 'Preço caixa (12 uni) R$' %>
+      <%= text_field_tag :preco_caixa, nil, class: 'form-control preco-caixa', readonly: true %>
+    </div>
+    <div class="col-2">
+      <%= f.label :price, 'Preço uni R$' %>
+      <%= f.text_field :price, class: 'form-control price', value: f.object.price, required: true %>
     </div>
     <div class="col-1">
       <% if params[:action] != 'show' %>

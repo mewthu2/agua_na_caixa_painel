@@ -1,6 +1,6 @@
 <div class="nested-fields" id="order-payment-container">
   <div class="row">
-    <div class="col-3">
+    <div class="col-6">
       <%= f.label :order_payment_type_id, 'Tipo de Pagamento' %>
       <%= f.select :order_payment_type_id,
              options_for_select(@payment_types.map { |t| ["#{t.payment_method} - #{t.payment_channel}", t.id] }, f.object.order_payment_type_id),
@@ -14,10 +14,6 @@
     <div class="col-3">
       <%= f.label :date, 'Data' %>
       <%= f.date_field :date, class: 'form-control', value: f.object.date || Date.today %>
-    </div>
-    <div class="col-3">
-      <%= f.label :note, 'Observação' %>
-      <%= f.text_field :note, class: 'form-control', value: f.object.note %>
     </div>
     <div class="col-1">
       <% if params[:action] != 'show' %>

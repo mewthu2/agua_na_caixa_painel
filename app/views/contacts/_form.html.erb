@@ -13,12 +13,12 @@
         <%= form.text_field :codigo, class: 'form-control form-control-lg' %>
       </div>
       <div class="col-md-3">
-        <%= form.label :nome, 'Nome', class: 'col-form-label text-secondary' %>
-        <%= form.text_field :nome, class: 'form-control form-control-lg' %>
+        <%= form.label :nome, 'Razão Social', class: 'col-form-label text-secondary' %>
+        <%= form.text_field :nome, class: 'form-control form-control-lg', required: true %>
       </div>
       <div class="col-md-3">
         <%= form.label :fantasia, 'Fantasia', class: 'col-form-label text-secondary' %>
-        <%= form.text_field :fantasia, class: 'form-control form-control-lg' %>
+        <%= form.text_field :fantasia, class: 'form-control form-control-lg', required: true %>
       </div>
       <div class="col-md-3">
         <%= form.label :tipo_pessoa, 'Tipo Pessoa', class: 'col-form-label text-secondary' %>
@@ -29,7 +29,7 @@
     <div class="row mb-3">
       <div class="col-md-3">
         <%= form.label :cpf_cnpj, 'CPF/CNPJ', class: 'col-form-label text-secondary' %>
-        <%= form.text_field :cpf_cnpj, class: 'form-control form-control-lg' %>
+        <%= form.text_field :cpf_cnpj, class: 'form-control form-control-lg', required: true %>
       </div>
       <div class="col-md-3">
         <%= form.label :email, 'Email', class: 'col-form-label text-secondary' %>
