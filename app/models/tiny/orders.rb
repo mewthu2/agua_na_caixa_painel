@@ -21,6 +21,15 @@ class Tiny::Orders
       response.with_indifferent_access[:retorno]
     end
 
+    def get_contact_orders(situacao, token, cliente)
+      response = JSON.parse(HTTParty.get(ENV.fetch('PEDIDOS_PESQUISA'),
+                                         query: { token:,
+                                                  formato: 'json',
+                                                  cliente:,
+                                                  situacao: }))
+      response.with_indifferent_access[:retorno]
+    end
+
     def get_all_orders(situacao, token)
       response = JSON.parse(HTTParty.get(ENV.fetch('PEDIDOS_PESQUISA'),
                                          query: { token:,

@@ -11,10 +11,6 @@
   <i class="fa fa-plus"></i> Novo produto
 <% end %>
 
-<%= link_to to_do_dashboard_index_path, class: 'btn btn-sm btn-success text-light mb-lg ml-md' do %>
-  <i class="fa fa-redo"></i> Atualizar base
-<% end %>
-
 <%= form_tag(products_path, method: 'get') do %>
   <%= hidden_field_tag :origin, params[:origin] %>
   <div class="card mb-lg advanced-search-form bg-dark text-light" id="filters">
@@ -62,9 +58,6 @@
             <td class="text-center">
               <%= link_to to_do_dashboard_index_path, class: 'btn btn-sm btn-primary text-light' do %> 
                 <i class="fa fa-pencil-alt"></i>
-              <% end %>
-              <%= link_to to_do_dashboard_index_path, class: 'btn btn-sm btn-success text-light' do %> 
-                <i class="fa fa-redo"></i>
               <% end %>
               <%= link_to to_do_dashboard_index_path, method: :delete, data: { confirm: 'Você tem certeza?' }, class: 'btn btn-sm btn-danger text-light' do %> 
                 <i class="fa fa-trash"></i>

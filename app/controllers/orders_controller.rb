@@ -88,6 +88,7 @@ class OrdersController < ApplicationController
 
   def order_params
     params.require(:order).permit(
+      :preference_payment,
       :contact_id,
       :use_contact_order,
       :tiny_order_id,

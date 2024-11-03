@@ -11,10 +11,6 @@
   <i class="fa fa-plus"></i> Novo contato
 <% end %>
 
-<%= link_to to_do_dashboard_index_path, class: 'btn btn-sm btn-success text-light mb-lg ml-md' do %> 
-  <i class="fa fa-redo"></i> Atualizar base
-<% end %>
-
 <%= form_tag(contacts_path, method: 'get') do %>
   <%= hidden_field_tag :origin, {}, value: params[:origin] %>
   <div class="card mb-lg advanced-search-form bg-dark text-light" id="filters">
@@ -44,6 +40,7 @@
         <tr>
           <th width="150" class="text-center"><i class="fa fa-ellipsis-v"></i></th>
           <th class="text-center"><%= 'ID' %></th>
+          <th class="text-center"><%= Contact.human_attribute_name :segment %></th>
           <th class="text-center"><%= Contact.human_attribute_name :codigo %></th>
           <th class="text-center"><%= Contact.human_attribute_name :nome %></th>
           <th class="text-center"><%= Contact.human_attribute_name :email %></th>
@@ -57,7 +54,7 @@
           <tr>
             <td class="text-center">
               <div class="btn-group" role="group" aria-label="Ações do pedido">
-                <%= link_to edit_contact_path(contact), class: 'btn btn-sm btn-primary text-light' do %>
+                <%= link_to edit_contact_path(contact, origin: params[:origin]), class: 'btn btn-sm btn-primary text-light' do %>
                   <i class="fa fa-pencil-alt"></i>
                 <% end %>
 
@@ -65,12 +62,13 @@
                   <i class="fa fa-eye"></i>
                 <% end %>
 
-                <%= button_to contact_path(contact), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Are you sure?" } do %>
+                <%= button_to contact_path(contact, origin: params[:origin]), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Are you sure?" } do %>
                   <i class="fa fa-times"></i>
                 <% end %>
               </div>
             </td>
             <td class="text-center"><%= contact.id %></td>
+            <td class="text-center"><span class="badge bg-info"><%= contact.segment %></span></td>
             <td class="text-center"><%= contact.codigo %></td>
             <td class="text-center"><%= contact.nome %></td>
             <td class="text-center"><%= contact.email %></td>

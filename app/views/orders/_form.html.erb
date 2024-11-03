@@ -19,6 +19,10 @@
             <%= form.check_box :use_contact_order, class: 'form-check-input', id: 'use_contact_order' %>
             <%= form.label :use_contact_order, 'Usar endereço do contato', class: 'form-check-label text-secondary' %>
           </div>
+          <div class="form-check mt-2">
+            <%= form.check_box :preference_payment, class: 'form-check-input', id: 'preference_payment' %>
+            <%= form.label :preference_payment, 'Usar preferência de pagamento do contato', class: 'form-check-label text-secondary' %>
+          </div>
         </div>
       </div>
       <div class="col-2 mt-4">
@@ -136,6 +140,41 @@
     </div>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  const preferenceCheckbox = document.getElementById('preference_payment');
+  const paymentTypeRows = document.querySelectorAll('.payment-type-row');
+
+  function togglePaymentTypeVisibility() {
+    paymentTypeRows.forEach(row => {
+      const paymentTypeDiv = row.querySelector('.payment-type');
+      if (preferenceCheckbox.checked) {
+        paymentTypeDiv.style.display = 'none';
+      } else {
+        paymentTypeDiv.style.display = '';
+      }
+    });
+  }
+
+  // Altera a visibilidade ao mudar o checkbox
+  preferenceCheckbox.addEventListener('change', togglePaymentTypeVisibility);
+
+  // Verifica o estado do checkbox ao inserir uma nova parcela
+  $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
+    const newPaymentTypeRow = added_task.querySelector('.payment-type-row');
+    const newPaymentTypeDiv = newPaymentTypeRow.querySelector('.payment-type');
+
+    // Verifica se o checkbox está ativado
+    if (preferenceCheckbox.checked) {
+      newPaymentTypeDiv.style.display = 'none';
+    } else {
+      newPaymentTypeDiv.style.display = ''; // Ou 'block', dependendo do seu estilo
+    }
+  });
+});
+
+</script>
 
 <!-- Contact div -->
 <script>

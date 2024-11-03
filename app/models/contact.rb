@@ -1,9 +1,20 @@
 class Contact < ApplicationRecord
   enum origin: [:primeiros_passos, :agua_na_caixa]
-  # Callbacks
-  # Associacoes
+  enum segment: [:food,
+                 :varejo,
+                 :corporativo,
+                 :eventos,
+                 :farma,
+                 :conveniência,
+                 :hotel,
+                 :distribuidores]
 
-  # Validacoes
+  # Callbacks
+  after_commit :enqueue_update_tiny_contact_job, on: [:create, :update]
+
+  # Associações
+  belongs_to :order_payment_type, optional: true
+  # Validações
 
   # Escopos
   add_scope :search do |value|
@@ -30,44 +41,10 @@ class Contact < ApplicationRecord
          contacts.id LIKE :valor', valor: "%#{value}%")
   end
 
-  # Metodos estaticos
-  def self.update_local_contacts(origin)
-    case origin
-    when 'primeiros_passos'
-      token = ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
-    when 'agua_na_caixa'
-      token = ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA')
-    else
-      raise ArgumentError, 'Origem inválida'
-    end
+  # Métodos privados
+  private
 
-    pagina = 1
-    numero_paginas = 1
-
-    while pagina <= numero_paginas
-      tiny_contacts_response = Tiny::Registrations.search_registration(token, pagina)
-
-      return unless tiny_contacts_response[:status] == 'OK'
-      numero_paginas = tiny_contacts_response[:numero_paginas].to_i
-      tiny_contacts = tiny_contacts_response[:contatos]
-
-      tiny_contacts.each do |tc|
-        contact_data = tc[:contato]
-        contact = Contact.find_or_initialize_by(id: contact_data[:id])
-
-        contact_data[:origin] = origin
-
-        contact.assign_attributes(contact_data.reject { |_, v| v.nil? || v == '' })
-        contact.save
-      end
-
-      pagina += 1
-    end
+  def enqueue_update_tiny_contact_job
+    UpdateTinyContactJob.perform_later(self)
   end
-  # Metodos publicos
-  # Metodos GET
-  # Metodos SET
-
-  # Nota: os metodos somente utilizados em callbacks ou utilizados somente por essa
-  #       propria classe deverao ser privados (remover essa anotacao)
 end

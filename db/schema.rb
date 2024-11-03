@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_24_172435) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_03_192855) do
   create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -30,7 +30,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_24_172435) do
   end
 
   create_table "contacts", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "order_payment_type_id"
     t.bigint "origin"
+    t.bigint "segment"
     t.string "codigo"
     t.string "nome"
     t.string "fantasia"
@@ -44,14 +46,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_24_172435) do
     t.string "cidade"
     t.string "uf"
     t.string "email"
+    t.string "email_nota_fiscal"
     t.string "fone"
     t.integer "id_lista_preco"
     t.integer "id_vendedor"
     t.string "nome_vendedor"
+    t.string "nome_responsavel_tel"
     t.string "situacao"
     t.datetime "data_criacao"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["order_payment_type_id"], name: "index_contacts_on_order_payment_type_id"
   end
 
   create_table "order_payment_types", charset: "utf8mb3", force: :cascade do |t|
@@ -90,6 +95,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_24_172435) do
     t.integer "tiny_order_id"
     t.integer "observation"
     t.boolean "use_contact_order", default: true
+    t.boolean "preference_payment", default: false
     t.string "endereco"
     t.string "numero"
     t.string "complemento"
@@ -156,6 +162,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_24_172435) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "contacts", "order_payment_types"
   add_foreign_key "order_payments", "order_payment_types"
   add_foreign_key "order_payments", "orders"
   add_foreign_key "order_products", "orders"

@@ -52,7 +52,7 @@
 
         <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
           <div class="mb-3 col-icon"> 
-            <%= link_to attempts_path(kinds: :create_order_tiny_1), class: 'text-light link' do %>
+            <%= link_to attempts_path(kinds: :create_order_primeiros_passos), class: 'text-light link' do %>
               <i class="fa-solid fa-file-invoice text-info link"></i>
               <span class="name-col">
                 Criação pedidos no Tiny - Primeiros Passos
@@ -63,10 +63,32 @@
 
         <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
           <div class="mb-3 col-icon"> 
-            <%= link_to attempts_path(kinds: :create_order_tiny_2), class: 'text-light link' do %>
+            <%= link_to attempts_path(kinds: :create_order_agua_na_caixa), class: 'text-light link' do %>
               <i class="fa-solid fa-file-invoice text-info link"></i>
               <span class="name-col">
                 Criação pedidos no Tiny - Água na Caixa
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
+          <div class="mb-3 col-icon"> 
+            <%= link_to attempts_path(kinds: :update_contact_primeiros_passos), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Atualização contato no Tiny - Primeiros Passos
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
+          <div class="mb-3 col-icon"> 
+            <%= link_to attempts_path(kinds: :update_contact_agua_na_caixa), class: 'text-light link' do %>
+              <i class="fa-solid fa-file-invoice text-info link"></i>
+              <span class="name-col">
+                Atualização contato no Tiny - Água na Caixa
               </span>
             <% end %>
           </div>
@@ -193,6 +215,7 @@
 
   .navbar-header .navbar-dropdowns {
     float: inline-start;
+    margin-left:8em;
   }
 
   .name-button,

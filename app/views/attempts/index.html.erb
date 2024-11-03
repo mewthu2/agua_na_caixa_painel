@@ -43,10 +43,8 @@
         <tr>
           <th width="50" class="text-center"><i class="fa fa-ellipsis-v"></i></th>
           <th class="text-center"><%= 'ID' %></th>
-          <th class="text-center"><%= 'Pedido no Tiny' %></th>
-          <th class="text-center"><%= Attempt.human_attribute_name :id_nota_fiscal %></th>
+          <th class="text-center"><%= 'Tiny' %></th>
           <th class="text-center"><%= Attempt.human_attribute_name :kinds %></th>
-          <th class="text-center"><%= Attempt.human_attribute_name :status %></th>
           <th class="text-center"><%= Attempt.human_attribute_name :status_code %></th>
           <th class="text-center"><%= Attempt.human_attribute_name :error %></th>
           <th class="text-center"><%= Attempt.human_attribute_name :message %></th>
@@ -70,10 +68,14 @@
                 Ver no Tiny
               </span>
             </td>
-            <td class="text-center"><%= attempt.id_nota_fiscal %></td>
-            <td class="text-center"><%= attempt.kinds %></td>
-            <td class="text-center"><%= attempt.status %></td>
-            <td class="text-center"><%= attempt.status_code %> - <%= attempt.message %></td>
+            <td class="text-center"><%= attempt.kinds %></td>  
+            <td class="text-center">
+              <% if attempt.status_code == 'OK' %>
+                <span class="badge bg-success"><%= attempt.status_code %> - <%= attempt.message %></span>
+              <% else %>
+                <span class="badge bg-warning text-dark"><%= attempt.status_code %> - <%= attempt.message %></span>
+              <% end %>
+            </td>
             <td class="text-center"><%= attempt.error.present? ? attempt.error : "<span class='badge bg-secondary'>x</span>".html_safe %></td>
             <td class="text-center"><%= attempt.message.present? ? attempt.message : "<span class='badge bg-secondary'>x</span>".html_safe %></td>
             <td class="text-center"><%= attempt.created_at.strftime('%d/%m/%Y %H:%M') %></td>
