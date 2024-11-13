@@ -1,8 +1,10 @@
 class Attempt < ApplicationRecord
   enum status: [:fail, :error, :success]
-  enum kinds: [:create_order_primeiros_passos, 
-               :create_order_agua_na_caixa, 
-               :update_contact_primeiros_passos, 
+  enum kinds: [:create_order_primeiros_passos,
+               :create_order_agua_na_caixa,
+               :update_contact_primeiros_passos,
+               :create_contact_primeiros_passos,
+               :create_contact_agua_na_caixa,
                :update_contact_agua_na_caixa]
   # Callbacks
   # Associacoes

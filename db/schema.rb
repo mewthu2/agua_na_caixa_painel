@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_03_192855) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
   create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -33,6 +33,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_03_192855) do
     t.bigint "order_payment_type_id"
     t.bigint "origin"
     t.bigint "segment"
+    t.boolean "exists_on_tiny", default: false
     t.string "codigo"
     t.string "nome"
     t.string "fantasia"

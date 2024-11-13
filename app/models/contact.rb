@@ -10,7 +10,7 @@ class Contact < ApplicationRecord
                  :distribuidores]
 
   # Callbacks
-  after_commit :enqueue_update_tiny_contact_job, on: [:create, :update]
+  after_commit :enqueue_tiny_contact_job, on: [:create, :update]
 
   # Associações
   belongs_to :order_payment_type, optional: true
@@ -44,7 +44,8 @@ class Contact < ApplicationRecord
   # Métodos privados
   private
 
-  def enqueue_update_tiny_contact_job
-    UpdateTinyContactJob.perform_later(self)
+  def enqueue_tiny_contact_job
+    function = transaction_include_any_action?([:create]) ? 'create' : 'update'
+    TinyContactJob.perform_now(self, function)
   end
 end

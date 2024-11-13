@@ -1,6 +1,7 @@
 class ContactsController < ApplicationController
   before_action :set_contact, only: %i[show edit update destroy]
-  before_action :load_references, only: %i[show edit]
+  before_action :load_references, only: %i[new show edit]
+
   def index
     redirect_to root_path, alert: 'Parâmetro não permitido.' unless ['primeiros_passos', 'agua_na_caixa'].include?(params[:origin])
 
@@ -74,6 +75,7 @@ class ContactsController < ApplicationController
       :order_payment_type_id,
       :origin,
       :segment,
+      :exists_on_tiny,
       :codigo,
       :nome,
       :fantasia,
