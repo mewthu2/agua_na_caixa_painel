@@ -88,8 +88,8 @@ class CreateOrderJob < ActiveJob::Base
               'data' => op.date&.to_s,
               'valor' => op.amount,
               'obs' => op.note,
-              'forma_pagamento' => op.order.preference_payment? ? op.contact.op.contact.order_payment.payment_method : op.order_payment_type.payment_method,
-              'meio_pagamento' => op.order.preference_payment? ? op.contact.op.contact.order_payment.payment_method : op.order_payment_type.payment_channel
+              'forma_pagamento' => op.order.preference_payment? ? op.order.contact.order_payment.payment_method : op.order_payment_type.payment_method,
+              'meio_pagamento' => op.order.preference_payment? ? op.order.contact.order_payment.payment_method : op.order_payment_type.payment_channel
             }
           }
         end,
