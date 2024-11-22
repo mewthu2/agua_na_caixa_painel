@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :set_order, only: %i[show edit update destroy]
-  before_action :load_references, only: %i[new edit show update]
+  before_action :load_references, only: %i[new edit show update create]
 
   def integrate_orders
     order = Order.find(params[:order_id])
@@ -70,16 +70,21 @@ class OrdersController < ApplicationController
   def validate_amounts(order_params)
     product_amount = order_params[:order_products_attributes].values.sum do |op|
       quantidade = op['quantidade'].to_f
-      product = Product.find(op['product_id'])
-      quantidade * product.preco
+      preco = op['price'].to_f
+      quantidade * preco
     end
 
     order_payment_amount = order_params[:order_payments_attributes].values.sum { |op| op['amount'].to_f }
 
-    return true if product_amount == order_payment_amount
-
-    @order.errors.add(:base, "O valor total dos pagamentos (#{order_payment_amount}) deve ser igual ao valor total dos produtos (#{product_amount}).")
-    false
+    if product_amount == order_payment_amount
+      true
+    else
+      @order.errors.add(
+        :base,
+        "O valor total dos pagamentos (#{order_payment_amount}) deve ser igual ao valor total dos produtos (#{product_amount})."
+      )
+      false
+    end
   end
 
   def set_order

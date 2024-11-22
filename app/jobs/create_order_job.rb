@@ -2,7 +2,7 @@ class CreateOrderJob < ActiveJob::Base
   def perform(order)
     order.destiny == 'agua_na_caixa' ? token = ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA') : token = ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS')
 
-    attempt = Attempt.create(kinds: :create_order)
+    attempt = Attempt.create(kinds: "create_order_#{order.destiny}")
 
     create_order(token, order, attempt)
   end
