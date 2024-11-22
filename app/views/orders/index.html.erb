@@ -69,7 +69,7 @@
             <td class="text-center"><%= order.destiny %></td>
             <td class="text-center"><%= order.contact.nome %></td>
             <td class="text-center"><%= OrderProductsPresenter.new(order).badges_for_order_products %></td>
-            <td class="text-center"><%= order.tiny_order_id %></td>
+            <td class="text-center"><span class="badge bg-primary"><a href="https://erp.tiny.com.br/vendas#edit/875735462" target="_blank" class="text-light"><%= order.tiny_order_id %></a></span></td>
             <td class="text-center"><%= order.created_at.strftime('%d/%m/%Y') %></td>
           </tr>
         <% end %>
