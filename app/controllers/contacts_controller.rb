@@ -3,10 +3,7 @@ class ContactsController < ApplicationController
   before_action :load_references, only: %i[new show edit]
 
   def index
-    redirect_to root_path, alert: 'Parâmetro não permitido.' unless ['primeiros_passos', 'agua_na_caixa'].include?(params[:origin])
-
-    @contacts = Contact.where(origin: params[:origin])
-                       .search(params[:search])
+    @contacts = Contact.search(params[:search])
                        .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
