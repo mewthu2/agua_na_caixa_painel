@@ -66,7 +66,7 @@ class CreateOrderJob < ActiveJob::Base
           'complemento' => order.use_contact_order ? order.contact.complemento : order.complemento,
           'bairro' => order.use_contact_order ? order.contact.bairro : order.bairro,
           'cep' => order.use_contact_order ? order.contact.cep : order.cep,
-          'cidade' => order.use_contact_order ? order.contact.cidade : order.cidade,
+          'cidade' => order.use_contact_order ? order.contact.cidade : '',
           'uf' => order.use_contact_order ? order.contact.uf : order.uf,
           'fone' => order.contact.fone
         },
