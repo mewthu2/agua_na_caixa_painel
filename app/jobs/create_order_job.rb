@@ -77,7 +77,7 @@ class CreateOrderJob < ActiveJob::Base
               'descricao' => op.product.nome,
               'unidade' => op.product.unidade,
               'quantidade' => op.quantidade&.to_s,
-              'valor_unitario' => op.price.present? op.price : op.product.preco
+              'valor_unitario' => op.price.present? ? op.price : op.product.preco
             }
           }
         end,
