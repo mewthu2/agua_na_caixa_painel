@@ -68,7 +68,7 @@ class TinyContactJob < ActiveJob::Base
             'complemento' => contact.complemento || '',
             'bairro' => contact.bairro,
             'cep' => contact.cep,
-            'cidade' => contact&.cidade,
+            'cidade' => '',
             'uf' => contact.uf,
             'fone' => contact.fone,
             'email' => contact.email,
