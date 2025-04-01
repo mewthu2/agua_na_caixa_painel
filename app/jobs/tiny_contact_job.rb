@@ -42,12 +42,13 @@ class TinyContactJob < ActiveJob::Base
     status = response.dig('retorno', 'status')
     registration = response.dig('retorno', 'registros', 0, 'registro') || {}
 
-    contact.update(id: registration['id'])
+    output = output.nil? ? contact.id : registration['id']
+    contact.update(id: output)
 
     attempt.update(
       status_code: status,
       message: "Sequência: #{registration['sequencia']}",
-      tiny_order_id: registration['id'],
+      tiny_order_id: output,
       requisition: response_json
     )
   end
@@ -67,7 +68,7 @@ class TinyContactJob < ActiveJob::Base
             'complemento' => contact.complemento || '',
             'bairro' => contact.bairro,
             'cep' => contact.cep,
-            'cidade' => contact.cidade,
+            'cidade' => contact&.cidade,
             'uf' => contact.uf,
             'fone' => contact.fone,
             'email' => contact.email,
