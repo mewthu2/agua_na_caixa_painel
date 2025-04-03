@@ -7,6 +7,68 @@
         <small class="text-secondary"> Informações do pedido</small>
       </h4>
     </div>
+
+    <% if action_name == 'edit' %>
+      <div class="row mb-3 justify-content-center">
+        <div class="col-md-6">
+          <div class="card bg-dark border-secondary mb-3">
+            <div class="card-body">
+              <h5 class="card-title text-secondary mb-3">Vendedor Responsável</h5>
+              
+              <%= form.label :seller_id, 'Selecione o vendedor:', class: 'form-label text-light' %>
+              <%= form.select :seller_id,
+                    options_for_select(
+                      (@order.destiny == 'primeiros_passos' ? @seller_primeiros_passos : @seller_agua_na_caixa)
+                        .map { |s| [s['vendedor']['nome'], s['vendedor']['id'], { 'data-seller-name' => s['vendedor']['nome'] }] }, 
+                      @order.seller_id
+                    ),
+                    { include_blank: 'Selecione o vendedor...' },
+                    { 
+                      class: 'form-control select2', 
+                      id: 'seller_select',
+                      onchange: "updateSellerName(this)"  
+                    } %>
+                      
+              <%= form.hidden_field :seller_name, id: 'seller_name_field', value: @order.seller_name %>
+              
+              <div class="mt-2">
+                <small class="text-muted">Vendedor selecionado: <span id="seller_name_display"><%= @order.seller_name.presence || 'Nenhum' %></span></small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function updateSellerName(selectElement) {
+          const selectedOption = selectElement.options[selectElement.selectedIndex];
+          const sellerNameField = document.getElementById('seller_name_field');
+          const sellerNameDisplay = document.getElementById('seller_name_display');
+          
+          if (selectedOption) {
+            const sellerName = selectedOption.dataset.sellerName || '';
+            sellerNameField.value = sellerName;
+            sellerNameDisplay.textContent = sellerName || 'Nenhum';
+          }
+        }
+
+        document.addEventListener("turbolinks:load", function() {
+          const sellerSelect = document.getElementById('seller_select');
+          
+          if (sellerSelect) {
+            updateSellerName(sellerSelect);
+            
+            $(sellerSelect).select2({
+              language: "pt-BR",
+              placeholder: "Selecione o vendedor",
+              width: '100%',
+              allowClear: true
+            });
+          }
+        });
+      </script>
+    <% end %>
+
     <div class="row mb-3 justify-content-center">
       <div class="col-10 d-flex">
         <div class="flex-grow-1">
@@ -142,44 +204,72 @@
 <% end %>
 
 <script>
+  // Configuração do select de vendedores
   document.addEventListener("DOMContentLoaded", function() {
-  const preferenceCheckbox = document.getElementById('preference_payment');
-  const paymentTypeRows = document.querySelectorAll('.payment-type-row');
-
-  function togglePaymentTypeVisibility() {
-    paymentTypeRows.forEach(row => {
-      const paymentTypeDiv = row.querySelector('.payment-type');
-      if (preferenceCheckbox.checked) {
-        paymentTypeDiv.style.display = 'none';
-      } else {
-        paymentTypeDiv.style.display = '';
-      }
-    });
-  }
-
-  // Altera a visibilidade ao mudar o checkbox
-  preferenceCheckbox.addEventListener('change', togglePaymentTypeVisibility);
-
-  // Verifica o estado do checkbox ao inserir uma nova parcela
-  $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
-    const newPaymentTypeRow = added_task.querySelector('.payment-type-row');
-    const newPaymentTypeDiv = newPaymentTypeRow.querySelector('.payment-type');
-
-    // Verifica se o checkbox está ativado
-    if (preferenceCheckbox.checked) {
-      newPaymentTypeDiv.style.display = 'none';
-    } else {
-      newPaymentTypeDiv.style.display = ''; // Ou 'block', dependendo do seu estilo
+    // Atualiza o campo hidden seller_name quando o select muda
+    const sellerSelect = document.getElementById('seller_select');
+    const sellerNameField = document.getElementById('seller_name_field');
+    
+    if (sellerSelect) {
+      sellerSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption) {
+          sellerNameField.value = selectedOption.dataset.sellerName || '';
+        }
+      });
+      
+      // Dispara o evento change para preencher inicialmente se já houver seleção
+      const event = new Event('change');
+      sellerSelect.dispatchEvent(event);
+      
+      // Inicializa o select2
+      $(sellerSelect).select2({
+        language: "pt-BR",
+        placeholder: "Selecione o vendedor",
+        width: '100%',
+        allowClear: true
+      });
     }
-  });
-});
 
-</script>
+    // Configuração do checkbox de preferência de pagamento
+    const preferenceCheckbox = document.getElementById('preference_payment');
+    const paymentTypeRows = document.querySelectorAll('.payment-type-row');
 
-<!-- Contact div -->
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
+    function togglePaymentTypeVisibility() {
+      paymentTypeRows.forEach(row => {
+        const paymentTypeDiv = row.querySelector('.payment-type');
+        if (preferenceCheckbox.checked) {
+          paymentTypeDiv.style.display = 'none';
+        } else {
+          paymentTypeDiv.style.display = '';
+        }
+      });
+    }
 
+    preferenceCheckbox.addEventListener('change', togglePaymentTypeVisibility);
+    togglePaymentTypeVisibility();
+
+    // Configuração para novas parcelas inseridas
+    $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
+      const newPaymentTypeRow = added_task.querySelector('.payment-type-row');
+      const newPaymentTypeDiv = newPaymentTypeRow.querySelector('.payment-type');
+
+      if (preferenceCheckbox.checked) {
+        newPaymentTypeDiv.style.display = 'none';
+      } else {
+        newPaymentTypeDiv.style.display = '';
+      }
+      
+      // Reaplica o select2 para novos campos
+      $("select.select2").select2({
+        language: "pt-BR",
+        placeholder: " ",
+        width: '100%',
+        allowClear: true      
+      });
+    });
+
+    // Configuração do checkbox de endereço de contato
     const contactCheckbox = document.getElementById('use_contact_order');
     const contactDiv = document.getElementById('div_contact');
 
@@ -192,29 +282,9 @@
     }
 
     contactCheckbox.addEventListener('change', toggleContactDiv);
-
     toggleContactDiv();
-  });
 
-  $('#order_products').on('cocoon:after-insert', function(e, added_task) {
-    $("select.select2").select2({
-      language: "pt-BR",
-      placeholder: " ",
-      width: '100%',
-      allowClear: true      
-    });
-  });
-
-  $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
-    $("select.select2").select2({
-      language: "pt-BR",
-      placeholder: " ",
-      width: '100%',
-      allowClear: true      
-    });
-  });
-
-  document.addEventListener('DOMContentLoaded', function () {
+    // Configuração do link de edição de contato
     const contactSelect = document.getElementById('contact_select');
     const editContactLink = document.getElementById('edit_contact_link');
 
@@ -233,14 +303,28 @@
     } else {
       contactSelect.addEventListener('change', updateEditLink);
     }
-
     updateEditLink();
-  });
-</script>
 
-<!-- Preenchimento das parcelas -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
+    // Configuração do select2 para produtos e pagamentos
+    $('#order_products').on('cocoon:after-insert', function(e, added_task) {
+      $("select.select2").select2({
+        language: "pt-BR",
+        placeholder: " ",
+        width: '100%',
+        allowClear: true      
+      });
+    });
+
+    $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
+      $("select.select2").select2({
+        language: "pt-BR",
+        placeholder: " ",
+        width: '100%',
+        allowClear: true      
+      });
+    });
+
+    // Preenchimento automático das parcelas
     const paymentInstallmentsField = document.getElementById('payment_installments');
     const orderPaymentsContainer = document.getElementById('order_payments');
     const totalOrderField = document.getElementById('total_order');
@@ -267,7 +351,6 @@
             <div class="col-3">
               <label for="order_payment_type_id">Tipo de Pagamento</label>
               <select class="form-control select2" name="order[order_payments_attributes][${index}][order_payment_type_id]">
-                <!-- opções de pagamento -->
                 ${getPaymentTypesOptions()}
               </select>
             </div>
@@ -289,6 +372,14 @@
           </div>
         `;
         orderPaymentsContainer.appendChild(newField);
+        
+        // Reaplica o select2 para o novo campo
+        $(newField).find('select.select2').select2({
+          language: "pt-BR",
+          placeholder: " ",
+          width: '100%',
+          allowClear: true      
+        });
       });
     }
 
@@ -298,24 +389,15 @@
               <% end %>`;
     }
 
-    paymentInstallmentsField.addEventListener('input', updateOrderPayments);
+    if (paymentInstallmentsField) {
+      paymentInstallmentsField.addEventListener('input', updateOrderPayments);
+    }
 
-    document.addEventListener('click', function(event) {
-      if (event.target.classList.contains('remove-order-payment')) {
-        event.target.closest('.nested-fields').remove();
-        updateOrderPayments();
-      }
-    });
-  });
-</script>
-
-<!-- Cálculo dos valores -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
+    // Cálculo do total do pedido
     function calculateTotal() {
       let total = 0;
 
-      document.querySelectorAll('.nested-fields').forEach(function(container) {
+      document.querySelectorAll('#order_products .nested-fields').forEach(function(container) {
         const quantidadeInput = container.querySelector('.quantidade');
         const priceInput = container.querySelector('.price');
         const precoCaixaInput = container.querySelector('.preco-caixa');
@@ -363,4 +445,3 @@
     calculateTotal();
   });
 </script>
-

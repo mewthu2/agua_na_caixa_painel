@@ -53,7 +53,7 @@ class CreateOrderJob < ActiveJob::Base
       'pedido' => {
         'data_pedido' => order.created_at.strftime('%d/%m/%Y'),
         'data_prevista' => '',
-        'id_vendedor' => '', # Implementar vendedor
+        'id_vendedor' => order.seller_id,
         'cliente' => {
           'codigo' => order.contact.codigo,
           'nome' => order.contact.nome,

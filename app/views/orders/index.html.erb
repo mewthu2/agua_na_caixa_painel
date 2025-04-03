@@ -13,9 +13,9 @@
     </div>
     <div class="card-body">
       <div class="row">
-        <div class="col-sm-12">
+        <div class="col-md-6">
           <%= label_tag :search, 'Procurar' %>
-          <%= text_field_tag :search, params[:search], class: 'form-control', placeholder: 'Pesquise por destino' %>
+          <%= text_field_tag :search, params[:search], class: 'form-control', placeholder: 'Pesquise por destino ou vendedor' %>
         </div>
       </div>
     </div>
@@ -34,6 +34,7 @@
         <tr>
           <th width="50" class="text-center"><i class="fa fa-ellipsis-v"></i></th>
           <th class="text-center"><%= 'ID' %></th>
+          <th class="text-center"><%= 'Vendedor' %></th>
           <th class="text-center"><%= 'Remetente' %></th>
           <th class="text-center"><%= 'Cliente' %></th>
           <th class="text-center"><%= 'Pedido' %></th>
@@ -46,7 +47,7 @@
           <tr>
             <td class="text-center">
               <div class="btn-group" role="group" aria-label="Ações do pedido">
-                <% if !order.tiny_order_id.present? %>
+                <% if !order.tiny_order_id.present? && order.seller_id.present? %>
                   <%= link_to integrate_orders_orders_path(order_id: order.id), class: 'btn btn-sm btn-success text-light' do %>
                     <i class="fas fa-link"></i>
                   <% end %>
@@ -60,16 +61,39 @@
                   <i class="fa fa-eye"></i>
                 <% end %>
 
-                <%= button_to order_path(order), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Are you sure?" } do %>
+                <%= button_to order_path(order), method: :delete, class: 'btn btn-danger btn-sm text-light', data: { confirm: "Tem certeza que deseja excluir este pedido?" } do %>
                   <i class="fa fa-times"></i>
                 <% end %>
               </div>
             </td>
             <td class="text-center"><%= order.id %></td>
+            <td class="text-center">
+              <% if order.seller_name.present? %>
+                <span class="badge bg-info seller-badge" data-bs-toggle="tooltip" title="Vendedor: <%= order.seller_name %>">
+                  <i class="fas fa-user-tie me-1"></i>
+                  <%= truncate(order.seller_name, length: 15) %>
+                </span>
+              <% else %>
+                <span class="badge bg-warning text-dark" data-bs-toggle="tooltip" title="Nenhum vendedor selecionado">
+                  <i class="fas fa-exclamation-triangle me-1"></i>
+                  Sem vendedor
+                </span>
+              <% end %>
+            </td>
             <td class="text-center"><%= order.destiny %></td>
             <td class="text-center"><%= order.contact.nome %></td>
             <td class="text-center"><%= OrderProductsPresenter.new(order).badges_for_order_products %></td>
-            <td class="text-center"><span class="badge bg-primary"><a href="https://erp.tiny.com.br/vendas#edit/<%= order.tiny_order_id %>" target="_blank" class="text-light"><%= order.tiny_order_id %></a></span></td>
+            <td class="text-center">
+              <% if order.tiny_order_id.present? %>
+                <span class="badge bg-primary">
+                  <a href="https://erp.tiny.com.br/vendas#edit/<%= order.tiny_order_id %>" target="_blank" class="text-light">
+                    <%= order.tiny_order_id %>
+                  </a>
+                </span>
+              <% else %>
+                <span class="badge bg-secondary">Não integrado</span>
+              <% end %>
+            </td>
             <td class="text-center"><%= order.created_at.strftime('%d/%m/%Y') %></td>
           </tr>
         <% end %>
@@ -86,3 +110,32 @@
 </div>
 
 <%= will_paginate @orders, list_classes: %w[pagination justify-content-center mt-lg], inner_window: 1 %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Ativa tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+    
+    // Inicializa select2 para o filtro de vendedores
+    $('.select2').select2({
+      theme: 'bootstrap-5',
+      width: '100%',
+      language: 'pt-BR'
+    });
+  });
+</script>
+
+<style>
+  .seller-badge {
+    cursor: help;
+    transition: all 0.3s;
+  }
+  .seller-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+  }
+  .disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+</style>

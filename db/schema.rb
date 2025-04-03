@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
-  create_table "attempts", charset: "utf8mb3", force: :cascade do |t|
+ActiveRecord::Schema[7.1].define(version: 2025_04_03_035417) do
+  create_table "attempts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
     t.text "requisition"
@@ -29,7 +29,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "contacts", charset: "utf8mb3", force: :cascade do |t|
+  create_table "contacts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "order_payment_type_id"
     t.bigint "origin"
     t.bigint "segment"
@@ -60,14 +60,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
     t.index ["order_payment_type_id"], name: "index_contacts_on_order_payment_type_id"
   end
 
-  create_table "order_payment_types", charset: "utf8mb3", force: :cascade do |t|
+  create_table "order_payment_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "payment_method", null: false
     t.string "payment_channel", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "order_payments", charset: "utf8mb3", force: :cascade do |t|
+  create_table "order_payments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "order_payment_type_id"
     t.bigint "order_id"
     t.decimal "amount", precision: 10
@@ -80,7 +80,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
     t.index ["order_payment_type_id"], name: "index_order_payments_on_order_payment_type_id"
   end
 
-  create_table "order_products", charset: "utf8mb3", force: :cascade do |t|
+  create_table "order_products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "order_id"
     t.bigint "product_id"
     t.integer "quantidade"
@@ -91,10 +91,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
     t.index ["product_id"], name: "index_order_products_on_product_id"
   end
 
-  create_table "orders", charset: "utf8mb3", force: :cascade do |t|
+  create_table "orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "contact_id"
     t.integer "tiny_order_id"
-    t.integer "observation"
+    t.text "observation"
     t.boolean "use_contact_order", default: true
     t.boolean "preference_payment", default: false
     t.string "endereco"
@@ -106,10 +106,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "destiny", default: 0, null: false
+    t.integer "seller_id"
+    t.string "seller_name"
     t.index ["contact_id"], name: "index_orders_on_contact_id"
   end
 
-  create_table "products", charset: "utf8mb3", force: :cascade do |t|
+  create_table "products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "origin"
     t.bigint "contact_id"
     t.datetime "data_criacao"
@@ -129,13 +131,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_11_183210) do
     t.index ["contact_id"], name: "index_products_on_contact_id"
   end
 
-  create_table "profiles", charset: "utf8mb3", force: :cascade do |t|
+  create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", charset: "utf8mb3", force: :cascade do |t|
+  create_table "test_table", id: false, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "id"
+  end
+
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "profile_id"
     t.string "name"
     t.string "phone"

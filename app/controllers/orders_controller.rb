@@ -5,7 +5,7 @@ class OrdersController < ApplicationController
   def integrate_orders
     order = Order.find(params[:order_id])
     result = CreateOrderJob.perform_now(order)
-
+    
     case result
     when 2
       redirect_to orders_path, notice: 'Pedido já criado no Tiny, não é possível recriar.'
@@ -40,7 +40,13 @@ class OrdersController < ApplicationController
     @order = Order.new
   end
 
-  def edit; end
+  def edit
+    if @order.destiny == 'primeiros_passos'
+      @seller_primeiros_passos = Tiny::Sellers.search_sellers(ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS'))
+    else
+      @seller_agua_na_caixa = Tiny::Sellers.search_sellers(ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA'))
+    end
+  end
 
   def create
     @order = Order.new(order_params)
@@ -104,6 +110,8 @@ class OrdersController < ApplicationController
       :bairro,
       :cep,
       :uf,
+      :seller_id,
+      :seller_name,
       order_products_attributes: [:id, :product_id, :quantidade, :price, :_destroy],
       order_payments_attributes: [:id, :order_payment_type_id, :date, :note, :amount, :_destroy]
     )
