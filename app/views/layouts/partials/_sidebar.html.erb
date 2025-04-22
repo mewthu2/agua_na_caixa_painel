@@ -1,236 +1,653 @@
-<aside class="left-menu bg-dark">
-  <div class="aside-inner">
-    <div class="flex-shrink-0 p-3 text-white">
-      <ul class="nav nav-pills flex-column mb-auto">
-        <a class="btn btn-secondary text-info mb-3" href="/" role="button">
-          <i class="fa-regular fa-house"></i> <span class="name-button"> Home </span>
-        </a>
+<aside class="sidebar bg-dark">
+  <div class="sidebar-header">
+    <div class="brand-logo">
+      <div class="d-flex align-items-center">
+        <%= image_tag 'admin/agua_na_caixa_logo', class: 'brand-image primary-logo', alt: 'Água na Caixa' %>
+        <span class="brand-separator">+</span>
+        <%= image_tag 'admin/tiny_logo', class: 'brand-image secondary-logo', alt: 'Tiny' %>
+      </div>
+    </div>
+    <button id="sidebar-toggle" class="sidebar-toggle d-lg-none">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+  </div>
+  
+  <div class="sidebar-content">
+    <div class="sidebar-user">
+      <div class="user-avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="user-info">
+        <span class="user-name"><%= current_user&.name || 'Usuário' %></span>
+        <span class="user-role"><%= current_user&.profile&.name || 'Perfil' %></span>
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <ul class="nav-menu">
+        <!-- Home -->
+        <li class="nav-item">
+          <a href="/" class="nav-link">
+            <i class="nav-icon fas fa-home"></i>
+            <span class="nav-text">Home</span>
+          </a>
+        </li>
         
-        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-dashboard" role="button" aria-expanded="false" aria-controls="collase-dashboard">
-          <i class="justify-content-center fa-regular fa-concierge-bell"></i> <span class="name-button"> Dashboard </span><i class="fa fa-angle-down arrow"></i>
-        </a>
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-dashboard">
-          <div class="mb-3 col-icon"> 
-            <%= link_to dashboard_index_path, class: 'text-light link' do %>
-              <i class="fa-solid fa-binoculars text-info"></i>
-              <span class="name-col text-white">
-                Painel Dashboard
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-users" role="button" aria-expanded="false" aria-controls="collase-correios">
-          <i class="fa-regular fa-gear"></i> <span class="name-button">Administração </span> <i class="fa fa-angle-down arrow"></i>
-        </a>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-users">
-          <div class="mb-3 col-icon"> 
-            <%= link_to users_path, class: 'text-light link' do %>
-              <i class="fa-solid fa-user text-info link"></i>
-              <span class="name-col">
-                Usuários
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-users">
-          <div class="mb-3 col-icon"> 
-            <%= link_to profiles_path, class: 'text-light link' do %>
-              <i class="fa-solid fa-id-badge text-info link"></i>
-              <span class="name-col">
-                Perfis de usuário
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-attempts" role="button" aria-expanded="false" aria-controls="collase-correios">
-          <i class="fa-regular fa-hourglass"></i> <span class="name-button">Histórico de Tentativas </span> <i class="fa fa-angle-down arrow"></i>
-        </a>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
-          <div class="mb-3 col-icon"> 
-            <%= link_to attempts_path(kinds: :create_order_primeiros_passos), class: 'text-light link' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Criação pedidos no Tiny - Primeiros Passos
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
-          <div class="mb-3 col-icon"> 
-            <%= link_to attempts_path(kinds: :create_order_agua_na_caixa), class: 'text-light link' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Criação pedidos no Tiny - Água na Caixa
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
-          <div class="mb-3 col-icon"> 
-            <%= link_to attempts_path(kinds: :update_contact_primeiros_passos), class: 'text-light link' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Atualização contato no Tiny - Primeiros Passos
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-attempts">
-          <div class="mb-3 col-icon"> 
-            <%= link_to attempts_path(kinds: :update_contact_agua_na_caixa), class: 'text-light link' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Atualização contato no Tiny - Água na Caixa
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-orders" role="button" aria-expanded="false" aria-controls="collase-correios">
-          <i class="fa-regular fa-file-circle-plus"></i> 
-          <span class="name-button"> Pedidos </span>
-          <i class="fa fa-angle-down arrow"></i>
-        </a>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-orders">
-          <div class="mb-3 col-icon"> 
-            <%= link_to tiny_orders_orders_path(kinds: 'primeiros_passos'), class: 'text-light link', target: '_blank' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Tiny - Primeiros Passos <span class="badge bg-success"> Live </span>
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-orders">
-          <div class="mb-3 col-icon"> 
-            <%= link_to tiny_orders_orders_path(kinds: 'agua_na_caixa'), class: 'text-light link', target: '_blank' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Tiny - Água na Caixa <span class="badge bg-success"> Live </span>
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-orders">
-          <div class="mb-3 col-icon"> 
-            <%= link_to orders_path, class: 'text-light link' do %>
-              <i class="far fa-calendar-plus text-info link"></i>
-              <span class="name-col">
-                Criação de Pedidos
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <a class="btn btn-secondary text-info mb-3" data-bs-toggle="collapse" href="#collase-registrations" role="button" aria-expanded="false" aria-controls="collase-correios">
-          <i class="fa-regular fa-file-circle-plus"></i> 
-          <span class="name-button"> Cadastros </span>
-          <i class="fa fa-angle-down arrow"></i>
-        </a>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
-          <div class="mb-3 col-icon"> 
-            <%= link_to contacts_path, class: 'text-light link' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Contatos
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
-          <div class="mb-3 col-icon"> 
-            <%= link_to products_path(origin: 'primeiros_passos'), class: 'text-light link' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Produtos - Primeiros Passos
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-         <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
-          <div class="mb-3 col-icon"> 
-            <%= link_to products_path(origin: 'agua_na_caixa'), class: 'text-light link' do %>
-              <i class="fa-solid fa-file-invoice text-info link"></i>
-              <span class="name-col">
-                Produtos - Água na Caixa
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="justify-content-center flex-column mb-auto collapse mb-3" id="collase-registrations">
-          <div class="mb-3 col-icon"> 
-            <%= link_to order_payment_types_path, class: 'text-light link' do %>
-              <i class="fas fa-money-check-alt text-info link"></i>
-              <span class="name-col">
-                Tipos de Pagamento</span>
-              </span>
-            <% end %>
-          </div>
-        </div>
-
+        <!-- Dashboard -->
+        <li class="nav-item">
+          <a href="#" class="nav-link has-dropdown" data-bs-toggle="collapse" data-bs-target="#collase-dashboard">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <span class="nav-text">Dashboard</span>
+            <i class="dropdown-icon fas fa-chevron-down"></i>
+          </a>
+          <ul class="nav-dropdown collapse" id="collase-dashboard">
+            <li class="dropdown-item">
+              <%= link_to dashboard_index_path, class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-binoculars text-info"></i>
+                <span class="dropdown-text">Painel Dashboard</span>
+              <% end %>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Administração -->
+        <li class="nav-item">
+          <a href="#" class="nav-link has-dropdown" data-bs-toggle="collapse" data-bs-target="#collase-users">
+            <i class="nav-icon fas fa-cog"></i>
+            <span class="nav-text">Administração</span>
+            <i class="dropdown-icon fas fa-chevron-down"></i>
+          </a>
+          <ul class="nav-dropdown collapse" id="collase-users">
+            <li class="dropdown-item">
+              <%= link_to users_path, class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-user text-info"></i>
+                <span class="dropdown-text">Usuários</span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to profiles_path, class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-id-badge text-info"></i>
+                <span class="dropdown-text">Perfis de usuário</span>
+              <% end %>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Histórico de Tentativas -->
+        <li class="nav-item">
+          <a href="#" class="nav-link has-dropdown" data-bs-toggle="collapse" data-bs-target="#collase-attempts">
+            <i class="nav-icon fas fa-hourglass"></i>
+            <span class="nav-text">Histórico de Tentativas</span>
+            <i class="dropdown-icon fas fa-chevron-down"></i>
+          </a>
+          <ul class="nav-dropdown collapse" id="collase-attempts">
+            <li class="dropdown-item">
+              <%= link_to attempts_path(kinds: :create_order_primeiros_passos), class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">Criação pedidos no Tiny - Primeiros Passos</span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to attempts_path(kinds: :create_order_agua_na_caixa), class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">Criação pedidos no Tiny - Água na Caixa</span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to attempts_path(kinds: :update_contact_primeiros_passos), class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">Atualização contato no Tiny - Primeiros Passos</span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to attempts_path(kinds: :update_contact_agua_na_caixa), class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">Atualização contato no Tiny - Água na Caixa</span>
+              <% end %>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Pedidos -->
+        <li class="nav-item">
+          <a href="#" class="nav-link has-dropdown" data-bs-toggle="collapse" data-bs-target="#collase-orders">
+            <i class="nav-icon fas fa-file-circle-plus"></i>
+            <span class="nav-text">Pedidos</span>
+            <i class="dropdown-icon fas fa-chevron-down"></i>
+          </a>
+          <ul class="nav-dropdown collapse" id="collase-orders">
+            <li class="dropdown-item">
+              <%= link_to tiny_orders_orders_path(kinds: 'primeiros_passos'), class: 'dropdown-link', target: '_blank' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">
+                  Tiny - Primeiros Passos
+                  <span class="badge bg-success">Live</span>
+                </span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to tiny_orders_orders_path(kinds: 'agua_na_caixa'), class: 'dropdown-link', target: '_blank' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">
+                  Tiny - Água na Caixa
+                  <span class="badge bg-success">Live</span>
+                </span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to orders_path, class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-calendar-plus text-info"></i>
+                <span class="dropdown-text">Criação de Pedidos</span>
+              <% end %>
+            </li>
+          </ul>
+        </li>
+        
+        <!-- Cadastros -->
+        <li class="nav-item">
+          <a href="#" class="nav-link has-dropdown" data-bs-toggle="collapse" data-bs-target="#collase-registrations">
+            <i class="nav-icon fas fa-file-circle-plus"></i>
+            <span class="nav-text">Cadastros</span>
+            <i class="dropdown-icon fas fa-chevron-down"></i>
+          </a>
+          <ul class="nav-dropdown collapse" id="collase-registrations">
+            <li class="dropdown-item">
+              <%= link_to contacts_path, class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">Contatos</span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to products_path(origin: 'primeiros_passos'), class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">Produtos - Primeiros Passos</span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to products_path(origin: 'agua_na_caixa'), class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-file-invoice text-info"></i>
+                <span class="dropdown-text">Produtos - Água na Caixa</span>
+              <% end %>
+            </li>
+            <li class="dropdown-item">
+              <%= link_to order_payment_types_path, class: 'dropdown-link' do %>
+                <i class="dropdown-icon fas fa-money-check-alt text-info"></i>
+                <span class="dropdown-text">Tipos de Pagamento</span>
+              <% end %>
+            </li>
+          </ul>
+        </li>
       </ul>
+    </nav>
+  </div>
+  
+  <div class="sidebar-footer">
+    <div class="footer-item">
+      <a href="#" class="footer-link" title="Configurações">
+        <i class="fas fa-cog"></i>
+      </a>
+    </div>
+    <div class="footer-item">
+      <a href="#" class="footer-link" title="Ajuda">
+        <i class="fas fa-question-circle"></i>
+      </a>
+    </div>
+    <div class="footer-item">
+      <a href="#" class="footer-link" title="Sair">
+        <i class="fas fa-sign-out-alt"></i>
+      </a>
     </div>
   </div>
-  <hr>
 </aside>
+
 <style>
-  @media (max-width: 999px) {
-    
-  .navbar-header .navbar-content {
-    display:none !important;
-  }
-  .col-icon {
-    display: flex;
-    justify-content: center;
-  }
-  .name-col {
-    display:none;
-  }
+:root {
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 70px;
+  --sidebar-bg: #212529;
+  --sidebar-border: #373b3e;
+  --sidebar-item-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-item-active: rgba(13, 202, 240, 0.15);
+  --sidebar-text: #e9ecef;
+  --sidebar-text-muted: #adb5bd;
+  --sidebar-icon: #adb5bd;
+  --sidebar-icon-active: #0dcaf0;
+  --transition-speed: 0.3s;
+}
 
-  .navbar-header .navbar-dropdowns {
-    float: inline-start;
-    margin-left:8em;
-  }
+/* Sidebar Base */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  transition: width var(--transition-speed) ease;
+  z-index: 1000;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 
-  .name-button,
-  .logo-agua-na-caixa {
-    display:none !important;
-  }
+/* Sidebar Header */
+.sidebar-header {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--sidebar-border);
+}
 
-  .left-menu {
-    width: 70px !important;
+.brand-logo {
+  display: flex;
+  align-items: center;
+  color: var(--sidebar-text);
+}
+
+.brand-logo i {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+}
+
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: var(--sidebar-icon);
+  cursor: pointer;
+  display: none;
+}
+
+/* Sidebar User */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(13, 202, 240, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.user-avatar i {
+  font-size: 1.5rem;
+  color: var(--sidebar-icon-active);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--sidebar-text);
+  white-space: nowrap;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: var(--sidebar-text-muted);
+  white-space: nowrap;
+}
+
+/* Sidebar Content */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Sidebar Nav */
+.sidebar-nav {
+  padding: 1rem 0;
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  margin-bottom: 0.25rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  transition: all var(--transition-speed);
+  position: relative;
+}
+
+.nav-link:hover {
+  background-color: var(--sidebar-item-hover);
+  color: var(--sidebar-text);
+}
+
+.nav-link.active {
+  background-color: var(--sidebar-item-active);
+  border-left: 3px solid var(--sidebar-icon-active);
+}
+
+.nav-icon {
+  font-size: 1.1rem;
+  width: 20px;
+  margin-right: 0.75rem;
+  color: var(--sidebar-icon);
+  text-align: center;
+}
+
+.nav-link.active .nav-icon {
+  color: var(--sidebar-icon-active);
+}
+
+.nav-text {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.dropdown-icon {
+  font-size: 0.75rem;
+  transition: transform var(--transition-speed);
+}
+
+.nav-link[aria-expanded="true"] .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.nav-dropdown {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+  margin: 0;
+}
+
+.dropdown-link {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1.5rem 0.6rem 3.25rem;
+  color: var(--sidebar-text-muted);
+  text-decoration: none;
+  transition: all var(--transition-speed);
+}
+
+.dropdown-link:hover {
+  background-color: var(--sidebar-item-hover);
+  color: var(--sidebar-text);
+}
+
+.dropdown-icon {
+  font-size: 0.9rem;
+  width: 20px;
+  margin-right: 0.75rem;
+  text-align: center;
+}
+
+.dropdown-text {
+  flex: 1;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+/* Badge */
+.badge {
+  font-size: 0.65rem;
+  padding: 0.25em 0.5em;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1px solid var(--sidebar-border);
+  padding: 0 1rem;
+}
+
+.footer-item {
+  flex: 1;
+  text-align: center;
+}
+
+.footer-link {
+  color: var(--sidebar-icon);
+  font-size: 1.1rem;
+  transition: color var(--transition-speed);
+}
+
+.footer-link:hover {
+  color: var(--sidebar-icon-active);
+}
+
+/* Collapsed State */
+.sidebar-collapsed .sidebar {
+  width: var(--sidebar-collapsed-width);
+}
+
+.sidebar-collapsed .brand-text,
+.sidebar-collapsed .user-info,
+.sidebar-collapsed .nav-text,
+.sidebar-collapsed .dropdown-text,
+.sidebar-collapsed .dropdown-icon.fas.fa-chevron-down {
+  display: none;
+}
+
+.sidebar-collapsed .nav-link {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.sidebar-collapsed .nav-icon {
+  margin-right: 0;
+  font-size: 1.25rem;
+}
+
+.sidebar-collapsed .dropdown-link {
+  justify-content: center;
+  padding: 0.6rem;
+}
+
+.sidebar-collapsed .dropdown-icon:not(.fas.fa-chevron-down) {
+  margin-right: 0;
+  font-size: 1.1rem;
+}
+
+.sidebar-collapsed .sidebar-user {
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sidebar-collapsed .user-avatar {
+  margin-right: 0;
+}
+
+/* Responsive */
+@media (max-width: 999px) {
+  .sidebar {
+    width: var(--sidebar-collapsed-width);
   }
   
-  .wrapper > section:not(.sem-menu) {
-    margin-left: 60px !important;
+  .brand-text,
+  .user-info,
+  .nav-text,
+  .dropdown-text,
+  .dropdown-icon.fas.fa-chevron-down {
+    display: none;
   }
-
-  .navbar-header .navbar-brand .brand-logo,
-  .navbar-header .navbar-brand  {
-    width: 205px !important;
+  
+  .nav-link {
+    justify-content: center;
+    padding: 0.75rem;
   }
-
-  .wrapper > section > .content-wrapper .row {
-    margin-top: -7px !important;
+  
+  .nav-icon {
+    margin-right: 0;
+    font-size: 1.25rem;
+  }
+  
+  .dropdown-link {
+    justify-content: center;
+    padding: 0.6rem;
+  }
+  
+  .dropdown-icon:not(.fas.fa-chevron-down) {
+    margin-right: 0;
+    font-size: 1.1rem;
+  }
+  
+  .sidebar-user {
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .user-avatar {
+    margin-right: 0;
+  }
+  
+  .sidebar-toggle {
+    display: block;
+  }
+  
+  /* Expanded state for mobile */
+  .sidebar-expanded .sidebar {
+    width: var(--sidebar-width);
+  }
+  
+  .sidebar-expanded .brand-text,
+  .sidebar-expanded .user-info,
+  .sidebar-expanded .nav-text,
+  .sidebar-expanded .dropdown-text,
+  .sidebar-expanded .dropdown-icon.fas.fa-chevron-down {
+    display: block;
+  }
+  
+  .sidebar-expanded .nav-link {
+    justify-content: flex-start;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .sidebar-expanded .nav-icon {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+  }
+  
+  .sidebar-expanded .dropdown-link {
+    justify-content: flex-start;
+    padding: 0.6rem 1.5rem 0.6rem 3.25rem;
+  }
+  
+  .sidebar-expanded .dropdown-icon:not(.fas.fa-chevron-down) {
+    margin-right: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .sidebar-expanded .sidebar-user {
+    justify-content: flex-start;
+    padding: 1.5rem;
+  }
+  
+  .sidebar-expanded .user-avatar {
+    margin-right: 1rem;
   }
 }
 
-@media (min-width: 1000px) {
-  
+/* Main content adjustment */
+.wrapper > section:not(.sem-menu) {
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--transition-speed) ease;
+}
+
+@media (max-width: 999px) {
+  .wrapper > section:not(.sem-menu) {
+    margin-left: var(--sidebar-collapsed-width) !important;
+  }
+}
+
+.sidebar-collapsed .wrapper > section:not(.sem-menu) {
+  margin-left: var(--sidebar-collapsed-width);
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Toggle sidebar on mobile
+  const sidebarToggle = document.getElementById('sidebar-toggle');
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', function() {
+      document.body.classList.toggle('sidebar-expanded');
+      
+      // Change icon direction
+      const icon = this.querySelector('i');
+      if (document.body.classList.contains('sidebar-expanded')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-left');
+      }
+    });
+  }
+  
+  // Add active class to current page link
+  const currentPath = window.location.pathname;
+  const navLinks = document.querySelectorAll('.nav-link, .dropdown-link');
+  
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href && currentPath.includes(href) && href !== '/') {
+      link.classList.add('active');
+      
+      // If it's a dropdown item, expand its parent
+      const dropdownItem = link.closest('.dropdown-item');
+      if (dropdownItem) {
+        const dropdownId = dropdownItem.parentElement.id;
+        const parentLink = document.querySelector(`[data-bs-target="#${dropdownId}"]`);
+        if (parentLink) {
+          parentLink.classList.add('active');
+          const dropdown = new bootstrap.Collapse(document.getElementById(dropdownId), {
+            toggle: false
+          });
+          dropdown.show();
+        }
+      }
+    }
+  });
+  
+  // Collapse/expand animation for dropdowns
+  const dropdownLinks = document.querySelectorAll('.nav-link.has-dropdown');
+  dropdownLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      this.querySelector('.dropdown-icon').style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+  });
+});
+</script>

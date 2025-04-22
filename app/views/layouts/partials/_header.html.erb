@@ -1,23 +1,196 @@
-<header class="navbar-header bg-dark">
-  <div class="navbar-brand">
-    <div class="brand-logo bg-dark">
-      <div class="d-flex p-2">
-        <%= image_tag 'admin/agua_na_caixa_logo', style: 'width:20%;z-index:99;' %>
-        <span class="mt-2 h2">+</span>
-        <%= image_tag 'admin/tiny_logo', style: 'width:18%; height:20%; border-radius:5px;' %>
+<header class="navbar-header">
+  <div class="navbar-container">
+    <!-- Page Title Section -->
+    <div class="navbar-content">
+      <h1 class="page-title"><%= yield :title %></h1>
+    </div>
+    
+    <!-- User Profile Section -->
+    <div class="navbar-dropdowns">
+      <div class="dropdown user-dropdown">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="user-info">
+            <%= image_tag 'admin/usuario-200x200', class: 'user-avatar', alt: 'User Avatar' %>
+            <span class="user-name"><%= current_user.name %></span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+          <li>
+            <a class="dropdown-item" href="#">
+              <i class="fas fa-user me-2"></i>Meu Perfil
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">
+              <i class="fas fa-cog me-2"></i>Configurações
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <%= link_to destroy_user_session_path(current_user), class: 'dropdown-item', data: { turbo: :false } do %>
+              <i class="fas fa-sign-out-alt me-2"></i>Sair
+            <% end %>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
-  <div class="navbar-content text-white">
-    <span class="badge bg-dark"><%= yield :title %></span>
-  </div>
-  <div class="navbar-dropdowns">
-    <nav class="navbar navbar-expand-sm">
-      <span class="badge bg-dark">
-        <%= image_tag 'admin/usuario-200x200', class: 'mb-1', style: 'width:15%; border-radius: 50%;' %>
-        <strong class="text-white"><%= current_user.name %></strong>
-        <%= link_to destroy_user_session_path(current_user), data: { turbo: :false } do %>Sair<% end %>
-      </span>
-    </nav>
-  </div>
 </header>
+
+<style>
+/* Header Styles */
+.navbar-header {
+  background-color: var(--bs-dark);
+  border-bottom: 1px solid var(--bs-border-dark);
+  height: 70px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: var(--sidebar-width);
+  z-index: 1000;
+  transition: left var(--transition-speed) ease;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 1.5rem;
+}
+
+/* Brand Section */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+}
+
+.brand-image {
+  height: auto;
+  object-fit: contain;
+}
+
+.primary-logo {
+  width: 120px;
+  max-height: 40px;
+}
+
+.secondary-logo {
+  width: 80px;
+  max-height: 30px;
+  border-radius: 5px;
+}
+
+.brand-separator {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--bs-info);
+  margin: 0 0.75rem;
+}
+
+/* Page Title Section */
+.navbar-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-title {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0.25rem 1rem;
+  border-radius: 0.375rem;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* User Section */
+.navbar-dropdowns {
+  display: flex;
+  align-items: center;
+}
+
+.user-dropdown .dropdown-toggle {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.user-dropdown .dropdown-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  border: 2px solid var(--bs-info);
+}
+
+.user-name {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .navbar-header {
+    left: var(--sidebar-collapsed-width);
+  }
+  
+  .navbar-content {
+    display: none;
+  }
+  
+  .brand-separator,
+  .secondary-logo {
+    display: none;
+  }
+  
+  .primary-logo {
+    width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-header {
+    left: 0;
+  }
+  
+  .user-name {
+    display: none;
+  }
+  
+  .navbar-container {
+    padding: 0 1rem;
+  }
+}
+
+/* Sidebar Collapsed State */
+.sidebar-collapsed .navbar-header {
+  left: var(--sidebar-collapsed-width);
+}
+
+/* Sidebar Expanded State (Mobile) */
+.sidebar-expanded .navbar-header {
+  left: var(--sidebar-width);
+}
+</style>

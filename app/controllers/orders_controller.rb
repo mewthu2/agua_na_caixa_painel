@@ -5,7 +5,7 @@ class OrdersController < ApplicationController
   def integrate_orders
     order = Order.find(params[:order_id])
     result = CreateOrderJob.perform_now(order)
-    
+
     case result
     when 2
       redirect_to orders_path, notice: 'Pedido já criado no Tiny, não é possível recriar.'
@@ -30,8 +30,16 @@ class OrdersController < ApplicationController
   end
 
   def index
-    @orders = Order.search(params[:search])
-                   .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
+    @orders = Order.all
+
+    if current_user.profile_id == 3
+      @orders = @orders.where(
+        seller_id: [current_user.seller_id_primeiros_passos, current_user.seller_id_agua_na_caixa]
+      )
+    end
+
+    @orders = @orders.search(params[:search])
+                     .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
   def show; end

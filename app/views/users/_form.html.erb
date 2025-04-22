@@ -44,6 +44,22 @@
       </div>
     </div>
 
+    <% if user.profile_id == 3 %>
+      <div class="row">
+        <%= form.label 'Seller ID - Primeiros Passos', class: 'col-form-label text-secondary' %>
+        <div class="col-12">
+          <%= form.text_field :seller_id_primeiros_passos, class: 'form-control' %>
+        </div>
+      </div>
+
+      <div class="row">
+        <%= form.label 'Seller ID - Água na Caixa', class: 'col-form-label text-secondary' %>
+        <div class="col-12">
+          <%= form.text_field :seller_id_agua_na_caixa, class: 'form-control' %>
+        </div>
+      </div>
+    <% end %>
+
     <div class="panel-buttons bg-secondary">
       <%= link_to users_path, class: 'btn btn-dark btn-lg' do %>
         <i class="fa fa-undo"></i> Voltar
