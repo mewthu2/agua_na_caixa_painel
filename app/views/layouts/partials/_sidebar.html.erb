@@ -193,9 +193,9 @@
       </a>
     </div>
     <div class="footer-item">
-      <a href="#" class="footer-link" title="Sair">
-        <i class="fas fa-sign-out-alt"></i>
-      </a>
+      <%= link_to destroy_user_session_path, method: :delete, class: 'dropdown-item', data: { turbo: false } do %>
+        <i class="fas fa-sign-out-alt me-2"></i>Sair
+      <% end %>
     </div>
   </div>
 </aside>

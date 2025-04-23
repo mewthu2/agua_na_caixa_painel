@@ -28,7 +28,7 @@
           </li>
           <li><hr class="dropdown-divider"></li>
           <li>
-            <%= link_to destroy_user_session_path(current_user), class: 'dropdown-item', data: { turbo: :false } do %>
+            <%= link_to destroy_user_session_path, method: :delete, class: 'dropdown-item', data: { turbo: false } do %>
               <i class="fas fa-sign-out-alt me-2"></i>Sair
             <% end %>
           </li>

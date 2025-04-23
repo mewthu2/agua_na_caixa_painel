@@ -1,178 +1,244 @@
-<div class="login">
-  <div class="main">
+<div class="login-container">
+  <div class="background-animation">
     <div class="d1"></div>
     <div class="d2"></div>
     <div class="d3"></div>
     <div class="d4"></div>
   </div>
-  <div class="main_login">
-    <div class="login-text row d-flex justify-content-center">
-      <b><h5 class="text-primary page-header d-flex justify-content-center"></h5></b>
-      <div class="col-4">
-        <%= image_tag 'admin/agua_na_caixa_logo', style: 'width:65%;margin-top:7px;' %>
-      </div>
-      <div class="col-6">
-        <%= render 'layouts/partials/messages' %>
-        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-          <div class="field">
-            <%= f.label 'Seu e-mail:', class: 'text-primary' %><br />
-            <div class="input-group">
-              <div class="input-group-text"><i class="fas fa-envelope"></i></div>
-              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control' %>
-            </div>
+  
+  <div class="login-card">
+    <div class="login-header">
+      <%= image_tag 'admin/agua_na_caixa_logo', class: 'login-logo' %>
+    </div>
+    
+    <div class="login-form">
+      <%= render 'layouts/partials/messages' %>
+      
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+        <div class="form-group">
+          <%= f.label 'Seu e-mail:', class: 'form-label' %>
+          <div class="input-group">
+            <div class="input-group-text"><i class="fas fa-envelope"></i></div>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control', placeholder: 'Digite seu email' %>
           </div>
+        </div>
 
-          <div class="field">
-            <%= f.label 'Sua senha:' ,class: 'text-primary' %><br />
-            <div class="input-group">
-              <div class="input-group-text"><i class="fas fa-lock"></i></div>
-              <%= f.password_field :password, autocomplete: "current-password", class: 'form-control' %>
-            </div>
+        <div class="form-group">
+          <%= f.label 'Sua senha:', class: 'form-label' %>
+          <div class="input-group">
+            <div class="input-group-text"><i class="fas fa-lock"></i></div>
+            <%= f.password_field :password, autocomplete: "current-password", class: 'form-control', placeholder: 'Digite sua senha' %>
           </div>
+        </div>
 
-          <% if devise_mapping.rememberable? %>
-            <div class="field text-primary">
-              <%= f.check_box :remember_me %>
-              <%= f.label 'Lembrar-me' %>
-            </div>
-          <% end %>
-
-          <div class="actions">
-            <%= f.submit "Logar", class: 'btn btn-primary w-100' %>
+        <% if devise_mapping.rememberable? %>
+          <div class="form-check">
+            <%= f.check_box :remember_me, class: 'form-check-input' %>
+            <%= f.label 'Lembrar-me', class: 'form-check-label' %>
           </div>
         <% end %>
-      </div>
+
+        <div class="form-action">
+          <%= f.submit "Entrar", class: 'btn btn-primary w-100' %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
+
 <style>
+  .login-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .background-animation {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  
+  .login-card {
+    position: absolute;
+    top: 50%;
+    left: 42%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 450px;
+    z-index: 10;
+    transition: all 0.3s ease;
+    /* Ajuste para compensar o margin-left do sidebar */
+    margin-left: 125px; /* Metade do margin-left do sidebar (250px ÷ 2) */
+  }
+  
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .login-logo {
+    max-width: 180px;
+    height: auto;
+  }
+  
+  .login-form {
+    width: 100%;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--bs-primary);
+    font-weight: 500;
+  }
+  
+  .form-check {
+    margin: 1rem 0;
+    color: var(--bs-primary);
+  }
+  
+  .form-action {
+    margin-top: 1.5rem;
+  }
+  
+  .btn-primary {
+    padding: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Keep the original animation styles */
+  .d1 {
+    position: absolute;
+    background-image: url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80);
+    background-size: 2700px 1500px;
+    height: 30vh;
+    width: 15vw;
+    background-position: 0 50%;
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.8);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    animation: dd1 10s 1, dd12 10s 1;
+    animation-delay: 4s, 14s;
+  }
+  
+  .d2 {
+    position: absolute;
+    background-image: url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80);
+    background-size: 2700px 1500px;
+    height: 50vh;
+    width: 25vw;
+    background-position: -10vw 50%;
+    left: 10vw;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    animation: dd2 10s 2;
+    animation-delay: 4s;
+  }
+  
+  .d3 {
+    position: absolute;
+    background-image: url("<%= asset_path('admin/back1.jpg') %>");
+    overflow: hidden;
+    height: 100vh;
+    width: 40vw;
+    left: 25vw;
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.8);
+    background-position: -35vw 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    animation: dd3 10s 2;
+    animation-delay: 4s;
+  }
+  
+  .d4 {
+    position: absolute;
+    overflow: hidden;
+    background-image: url("<%= asset_path('admin/back2.png') %>");
+    height: 80vh;
+    width: 25vw;
+    left: 60vw;
+    background-position: -70vw 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    animation: dd4 10s 2;
+    animation-delay: 4s;
+  }
+  
+  @keyframes dd1 {
+    0% {}
+    50% { width: 95vw; }
+  }
+  
+  @keyframes dd12 {
+    0% {}
+    50% { background-position: Calc(0vw - 40px) 50%; }
+  }
+  
+  @keyframes dd2 {
+    0% {}
+    50% { background-position: Calc(-10vw - 40px) 50%; }
+  }
+  
+  @keyframes dd3 {
+    0% {}
+    50% { background-position: Calc(-35vw - 40px) 50%; }
+  }
+  
+  @keyframes dd4 {
+    0% {}
+    50% { background-position: Calc(-70vw - 40px) 50%; }
+  }
+  
+  /* Responsive styles */
   @media (max-width: 999px) {
-    .main {
-      display: none;
+    .d1, .d2, .d3, .d4 {
+      display: block;
+      opacity: 0.4; /* Make background subtle on mobile */
+    }
+    
+    .login-card {
+      background-color: rgba(255, 255, 255, 0.95);
     }
   }
-  .login-text {
-    background-color: rgba(255, 255, 255, 0.7);
-    z-index: 99999;
-    position: fixed;
-    padding: 2em;
-    top: 27%;
-    left: 25%;
-    min-width: 37%;
-    border-radius: 1.5em;
+  
+  @media (max-width: 768px) {
+    .login-card {
+      margin-left: 0; /* Remove margin offset on mobile */
+    }
   }
-
-  .login {
-    margin-left: -19em !important;
-    margin-top: 4em !important;
+  
+  @media (max-width: 576px) {
+    .login-card {
+      padding: 1.5rem;
+      max-width: 90%;
+    }
   }
-
-  .luminoso {
-    box-shadow: 0 0 21px 7px rgba(255, 255, 255, 0.7);
-  }
-
- .d1 {
-  position: absolute;
-  background-image: url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80);
-  background-size: 2700px 1500px;
-
-  height: 30vh;
-  width: 15vw;
-
-  background-position: 0 50%;
-
-  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.8);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  animation: dd1 10s 1, dd12 10s 1;
-  animation-delay: 4s, 14s;
-}
-.d2 {
-  position: absolute;
-  background-image: url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80);
-  background-size: 2700px 1500px;
-
-  height: 50vh;
-  width: 25vw;
-
-  background-position: -10vw 50%;
-  left: 10vw;
-
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-  animation: dd2 10s 2;
-  animation-delay: 4s;
-}
-.d3 {
-  position: absolute;
-  background-image: url("<%= asset_path('admin/back1.jpg') %>");
-  overflow: hidden;
-
-  height: 100vh;
-  width: 40vw;
-  left: 25vw;
-  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.8);
-  background-position: -35vw 50%;
-
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-  animation: dd3 10s 2;
-  animation-delay: 4s;
-}
-.d4 {
-  position: absolute;
-  overflow: hidden;
-  background-image: url("<%= asset_path('admin/back2.png') %>");
-
-  height: 80vh;
-  width: 25vw;
-  left: 60vw;
-  background-position: -70vw 50%;
-
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-  animation: dd4 10s 2;
-  animation-delay: 4s;
-}
-
-@keyframes dd1 {
-  0% {
-  }
-  50% {
-    width: 95vw;
-  }
-}
-@keyframes dd12 {
-  0% {
-  }
-  50% {
-    background-position: Calc(0vw - 40px) 50%;
-  }
-}
-@keyframes dd2 {
-  0% {
-  }
-  50% {
-    background-position: Calc(-10vw - 40px) 50%;
-  }
-}
-@keyframes dd3 {
-  0% {
-  }
-  50% {
-    background-position: Calc(-35vw - 40px) 50%;
-  }
-}
-@keyframes dd4 {
-  0% {
-  }
-  50% {
-    background-position: Calc(-70vw - 40px) 50%;
-  }
-}
-
 </style>
