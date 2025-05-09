@@ -1,33 +1,28 @@
 <div class="nested-fields" id="order-product-container">
-  <div class="row" data-tag-id="<%= f.object.id %>">
-    <div class="col-5 text-white">
-      <%= f.label :product_id, 'Produto' %>
+  <div class="row mb-3" data-tag-id="<%= f.object.id %>">
+    <div class="col-md-5">
+      <%= f.label :product_id, 'Produto', class: 'form-label text-white' %>
       <%= f.select :product_id,
-                    options_for_select(@products.map { |v| ["#{v.nome}", v.id] }, f.object.product_id),
-                    { include_blank: 'Selecione o Produto' },
-                    class: 'form-control product-select' %>
+                  options_for_select(@products.map { |v| ["#{v.nome}", v.id] }, f.object.product_id),
+                  { include_blank: 'Selecione o Produto' },
+                  class: 'form-select bg-dark text-white border-secondary select2 product-select' %>
     </div>
-    <div class="col-2">
-      <%= f.label :quantidade, 'Quantidade' %>
-      <%= f.number_field :quantidade, class: 'form-control quantidade', min: 1, value: f.object.quantidade || 1 %>
+    <div class="col-md-3">
+      <%= f.label :quantidade, 'Quantidade', class: 'form-label text-white' %>
+      <%= f.number_field :quantidade, class: 'form-control bg-dark text-white border-secondary quantidade', min: 1, value: f.object.quantidade || 1 %>
     </div>
-    <div class="col-2">
-      <%= label_tag :preco_caixa, 'Preço caixa (12 uni) R$' %>
-      <%= text_field_tag :preco_caixa, nil, class: 'form-control preco-caixa', readonly: true %>
+    <div class="col-md-3">
+      <%= f.label :price, 'Preço uni R$', class: 'form-label text-white' %>
+      <div class="input-group">
+        <span class="input-group-text bg-dark border-secondary text-white">R$</span>
+        <%= f.text_field :price, class: 'form-control bg-dark text-white border-secondary price', value: f.object.price, required: true %>
+      </div>
     </div>
-    <div class="col-2">
-      <%= f.label :price, 'Preço uni R$' %>
-      <%= f.text_field :price, class: 'form-control price', value: f.object.price, required: true %>
-    </div>
-    <div class="col-1">
+    <div class="col-md-1 d-flex align-items-end justify-content-center">
       <% if params[:action] != 'show' %>
-        <div class="row">
-          <div class="col-2">
-            <%= link_to_remove_association f, class: 'btn btn-danger mt-3' do %>
-              <i class="fa fa-trash"></i>
-            <% end %>
-          </div>
-        </div>
+        <%= link_to_remove_association f, class: 'btn btn-outline-danger' do %>
+          <i class="fas fa-trash"></i>
+        <% end %>
       <% end %>
     </div>
   </div>

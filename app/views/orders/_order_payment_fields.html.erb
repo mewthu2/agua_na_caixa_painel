@@ -1,32 +1,29 @@
-<div class="nested-fields" id="order-payment-container">
-  <div class="row payment-type-row">
-    <% if !f.object.order.preference_payment %>
-      <div class="col-6 payment-type">
-        <%= f.label :order_payment_type_id, 'Tipo de Pagamento' %>
-        <%= f.select :order_payment_type_id,
-              options_for_select(@payment_types.map { |t| ["#{t.payment_method} - #{t.payment_channel}", t.id] }, f.object.order_payment_type_id),
-              {},
-              class: 'form-control select2' %>
-      </div>
-    <% end %>
-    <div class="col-2">
-      <%= f.label :amount, 'Valor (R$)' %>
-      <%= f.text_field :amount, class: 'form-control', value: f.object.amount, required: true %>
+<tr class="nested-fields">
+  <td class="payment-type-row">
+    <div class="payment-type">
+      <%= f.select :order_payment_type_id,
+                  options_for_select(@payment_types.map { |t| ["#{t.payment_method} - #{t.payment_channel}", t.id] }, f.object.order_payment_type_id),
+                  { include_blank: 'Selecione o tipo de pagamento' },
+                  class: 'form-select bg-dark text-white border-secondary select2' %>
     </div>
-    <div class="col-3">
-      <%= f.label :date, 'Data' %>
-      <%= f.date_field :date, class: 'form-control', value: f.object.date || Date.today %>
+  </td>
+  <td>
+    <div class="input-group">
+      <span class="input-group-text bg-dark border-secondary text-white">R$</span>
+      <%= f.text_field :amount, class: 'form-control bg-dark text-white border-secondary', required: true %>
     </div>
-    <div class="col-1">
-      <% if params[:action] != 'show' %>
-        <div class="row">
-          <div class="col-2">
-            <%= link_to_remove_association f, class: 'btn btn-danger mt-3' do %>
-              <i class="fa fa-trash"></i>
-            <% end %>
-          </div>
-        </div>
+  </td>
+  <td>
+    <%= f.date_field :date, class: 'form-control bg-dark text-white border-secondary' %>
+  </td>
+  <td>
+    <%= f.text_field :note, class: 'form-control bg-dark text-white border-secondary' %>
+  </td>
+  <td class="text-center">
+    <% if params[:action] != 'show' %>
+      <%= link_to_remove_association f, class: 'btn btn-outline-danger' do %>
+        <i class="fas fa-trash"></i>
       <% end %>
-    </div>
-  </div>
-</div>
+    <% end %>
+  </td>
+</tr>

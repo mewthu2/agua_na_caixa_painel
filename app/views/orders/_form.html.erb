@@ -1,343 +1,632 @@
-<%= form_for(@order, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
-  <div class="bg-dark p-4 mt-4">
-    <div class="page-header text-primary">
-      <h4 class="text-light" style="float:right;">Total do Pedido: <span class="badge bg-primary">R$ <span id="total_order"></span></span></h4>
-      <h4>
-        <%= @order.new_record? ? "Criar Pedido" : "Atualizar Pedido" %>
-        <small class="text-secondary"> Informações do pedido</small>
-      </h4>
-    </div>
-
-    <% if action_name == 'edit' %>
-      <div class="row mb-3 justify-content-center">
-        <div class="col-md-6">
-          <div class="card bg-dark border-secondary mb-3">
-            <div class="card-body">
-              <h5 class="card-title text-secondary mb-3">Vendedor Responsável</h5>
-              
-              <%= form.label :seller_id, 'Selecione o vendedor:', class: 'form-label text-light' %>
-              <%= form.select :seller_id,
-                    options_for_select(
-                      (@order.destiny == 'primeiros_passos' ? @seller_primeiros_passos : @seller_agua_na_caixa)
-                        .map { |s| [s['vendedor']['nome'], s['vendedor']['id'], { 'data-seller-name' => s['vendedor']['nome'] }] }, 
-                      @order.seller_id
-                    ),
-                    { include_blank: 'Selecione o vendedor...' },
-                    { 
-                      class: 'form-control select2', 
-                      id: 'seller_select',
-                      onchange: "updateSellerName(this)"  
-                    } %>
-                      
-              <%= form.hidden_field :seller_name, id: 'seller_name_field', value: @order.seller_name %>
-              
-              <div class="mt-2">
-                <small class="text-muted">Vendedor selecionado: <span id="seller_name_display"><%= @order.seller_name.presence || 'Nenhum' %></span></small>
+<%= form_for(@order, html: { autocomplete: 'off', class: 'order-form' }, data: { disabled: read_only }) do |form| %>
+  <div class="container-fluid p-0">
+    <!-- Cliente -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card stat-card bg-light-dark">
+          <div class="card-header d-flex align-items-center">
+            <i class="fas fa-user-circle text-info me-2"></i>
+            <h5 class="mb-0 text-white">Informações do Cliente</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="mb-3">
+                  <%= form.label :contact_id, 'Cliente:', class: 'form-label text-white' %>
+                  <div class="input-group">
+                    <%= form.select :contact_id,
+                          options_for_select(@contacts.map { |t| ["#{t.nome} - CPF/CNPJ:#{t.cpf_cnpj}", t.id] }, form.object.contact_id),
+                          { include_blank: 'Selecione o cliente...' },
+                          class: 'form-select bg-dark text-white border-secondary select2', id: 'contact_select' %>
+                    <a href="#" id="edit_contact_link" class="btn btn-outline-info" target="_blank" style="display: none;" data-bs-toggle="tooltip" title="Editar cliente">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <%= form.check_box :use_contact_order, class: 'form-check-input', id: 'use_contact_order' %>
+                  <%= form.label :use_contact_order, 'Usar endereço do contato', class: 'form-check-label text-white' %>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <%= form.check_box :preference_payment, class: 'form-check-input', id: 'preference_payment' %>
+                  <%= form.label :preference_payment, 'Usar preferência de pagamento', class: 'form-check-label text-white' %>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <script>
-        function updateSellerName(selectElement) {
-          const selectedOption = selectElement.options[selectElement.selectedIndex];
-          const sellerNameField = document.getElementById('seller_name_field');
-          const sellerNameDisplay = document.getElementById('seller_name_display');
-          
-          if (selectedOption) {
-            const sellerName = selectedOption.dataset.sellerName || '';
-            sellerNameField.value = sellerName;
-            sellerNameDisplay.textContent = sellerName || 'Nenhum';
-          }
-        }
-
-        document.addEventListener("turbolinks:load", function() {
-          const sellerSelect = document.getElementById('seller_select');
-          
-          if (sellerSelect) {
-            updateSellerName(sellerSelect);
-            
-            $(sellerSelect).select2({
-              language: "pt-BR",
-              placeholder: "Selecione o vendedor",
-              width: '100%',
-              allowClear: true
-            });
-          }
-        });
-      </script>
-    <% end %>
-
-    <div class="row mb-3 justify-content-center">
-      <div class="col-10 d-flex">
-        <div class="flex-grow-1">
-          <%= form.label :contact_id, 'Cliente:' %>
-          <%= form.select :contact_id,
-                options_for_select(@contacts.map { |t| ["#{t.nome} - CPF/CNPJ:#{t.cpf_cnpj}", t.id] }, form.object.contact_id),
-                {},
-                class: 'form-control select2', id: 'contact_select' %>
-          <div class="form-check mt-2">
-            <%= form.check_box :use_contact_order, class: 'form-check-input', id: 'use_contact_order' %>
-            <%= form.label :use_contact_order, 'Usar endereço do contato', class: 'form-check-label text-secondary' %>
-          </div>
-          <div class="form-check mt-2">
-            <%= form.check_box :preference_payment, class: 'form-check-input', id: 'preference_payment' %>
-            <%= form.label :preference_payment, 'Usar preferência de pagamento do contato', class: 'form-check-label text-secondary' %>
-          </div>
-        </div>
-      </div>
-      <div class="col-2 mt-4">
-        <a href="#" id="edit_contact_link" class="btn btn-secondary" target="_blank" style="display: none;">
-          <i class="fa fa-edit"></i> Editar
-        </a>
-      </div>
     </div>
-
-    <div class="container" id="div_contact" style="display: none;">
-      <div class="row d-flex justify-content-center">
-        <div class="col-md-12">
-          <div class="page-header text-primary">
-            <h4>
-              <small class="text-secondary"> Endereço de entrega</small>
-            </h4>
+    
+    <!-- Endereço de Entrega -->
+    <div id="div_contact" class="card stat-card bg-light-dark mb-4" style="display: none;">
+      <div class="card-header d-flex align-items-center">
+        <i class="fas fa-map-marker-alt text-info me-2"></i>
+        <h5 class="mb-0 text-white">Endereço de Entrega</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <%= form.label :endereco, 'Endereço', class: 'form-label text-white' %>
+            <%= form.text_field :endereco, class: 'form-control bg-dark text-white border-secondary', placeholder: 'Rua, Avenida, etc.' %>
+          </div>
+          <div class="col-md-3">
+            <%= form.label :numero, 'Número', class: 'form-label text-white' %>
+            <%= form.text_field :numero, class: 'form-control bg-dark text-white border-secondary', placeholder: 'Nº' %>
+          </div>
+          <div class="col-md-3">
+            <%= form.label :complemento, 'Complemento', class: 'form-label text-white' %>
+            <%= form.text_field :complemento, class: 'form-control bg-dark text-white border-secondary', placeholder: 'Apto, Sala, etc.' %>
           </div>
         </div>
-      </div>
-      <div class="row mb-3 d-flex justify-content-center">
-        <div class="col-md-4">
-          <%= form.label :endereco, 'Endereço', class: 'col-form-label text-secondary' %>
-          <%= form.text_field :endereco, class: 'form-control form-control-lg' %>
-        </div>
-        <div class="col-md-4">
-          <%= form.label :numero, 'Número', class: 'col-form-label text-secondary' %>
-          <%= form.text_field :numero, class: 'form-control form-control-lg' %>
-        </div>
-        <div class="col-md-4">
-          <%= form.label :complemento, 'Complemento', class: 'col-form-label text-secondary' %>
-          <%= form.text_field :complemento, class: 'form-control form-control-lg' %>
-        </div>
-      </div>
-      <div class="row mb-3 d-flex justify-content-center">
-        <div class="col-md-4">
-          <%= form.label :bairro, 'Bairro', class: 'col-form-label text-secondary' %>
-          <%= form.text_field :bairro, class: 'form-control form-control-lg' %>
-        </div>
-        <div class="col-md-4">
-          <%= form.label :cep, 'CEP', class: 'col-form-label text-secondary' %>
-          <%= form.text_field :cep, class: 'form-control form-control-lg' %>
-        </div>
-        <div class="col-md-4">
-          <%= form.label :uf, 'UF', class: 'col-form-label text-secondary' %>
-          <%= form.text_field :uf, class: 'form-control form-control-lg' %>
+        <div class="row">
+          <div class="col-md-4">
+            <%= form.label :bairro, 'Bairro', class: 'form-label text-white' %>
+            <%= form.text_field :bairro, class: 'form-control bg-dark text-white border-secondary', placeholder: 'Bairro' %>
+          </div>
+          <div class="col-md-4">
+            <%= form.label :cep, 'CEP', class: 'form-label text-white' %>
+            <%= form.text_field :cep, class: 'form-control bg-dark text-white border-secondary', placeholder: '00000-000' %>
+          </div>
+          <div class="col-md-4">
+            <%= form.label :uf, 'UF', class: 'form-label text-white' %>
+            <%= form.text_field :uf, class: 'form-control bg-dark text-white border-secondary', placeholder: 'Estado' %>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="page-header text-primary mt-4">
-      <h4>
-        <small class="text-secondary"> Itens do pedido</small>
-      </h4>
-    </div>
-
-    <div id="order_products">
-      <%= form.fields_for :order_products do |pi| %>
-        <%= render 'order_product_fields', f: pi %>
-      <% end %>
-      <% if params[:action] != 'show' %>
-        <div class="links">
-          <%= link_to_add_association form, :order_products, class: 'btn btn-primary' do %>
-            <i class="fa fa-plus"></i> Adicionar produto
+    <!-- Produtos -->
+    <div class="card stat-card bg-light-dark mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-box text-info me-2"></i>
+          <h5 class="mb-0 text-white">Itens do Pedido</h5>
+        </div>
+        <% if params[:action] != 'show' %>
+          <%= link_to_add_association form, :order_products, class: 'btn btn-outline-info' do %>
+            <i class="fas fa-plus me-2"></i> Adicionar Produto
           <% end %>
-        </div>
-      <% end %>
-    </div>
-
-    <div class="page-header text-primary mt-4">
-      <h4>
-        <small class="text-secondary"> Parcelas do pedido</small>
-      </h4>
-    </div>
-
-    <div class="row">
-      <div class="col-6">
-        <%= label_tag 'payment_installments', 'Prazo de Pagamento (se parcelado, separar por vírgula)' %>
-        <%= text_field_tag 'payment_installments', '', class: 'form-control', placeholder: 'Ex: 10,25,35', id: 'payment_installments' %>
-      </div>
-    </div>
-
-    <div id="order_payments">
-      <%= form.fields_for :order_payments do |pi| %>
-        <%= render 'order_payment_fields', f: pi %>
-      <% end %>
-      <% if params[:action] != 'show' %>
-        <div class="links">
-          <%= link_to_add_association form, :order_payments, class: 'btn btn-primary', id:'add_order_payment' do %>
-            <i class="fa fa-plus"></i> Adicionar parcela
-          <% end %>
-        </div>
-      <% end %>
-    </div>
-
-    <div class="page-header text-primary mt-4">
-      <h4>
-        <small class="text-secondary"> Observações do Pedido</small>
-      </h4>
-    </div>
-
-    <div class="col-md-12">
-      <%= form.label :observation, 'Observação', class: 'col-form-label text-secondary' %>
-      <%= form.text_area :observation, class: 'form-control form-control-lg' %>
-    </div>
-
-    <div class="panel-buttons bg-secondary">
-      <%= link_to orders_path, class: 'btn btn-dark btn-lg' do %>
-        <i class="fa fa-undo"></i> Voltar
-      <% end %>
-      <% unless read_only %>
-        <%= form.button class: 'btn btn-primary btn-lg', data: { disable_with: @order.new_record? ? 'Criando...' : 'Salvando...' } do %>
-          <i class="fa fa-save"></i> <%= @order.new_record? ? 'Criar Pedido' : 'Atualizar Pedido' %>
         <% end %>
-      <% end %>
+      </div>
+      <div class="card-body">
+        <div id="order_products">
+          <%= form.fields_for :order_products do |pi| %>
+            <%= render 'order_product_fields', f: pi %>
+          <% end %>
+          <% if form.object.order_products.empty? && params[:action] != 'show' %>
+            <div class="text-center py-4 text-muted">
+              <i class="fas fa-box-open fa-2x mb-2"></i>
+              <p>Nenhum produto adicionado. Clique em "Adicionar Produto" para começar.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagamento -->
+    <div class="card table-card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-credit-card text-info me-2"></i>
+          <h5 class="mb-0 text-white">Pagamento</h5>
+        </div>
+        <% if params[:action] != 'show' %>
+          <%= link_to_add_association form, :order_payments, class: 'btn btn-outline-info', id:'add_order_payment' do %>
+            <i class="fas fa-plus me-2"></i> Adicionar Parcela
+          <% end %>
+        <% end %>
+      </div>
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <%= label_tag 'payment_installments', 'Prazo de Pagamento (dias)', class: 'form-label text-white' %>
+            <div class="input-group">
+              <%= text_field_tag 'payment_installments', '', class: 'form-control bg-dark text-white border-secondary', placeholder: 'Ex: 10,25,35', id: 'payment_installments' %>
+              <span class="input-group-text bg-dark border-secondary text-white">dias</span>
+            </div>
+            <small class="form-text text-muted">Para pagamento parcelado, separe os prazos por vírgula.</small>
+          </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="payments-table">
+            <thead>
+              <tr>
+                <th style="width: 30%">Tipo de Pagamento</th>
+                <th style="width: 20%">Valor (R$)</th>
+                <th style="width: 20%">Data</th>
+                <th style="width: 20%">Observação</th>
+                <th style="width: 10%" class="text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="order_payments">
+              <%= form.fields_for :order_payments do |pi| %>
+                <%= render 'order_payment_fields', f: pi %>
+              <% end %>
+              <% if form.object.order_payments.empty? && params[:action] != 'show' %>
+                <tr>
+                  <td colspan="5" class="text-center py-4 text-muted">
+                    <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+                    <p>Nenhuma parcela adicionada. Defina os prazos acima ou clique em "Adicionar Parcela".</p>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observações -->
+    <div class="card stat-card bg-light-dark mb-4">
+      <div class="card-header d-flex align-items-center">
+        <i class="fas fa-comment text-info me-2"></i>
+        <h5 class="mb-0 text-white">Observações</h5>
+      </div>
+      <div class="card-body">
+        <%= form.label :observation, 'Observações do Pedido', class: 'form-label text-white' %>
+        <%= form.text_area :observation, class: 'form-control bg-dark text-white border-secondary', rows: 4, placeholder: 'Informações adicionais sobre o pedido...' %>
+      </div>
+    </div>
+
+    <!-- Botões de Ação e Total do Pedido -->
+    <div class="action-bar">
+      <div class="d-flex justify-content-between align-items-center">
+        <%= link_to orders_path, class: 'btn btn-outline-secondary btn-lg' do %>
+          <i class="fas fa-arrow-left me-2"></i> Voltar
+        <% end %>
+        
+        <div class="d-flex align-items-center">
+          <% if action_name == 'edit' %>
+            <div class="seller-selection me-4">
+              <div class="card bg-gradient-info p-3 border-0">
+                <div class="d-flex flex-column">
+                  <label for="seller_select" class="form-label text-white mb-2">Vendedor Responsável:</label>
+                  <%= form.select :seller_id,
+                        options_for_select(
+                          (@order.destiny == 'primeiros_passos' ? @seller_primeiros_passos : @seller_agua_na_caixa)
+                            .map { |s| [s['vendedor']['nome'], s['vendedor']['id'], { 'data-seller-name' => s['vendedor']['nome'] }] }, 
+                          @order.seller_id
+                        ),
+                        { include_blank: 'Selecione o vendedor...' },
+                        { 
+                          class: 'form-select bg-dark text-white border-secondary select2', 
+                          id: 'seller_select',
+                          onchange: "updateSellerName(this)",
+                          style: "width: 250px;"
+                        } %>
+                  
+                  <%= form.hidden_field :seller_name, id: 'seller_name_field', value: @order.seller_name %>
+                  
+                  <div class="mt-2">
+                    <small class="text-white">
+                      <i class="fas fa-user-tie me-1"></i>
+                      <span id="seller_name_display"><%= @order.seller_name.presence || 'Nenhum selecionado' %></span>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+          
+          <div class="order-total-card">
+            <div class="card bg-gradient-primary p-3 border-0">
+              <div class="d-flex flex-column align-items-center">
+                <span class="text-white mb-1">Total do Pedido</span>
+                <span class="total-value">R$ <span id="total_order">0.00</span></span>
+              </div>
+            </div>
+          </div>
+          
+          <% unless read_only %>
+            <%= form.button class: 'btn btn-gradient-primary btn-lg ms-4', data: { disable_with: @order.new_record? ? 'Criando...' : 'Salvando...' } do %>
+              <i class="fas fa-save me-2"></i> <%= @order.new_record? ? 'Criar Pedido' : 'Atualizar Pedido' %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 <% end %>
 
+<style>
+:root {
+  --bs-primary: #3a7bd5;
+  --bs-secondary: #495057;
+  --bs-success: #00b09b;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-dark: #212529;
+  --bs-darker: #151515;
+  --bs-light-dark: #2c3034;
+  --bs-border-dark: #373b3e;
+}
+
+body {
+  background-color: var(--bs-darker);
+  color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Action Bar */
+.action-bar {
+  background-color: var(--bs-light-dark);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.order-total-card {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.total-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* Cards */
+.stat-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--bs-border-dark);
+  padding: 1rem 1.5rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  margin-right: 1rem;
+  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Table Card */
+.table-card {
+  background-color: var(--bs-light-dark);
+  border: 1px solid var(--bs-border-dark);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-card .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--bs-border-dark);
+  padding: 1rem 1.5rem;
+}
+
+/* Table Styling */
+.table {
+  margin-bottom: 0;
+  color: #fff;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border-bottom-width: 1px;
+  border-bottom-color: var(--bs-border-dark);
+}
+
+.table > thead {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Form Controls */
+.form-control, .form-select {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.375rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--bs-info);
+  box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+}
+
+.form-check-input:checked {
+  background-color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-primary {
+  background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+}
+
+.bg-gradient-info {
+  background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+.bg-light-dark {
+  background-color: var(--bs-light-dark);
+}
+
+/* Buttons */
+.btn-gradient-primary {
+  background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+  border: none;
+  color: white;
+  transition: all 0.3s;
+}
+
+.btn-gradient-primary:hover {
+  background: linear-gradient(45deg, #2a6ac4, #00bfe9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);
+}
+
+.btn-outline-info {
+  color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+.btn-outline-info:hover {
+  background-color: var(--bs-info);
+  color: #212529;
+}
+
+/* Badges */
+.badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+/* Select2 Styling */
+.select2-container--default .select2-selection--single {
+  background-color: var(--bs-dark);
+  border: 1px solid var(--bs-border-dark);
+  border-radius: 0.375rem;
+  height: calc(2.5rem + 2px);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #fff;
+  line-height: 2.5rem;
+  padding-left: 1rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 2.5rem;
+}
+
+.select2-dropdown {
+  background-color: var(--bs-dark);
+  border: 1px solid var(--bs-border-dark);
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--bs-info);
+  color: #212529;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+  background-color: var(--bs-secondary);
+}
+
+.select2-results__option {
+  color: #fff;
+  padding: 0.5rem 1rem;
+}
+
+/* Seller Selection */
+.seller-selection .card {
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .action-bar .d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .action-bar .d-flex > div:last-child {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .seller-selection, .order-total-card {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+  
+  .seller-selection .card, .order-total-card .card {
+    width: 100%;
+  }
+  
+  .seller-selection select {
+    width: 100% !important;
+  }
+  
+  .btn-gradient-primary {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .action-bar .d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .action-bar .d-flex > div:first-child {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+  
+  .action-bar .d-flex > div:last-child {
+    width: 100%;
+  }
+}
+</style>
+
 <script>
-  // Configuração do select de vendedores
-  document.addEventListener("DOMContentLoaded", function() {
-    // Atualiza o campo hidden seller_name quando o select muda
-    const sellerSelect = document.getElementById('seller_select');
-    const sellerNameField = document.getElementById('seller_name_field');
+function updateSellerName(selectElement) {
+  const selectedOption = selectElement.options[selectElement.selectedIndex];
+  const sellerNameField = document.getElementById('seller_name_field');
+  const sellerNameDisplay = document.getElementById('seller_name_display');
+  
+  if (selectedOption) {
+    const sellerName = selectedOption.dataset.sellerName || '';
+    sellerNameField.value = sellerName;
+    sellerNameDisplay.textContent = sellerName || 'Nenhum selecionado';
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Ativa tooltips
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      boundary: document.body
+    });
+  });
+
+  // Inicializa select2
+  $('.select2').select2({
+    theme: 'bootstrap-5',
+    dropdownParent: $('body'),
+    width: '100%',
+    language: 'pt-BR'
+  });
+
+  const sellerSelect = document.getElementById('seller_select');
+  const sellerNameField = document.getElementById('seller_name_field');
+  
+  if (sellerSelect) {
+    sellerSelect.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      if (selectedOption) {
+        sellerNameField.value = selectedOption.dataset.sellerName || '';
+      }
+    });
     
-    if (sellerSelect) {
-      sellerSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        if (selectedOption) {
-          sellerNameField.value = selectedOption.dataset.sellerName || '';
-        }
-      });
-      
-      // Dispara o evento change para preencher inicialmente se já houver seleção
-      const event = new Event('change');
-      sellerSelect.dispatchEvent(event);
-      
-      // Inicializa o select2
-      $(sellerSelect).select2({
-        language: "pt-BR",
-        placeholder: "Selecione o vendedor",
-        width: '100%',
-        allowClear: true
-      });
-    }
+    const event = new Event('change');
+    sellerSelect.dispatchEvent(event);
+  }
 
-    // Configuração do checkbox de preferência de pagamento
-    const preferenceCheckbox = document.getElementById('preference_payment');
-    const paymentTypeRows = document.querySelectorAll('.payment-type-row');
+  const preferenceCheckbox = document.getElementById('preference_payment');
+  const paymentTypeRows = document.querySelectorAll('.payment-type-row');
 
-    function togglePaymentTypeVisibility() {
-      paymentTypeRows.forEach(row => {
-        const paymentTypeDiv = row.querySelector('.payment-type');
-        if (preferenceCheckbox.checked) {
-          paymentTypeDiv.style.display = 'none';
-        } else {
-          paymentTypeDiv.style.display = '';
-        }
-      });
-    }
-
-    preferenceCheckbox.addEventListener('change', togglePaymentTypeVisibility);
-    togglePaymentTypeVisibility();
-
-    // Configuração para novas parcelas inseridas
-    $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
-      const newPaymentTypeRow = added_task.querySelector('.payment-type-row');
-      const newPaymentTypeDiv = newPaymentTypeRow.querySelector('.payment-type');
-
+  function togglePaymentTypeVisibility() {
+    paymentTypeRows.forEach(row => {
+      const paymentTypeDiv = row.querySelector('.payment-type');
       if (preferenceCheckbox.checked) {
-        newPaymentTypeDiv.style.display = 'none';
+        paymentTypeDiv.style.display = 'none';
       } else {
-        newPaymentTypeDiv.style.display = '';
+        paymentTypeDiv.style.display = '';
+      }
+    });
+  }
+
+  preferenceCheckbox.addEventListener('change', togglePaymentTypeVisibility);
+  togglePaymentTypeVisibility();
+
+  $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
+    const newPaymentTypeRow = added_task.querySelector('.payment-type-row');
+    const newPaymentTypeDiv = newPaymentTypeRow.querySelector('.payment-type');
+
+    if (preferenceCheckbox.checked) {
+      newPaymentTypeDiv.style.display = 'none';
+    } else {
+      newPaymentTypeDiv.style.display = '';
+    }
+    
+    $(added_task).find("select.select2").select2({
+      theme: 'bootstrap-5',
+      dropdownParent: $('body'),
+      width: '100%',
+      language: 'pt-BR'
+    });
+  });
+
+  const contactCheckbox = document.getElementById('use_contact_order');
+  const contactDiv = document.getElementById('div_contact');
+
+  function toggleContactDiv() {
+    if (contactCheckbox.checked) {
+      contactDiv.style.display = 'none';
+    } else {
+      contactDiv.style.display = 'block';
+    }
+  }
+
+  contactCheckbox.addEventListener('change', toggleContactDiv);
+  toggleContactDiv();
+
+  const contactSelect = document.getElementById('contact_select');
+  const editContactLink = document.getElementById('edit_contact_link');
+
+  function updateEditLink() {
+    const selectedContactId = contactSelect.value;
+    if (selectedContactId) {
+      editContactLink.href = `/contacts/${selectedContactId}/edit`;
+      editContactLink.style.display = 'inline-block';
+    } else {
+      editContactLink.style.display = 'none';
+    }
+  }
+
+  $(contactSelect).on('select2:select', updateEditLink);
+  updateEditLink();
+
+  $('#order_products').on('cocoon:after-insert', function(e, added_task) {
+    $(added_task).find("select.select2").select2({
+      theme: 'bootstrap-5',
+      dropdownParent: $('body'),
+      width: '100%',
+      language: 'pt-BR'
+    });
+  });
+
+  const paymentInstallmentsField = document.getElementById('payment_installments');
+  const orderPaymentsContainer = document.getElementById('order_payments');
+  const totalOrderField = document.getElementById('total_order');
+
+  function updateOrderPayments() {
+    const values = paymentInstallmentsField.value.split(',').map(value => parseInt(value.trim())).filter(value => !isNaN(value));
+    const totalOrder = calculateTotal();
+
+    const currentFields = orderPaymentsContainer.querySelectorAll('.nested-fields');
+    currentFields.forEach(field => field.remove());
+
+    if (values.length > 0) {
+      // Remove placeholder message if it exists
+      const placeholderRow = orderPaymentsContainer.querySelector('tr td[colspan="5"]');
+      if (placeholderRow) {
+        placeholderRow.closest('tr').remove();
       }
       
-      // Reaplica o select2 para novos campos
-      $("select.select2").select2({
-        language: "pt-BR",
-        placeholder: " ",
-        width: '100%',
-        allowClear: true      
-      });
-    });
-
-    // Configuração do checkbox de endereço de contato
-    const contactCheckbox = document.getElementById('use_contact_order');
-    const contactDiv = document.getElementById('div_contact');
-
-    function toggleContactDiv() {
-      if (contactCheckbox.checked) {
-        contactDiv.style.display = 'none';
-      } else {
-        contactDiv.style.display = 'block';
-      }
-    }
-
-    contactCheckbox.addEventListener('change', toggleContactDiv);
-    toggleContactDiv();
-
-    // Configuração do link de edição de contato
-    const contactSelect = document.getElementById('contact_select');
-    const editContactLink = document.getElementById('edit_contact_link');
-
-    function updateEditLink() {
-      const selectedContactId = contactSelect.value;
-      if (selectedContactId) {
-        editContactLink.href = `/contacts/${selectedContactId}/edit`;
-        editContactLink.style.display = 'inline-block';
-      } else {
-        editContactLink.style.display = 'none';
-      }
-    }
-
-    if (contactSelect.classList.contains('select2')) {
-      $(contactSelect).on('select2:select', updateEditLink);
-    } else {
-      contactSelect.addEventListener('change', updateEditLink);
-    }
-    updateEditLink();
-
-    // Configuração do select2 para produtos e pagamentos
-    $('#order_products').on('cocoon:after-insert', function(e, added_task) {
-      $("select.select2").select2({
-        language: "pt-BR",
-        placeholder: " ",
-        width: '100%',
-        allowClear: true      
-      });
-    });
-
-    $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
-      $("select.select2").select2({
-        language: "pt-BR",
-        placeholder: " ",
-        width: '100%',
-        allowClear: true      
-      });
-    });
-
-    // Preenchimento automático das parcelas
-    const paymentInstallmentsField = document.getElementById('payment_installments');
-    const orderPaymentsContainer = document.getElementById('order_payments');
-    const totalOrderField = document.getElementById('total_order');
-
-    function updateOrderPayments() {
-      const values = paymentInstallmentsField.value.split(',').map(value => parseInt(value.trim())).filter(value => !isNaN(value));
-      const totalOrder = parseFloat(totalOrderField.textContent.replace('R$', '').trim());
-
-      const currentFields = orderPaymentsContainer.querySelectorAll('.nested-fields');
-      currentFields.forEach(field => field.remove());
-
       values.forEach((days, index) => {
-        const newField = document.createElement('div');
+        const newField = document.createElement('tr');
         newField.classList.add('nested-fields');
 
         const installmentDate = new Date();
@@ -347,101 +636,138 @@
         const installmentAmount = (totalOrder / values.length).toFixed(2);
 
         newField.innerHTML = `
-          <div class="row">
-            <div class="col-3">
-              <label for="order_payment_type_id">Tipo de Pagamento</label>
-              <select class="form-control select2" name="order[order_payments_attributes][${index}][order_payment_type_id]">
+          <td class="payment-type-row">
+            <div class="payment-type">
+              <select class="form-select bg-dark text-white border-secondary select2" name="order[order_payments_attributes][${index}][order_payment_type_id]">
                 ${getPaymentTypesOptions()}
               </select>
             </div>
-            <div class="col-2">
-              <label for="amount">Valor (R$)</label>
-              <input type="text" name="order[order_payments_attributes][${index}][amount]" class="form-control" value="${installmentAmount}" required>
+          </td>
+          <td>
+            <div class="input-group">
+              <span class="input-group-text bg-dark border-secondary text-white">R$</span>
+              <input type="text" name="order[order_payments_attributes][${index}][amount]" class="form-control bg-dark text-white border-secondary" value="${installmentAmount}" required>
             </div>
-            <div class="col-3">
-              <label for="date">Data</label>
-              <input type="date" name="order[order_payments_attributes][${index}][date]" class="form-control" value="${formattedDate}">
-            </div>
-            <div class="col-3">
-              <label for="note">Observação</label>
-              <input type="text" name="order[order_payments_attributes][${index}][note]" class="form-control">
-            </div>
-            <div class="col-1">
-              <button type="button" class="btn btn-danger remove-order-payment" style="margin-top: 2rem !important;"><i class="fa fa-trash"></i></button>
-            </div>
-          </div>
+          </td>
+          <td>
+            <input type="date" name="order[order_payments_attributes][${index}][date]" class="form-control bg-dark text-white border-secondary" value="${formattedDate}">
+          </td>
+          <td>
+            <input type="text" name="order[order_payments_attributes][${index}][note]" class="form-control bg-dark text-white border-secondary">
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-outline-danger remove-order-payment">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
         `;
         orderPaymentsContainer.appendChild(newField);
         
-        // Reaplica o select2 para o novo campo
         $(newField).find('select.select2').select2({
-          language: "pt-BR",
-          placeholder: " ",
+          theme: 'bootstrap-5',
+          dropdownParent: $('body'),
           width: '100%',
-          allowClear: true      
+          language: 'pt-BR'
+        });
+        
+        $(newField).find('.remove-order-payment').on('click', function() {
+          $(this).closest('.nested-fields').remove();
+          calculateTotal();
+          updatePaymentAmounts(calculateTotal());
         });
       });
     }
+  }
 
-    function getPaymentTypesOptions() {
-      return `<% @payment_types.each do |t| %>
-                <option value="<%= t.id %>"><%= "#{t.payment_method} - #{t.payment_channel}" %></option>
-              <% end %>`;
+  function getPaymentTypesOptions() {
+    return `<% @payment_types.each do |t| %>
+              <option value="<%= t.id %>"><%= "#{t.payment_method} - #{t.payment_channel}" %></option>
+            <% end %>`;
+  }
+
+  if (paymentInstallmentsField) {
+    paymentInstallmentsField.addEventListener('input', updateOrderPayments);
+  }
+
+  function calculateTotal() {
+    let total = 0;
+
+    document.querySelectorAll('#order_products .nested-fields').forEach(function(container) {
+      const quantidadeInput = container.querySelector('input[name*="[quantidade]"]');
+      const precoInput = container.querySelector('input[name*="[price]"]');
+      
+      if (quantidadeInput && precoInput) {
+        const quantidadeStr = quantidadeInput.value.replace(',', '.');
+        const precoStr = precoInput.value.replace(',', '.');
+        
+        const quantidade = parseFloat(quantidadeStr) || 0;
+        const preco = parseFloat(precoStr) || 0;
+        
+        const subtotal = quantidade * preco;
+        total += subtotal;
+      }
+    });
+
+    const totalOrderElement = document.getElementById('total_order');
+    if (totalOrderElement) {
+      totalOrderElement.textContent = total.toFixed(2);
     }
+    return total;
+  }
 
-    if (paymentInstallmentsField) {
-      paymentInstallmentsField.addEventListener('input', updateOrderPayments);
-    }
-
-    // Cálculo do total do pedido
-    function calculateTotal() {
-      let total = 0;
-
-      document.querySelectorAll('#order_products .nested-fields').forEach(function(container) {
-        const quantidadeInput = container.querySelector('.quantidade');
-        const priceInput = container.querySelector('.price');
-        const precoCaixaInput = container.querySelector('.preco-caixa');
-
-        if (quantidadeInput && priceInput) {
-          const quantidade = parseFloat(quantidadeInput.value) || 0;
-          const preco = parseFloat(priceInput.value) || 0;
-
-          total += quantidade * preco;
-
-          if (precoCaixaInput) {
-            precoCaixaInput.value = (preco * 12).toFixed(2);
-          }
+  function updatePaymentAmounts(total) {
+    const paymentFields = document.querySelectorAll('#order_payments .nested-fields');
+    if (paymentFields.length > 0) {
+      const installmentValue = (total / paymentFields.length).toFixed(2);
+      paymentFields.forEach(field => {
+        const amountInput = field.querySelector('input[name*="[amount]"]');
+        if (amountInput) {
+          amountInput.value = installmentValue;
         }
       });
-
-      const totalOrderElement = document.getElementById('total_order');
-      if (totalOrderElement) {
-        totalOrderElement.textContent = total.toFixed(2);
-      }
     }
+  }
 
-    document.addEventListener('change', function(event) {
-      if (event.target.matches('.price') || event.target.matches('.quantidade')) {
-        calculateTotal();
-      }
-    });
-
-    document.addEventListener('input', function(event) {
-      if (event.target.matches('.quantidade') || event.target.matches('.price')) {
-        calculateTotal();
-      }
-    });
-
-    document.addEventListener('click', function(event) {
-      if (event.target.closest('.remove_fields')) {
-        setTimeout(calculateTotal, 0);
-      }
-    });
-
-    document.addEventListener('cocoon:after-insert', function() {
-      calculateTotal();
-    });
-
-    calculateTotal();
+  document.addEventListener('change', function(event) {
+    if (event.target.matches('input[name*="[quantidade]"], input[name*="[price]"]')) {
+      const total = calculateTotal();
+      updatePaymentAmounts(total);
+    }
   });
+
+  document.addEventListener('input', function(event) {
+    if (event.target.matches('input[name*="[quantidade]"], input[name*="[price]"]')) {
+      const total = calculateTotal();
+      updatePaymentAmounts(total);
+    }
+  });
+
+  document.addEventListener('click', function(event) {
+    if (event.target.closest('.remove_fields')) {
+      setTimeout(() => {
+        const total = calculateTotal();
+        updatePaymentAmounts(total);
+      }, 0);
+    }
+  });
+
+  document.addEventListener('cocoon:after-insert', function(e, insertedItem) {
+    if (insertedItem.closest('#order_products')) {
+      const total = calculateTotal();
+      updatePaymentAmounts(total);
+    }
+  });
+
+  // Highlight da linha da tabela
+  document.querySelectorAll('.table tbody tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+      this.classList.add('table-active');
+    });
+    row.addEventListener('mouseleave', function() {
+      this.classList.remove('table-active');
+    });
+  });
+
+  calculateTotal();
+});
 </script>
