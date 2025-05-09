@@ -111,7 +111,7 @@
     </div>
 
     <!-- Pagamento -->
-    <div class="card table-card mb-4">
+    <div class="card stat-card bg-light-dark mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <i class="fas fa-credit-card text-info me-2"></i>
@@ -135,31 +135,16 @@
           </div>
         </div>
         
-        <div class="table-responsive">
-          <table class="table table-hover align-middle" id="payments-table">
-            <thead>
-              <tr>
-                <th style="width: 30%">Tipo de Pagamento</th>
-                <th style="width: 20%">Valor (R$)</th>
-                <th style="width: 20%">Data</th>
-                <th style="width: 20%">Observação</th>
-                <th style="width: 10%" class="text-center">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="order_payments">
-              <%= form.fields_for :order_payments do |pi| %>
-                <%= render 'order_payment_fields', f: pi %>
-              <% end %>
-              <% if form.object.order_payments.empty? && params[:action] != 'show' %>
-                <tr>
-                  <td colspan="5" class="text-center py-4 text-muted">
-                    <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
-                    <p>Nenhuma parcela adicionada. Defina os prazos acima ou clique em "Adicionar Parcela".</p>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+        <div id="order_payments">
+          <%= form.fields_for :order_payments do |pi| %>
+            <%= render 'order_payment_fields', f: pi %>
+          <% end %>
+          <% if form.object.order_payments.empty? && params[:action] != 'show' %>
+            <div class="text-center py-4 text-muted">
+              <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+              <p>Nenhuma parcela adicionada. Defina os prazos acima ou clique em "Adicionar Parcela".</p>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
@@ -185,48 +170,37 @@
         
         <div class="d-flex align-items-center">
           <% if action_name == 'edit' %>
-            <div class="seller-selection me-4">
-              <div class="card bg-gradient-info p-3 border-0">
-                <div class="d-flex flex-column">
-                  <label for="seller_select" class="form-label text-white mb-2">Vendedor Responsável:</label>
-                  <%= form.select :seller_id,
-                        options_for_select(
-                          (@order.destiny == 'primeiros_passos' ? @seller_primeiros_passos : @seller_agua_na_caixa)
-                            .map { |s| [s['vendedor']['nome'], s['vendedor']['id'], { 'data-seller-name' => s['vendedor']['nome'] }] }, 
-                          @order.seller_id
-                        ),
-                        { include_blank: 'Selecione o vendedor...' },
-                        { 
-                          class: 'form-select bg-dark text-white border-secondary select2', 
-                          id: 'seller_select',
-                          onchange: "updateSellerName(this)",
-                          style: "width: 250px;"
-                        } %>
-                  
-                  <%= form.hidden_field :seller_name, id: 'seller_name_field', value: @order.seller_name %>
-                  
-                  <div class="mt-2">
-                    <small class="text-white">
-                      <i class="fas fa-user-tie me-1"></i>
-                      <span id="seller_name_display"><%= @order.seller_name.presence || 'Nenhum selecionado' %></span>
-                    </small>
-                  </div>
-                </div>
+            <div class="seller-selection me-3">
+              <div class="d-flex align-items-center">
+                <label for="seller_select" class="form-label text-white mb-0 me-2">Vendedor:</label>
+                <%= form.select :seller_id,
+                      options_for_select(
+                        (@order.destiny == 'primeiros_passos' ? @seller_primeiros_passos : @seller_agua_na_caixa)
+                          .map { |s| [s['vendedor']['nome'], s['vendedor']['id'], { 'data-seller-name' => s['vendedor']['nome'] }] }, 
+                        @order.seller_id
+                      ),
+                      { include_blank: 'Selecione...' },
+                      { 
+                        class: 'form-select bg-dark text-white border-secondary select2', 
+                        id: 'seller_select',
+                        onchange: "updateSellerName(this)",
+                        style: "width: 200px;"
+                      } %>
+                
+                <%= form.hidden_field :seller_name, id: 'seller_name_field', value: @order.seller_name %>
               </div>
             </div>
           <% end %>
           
-          <div class="order-total-card">
-            <div class="card bg-gradient-primary p-3 border-0">
-              <div class="d-flex flex-column align-items-center">
-                <span class="text-white mb-1">Total do Pedido</span>
-                <span class="total-value">R$ <span id="total_order">0.00</span></span>
-              </div>
+          <div class="order-total me-3">
+            <div class="d-flex align-items-center">
+              <span class="text-white me-2">Total:</span>
+              <span class="total-value">R$ <span id="total_order">0.00</span></span>
             </div>
           </div>
           
           <% unless read_only %>
-            <%= form.button class: 'btn btn-gradient-primary btn-lg ms-4', data: { disable_with: @order.new_record? ? 'Criando...' : 'Salvando...' } do %>
+            <%= form.button class: 'btn btn-gradient-primary btn-lg', data: { disable_with: @order.new_record? ? 'Criando...' : 'Salvando...' } do %>
               <i class="fas fa-save me-2"></i> <%= @order.new_record? ? 'Criar Pedido' : 'Atualizar Pedido' %>
             <% end %>
           <% end %>
@@ -264,16 +238,10 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.order-total-card {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
 .total-value {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: white;
+  color: var(--bs-info);
 }
 
 /* Cards */
@@ -300,38 +268,6 @@ body {
   margin-right: 1rem;
   opacity: 0.8;
   color: rgba(255, 255, 255, 0.9);
-}
-
-/* Table Card */
-.table-card {
-  background-color: var(--bs-light-dark);
-  border: 1px solid var(--bs-border-dark);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.table-card .card-header {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-bottom: 1px solid var(--bs-border-dark);
-  padding: 1rem 1.5rem;
-}
-
-/* Table Styling */
-.table {
-  margin-bottom: 0;
-  color: #fff;
-}
-
-.table > :not(caption) > * > * {
-  padding: 0.75rem 1rem;
-  background-color: transparent;
-  border-bottom-width: 1px;
-  border-bottom-color: var(--bs-border-dark);
-}
-
-.table > thead {
-  background-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Form Controls */
@@ -432,10 +368,13 @@ body {
   padding: 0.5rem 1rem;
 }
 
-/* Seller Selection */
-.seller-selection .card {
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+/* Product and Payment Fields */
+#order-product-container, #order-payment-container {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid var(--bs-border-dark);
 }
 
 /* Responsive */
@@ -452,12 +391,8 @@ body {
     width: 100%;
   }
   
-  .seller-selection, .order-total-card {
+  .seller-selection, .order-total {
     margin-bottom: 1rem;
-    width: 100%;
-  }
-  
-  .seller-selection .card, .order-total-card .card {
     width: 100%;
   }
   
@@ -497,7 +432,9 @@ function updateSellerName(selectElement) {
   if (selectedOption) {
     const sellerName = selectedOption.dataset.sellerName || '';
     sellerNameField.value = sellerName;
-    sellerNameDisplay.textContent = sellerName || 'Nenhum selecionado';
+    if (sellerNameDisplay) {
+      sellerNameDisplay.textContent = sellerName || 'Nenhum selecionado';
+    }
   }
 }
 
@@ -539,7 +476,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function togglePaymentTypeVisibility() {
     paymentTypeRows.forEach(row => {
       const paymentTypeDiv = row.querySelector('.payment-type');
-      if (preferenceCheckbox.checked) {
+      if (preferenceCheckbox && preferenceCheckbox.checked) {
         paymentTypeDiv.style.display = 'none';
       } else {
         paymentTypeDiv.style.display = '';
@@ -547,14 +484,16 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  preferenceCheckbox.addEventListener('change', togglePaymentTypeVisibility);
-  togglePaymentTypeVisibility();
+  if (preferenceCheckbox) {
+    preferenceCheckbox.addEventListener('change', togglePaymentTypeVisibility);
+    togglePaymentTypeVisibility();
+  }
 
   $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
     const newPaymentTypeRow = added_task.querySelector('.payment-type-row');
     const newPaymentTypeDiv = newPaymentTypeRow.querySelector('.payment-type');
 
-    if (preferenceCheckbox.checked) {
+    if (preferenceCheckbox && preferenceCheckbox.checked) {
       newPaymentTypeDiv.style.display = 'none';
     } else {
       newPaymentTypeDiv.style.display = '';
@@ -572,15 +511,17 @@ document.addEventListener("DOMContentLoaded", function() {
   const contactDiv = document.getElementById('div_contact');
 
   function toggleContactDiv() {
-    if (contactCheckbox.checked) {
+    if (contactCheckbox && contactCheckbox.checked) {
       contactDiv.style.display = 'none';
     } else {
       contactDiv.style.display = 'block';
     }
   }
 
-  contactCheckbox.addEventListener('change', toggleContactDiv);
-  toggleContactDiv();
+  if (contactCheckbox && contactDiv) {
+    contactCheckbox.addEventListener('change', toggleContactDiv);
+    toggleContactDiv();
+  }
 
   const contactSelect = document.getElementById('contact_select');
   const editContactLink = document.getElementById('edit_contact_link');
@@ -595,8 +536,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  $(contactSelect).on('select2:select', updateEditLink);
-  updateEditLink();
+  if (contactSelect && editContactLink) {
+    $(contactSelect).on('select2:select', updateEditLink);
+    updateEditLink();
+  }
 
   $('#order_products').on('cocoon:after-insert', function(e, added_task) {
     $(added_task).find("select.select2").select2({
@@ -609,9 +552,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const paymentInstallmentsField = document.getElementById('payment_installments');
   const orderPaymentsContainer = document.getElementById('order_payments');
-  const totalOrderField = document.getElementById('total_order');
 
   function updateOrderPayments() {
+    if (!paymentInstallmentsField || !orderPaymentsContainer) return;
+    
     const values = paymentInstallmentsField.value.split(',').map(value => parseInt(value.trim())).filter(value => !isNaN(value));
     const totalOrder = calculateTotal();
 
@@ -620,14 +564,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (values.length > 0) {
       // Remove placeholder message if it exists
-      const placeholderRow = orderPaymentsContainer.querySelector('tr td[colspan="5"]');
-      if (placeholderRow) {
-        placeholderRow.closest('tr').remove();
+      const placeholderDiv = orderPaymentsContainer.querySelector('.text-center.py-4');
+      if (placeholderDiv) {
+        placeholderDiv.remove();
       }
       
       values.forEach((days, index) => {
-        const newField = document.createElement('tr');
+        const newField = document.createElement('div');
         newField.classList.add('nested-fields');
+        newField.id = 'order-payment-container';
 
         const installmentDate = new Date();
         installmentDate.setDate(installmentDate.getDate() + days);
@@ -636,30 +581,36 @@ document.addEventListener("DOMContentLoaded", function() {
         const installmentAmount = (totalOrder / values.length).toFixed(2);
 
         newField.innerHTML = `
-          <td class="payment-type-row">
-            <div class="payment-type">
-              <select class="form-select bg-dark text-white border-secondary select2" name="order[order_payments_attributes][${index}][order_payment_type_id]">
-                ${getPaymentTypesOptions()}
-              </select>
+          <div class="row mb-3" data-tag-id="new_${index}">
+            <div class="col-md-4">
+              <label class="form-label text-white">Tipo de Pagamento</label>
+              <div class="payment-type">
+                <select class="form-select bg-dark text-white border-secondary select2" name="order[order_payments_attributes][${index}][order_payment_type_id]">
+                  ${getPaymentTypesOptions()}
+                </select>
+              </div>
             </div>
-          </td>
-          <td>
-            <div class="input-group">
-              <span class="input-group-text bg-dark border-secondary text-white">R$</span>
-              <input type="text" name="order[order_payments_attributes][${index}][amount]" class="form-control bg-dark text-white border-secondary" value="${installmentAmount}" required>
+            <div class="col-md-2">
+              <label class="form-label text-white">Valor (R$)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-white">R$</span>
+                <input type="text" name="order[order_payments_attributes][${index}][amount]" class="form-control bg-dark text-white border-secondary" value="${installmentAmount}" required>
+              </div>
             </div>
-          </td>
-          <td>
-            <input type="date" name="order[order_payments_attributes][${index}][date]" class="form-control bg-dark text-white border-secondary" value="${formattedDate}">
-          </td>
-          <td>
-            <input type="text" name="order[order_payments_attributes][${index}][note]" class="form-control bg-dark text-white border-secondary">
-          </td>
-          <td class="text-center">
-            <button type="button" class="btn btn-outline-danger remove-order-payment">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
+            <div class="col-md-2">
+              <label class="form-label text-white">Data</label>
+              <input type="date" name="order[order_payments_attributes][${index}][date]" class="form-control bg-dark text-white border-secondary" value="${formattedDate}">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label text-white">Observação</label>
+              <input type="text" name="order[order_payments_attributes][${index}][note]" class="form-control bg-dark text-white border-secondary">
+            </div>
+            <div class="col-md-1 d-flex align-items-end justify-content-center">
+              <button type="button" class="btn btn-outline-danger remove-order-payment">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
         `;
         orderPaymentsContainer.appendChild(newField);
         
@@ -756,16 +707,6 @@ document.addEventListener("DOMContentLoaded", function() {
       const total = calculateTotal();
       updatePaymentAmounts(total);
     }
-  });
-
-  // Highlight da linha da tabela
-  document.querySelectorAll('.table tbody tr').forEach(row => {
-    row.addEventListener('mouseenter', function() {
-      this.classList.add('table-active');
-    });
-    row.addEventListener('mouseleave', function() {
-      this.classList.remove('table-active');
-    });
   });
 
   calculateTotal();
