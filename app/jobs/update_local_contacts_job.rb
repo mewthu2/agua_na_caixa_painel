@@ -24,6 +24,7 @@ class UpdateLocalContactsJob < ActiveJob::Base
       tiny_contacts = tiny_contacts_response[:contatos]
 
       tiny_contacts.each do |tc|
+        sleep(0.5)
         contact_data = tc[:contato]
         contact = Contact.find_or_initialize_by(id: contact_data[:id])
 

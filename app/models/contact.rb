@@ -10,7 +10,7 @@ class Contact < ApplicationRecord
                  :distribuidores]
 
   # Callbacks
-  after_commit :enqueue_tiny_contact_job, on: [:create, :update]
+  # after_commit :enqueue_tiny_contact_job, on: [:create, :update]
 
   # Associações
   belongs_to :order_payment_type, optional: true
