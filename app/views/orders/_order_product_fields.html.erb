@@ -1,29 +1,394 @@
-<div class="nested-fields" id="order-product-container">
-  <div class="row mb-3" data-tag-id="<%= f.object.id %>">
+<div class="nested-fields product-field" id="order-product-container">
+  <div class="row mb-3 product-row" data-tag-id="<%= f.object.id %>">
     <div class="col-md-5">
       <%= f.label :product_id, 'Produto', class: 'form-label text-white' %>
       <%= f.select :product_id,
-                  options_for_select(@products.map { |v| ["#{v.nome}", v.id] }, f.object.product_id),
-                  { include_blank: 'Selecione o Produto' },
-                  class: 'form-select bg-dark text-white border-secondary select2 product-select' %>
+                  options_for_select(@products.map { |v| ["#{v.nome} - #{v.codigo}", v.id, { 'data-price' => v.preco }] }, f.object.product_id),
+                  { include_blank: 'Selecione o Produto...' },
+                  { 
+                    class: 'form-control bg-dark text-white border-secondary select2 product-select',
+                    data: { 
+                      placeholder: 'Selecione o Produto...',
+                      'allow-clear': 'true'
+                    }
+                  } %>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <%= f.label :quantidade, 'Quantidade', class: 'form-label text-white' %>
-      <%= f.number_field :quantidade, class: 'form-control bg-dark text-white border-secondary quantidade', min: 1, value: f.object.quantidade || 1 %>
+      <%= f.number_field :quantidade, 
+          class: 'form-control bg-dark text-white border-secondary quantidade', 
+          min: 1, 
+          step: 1,
+          value: f.object.quantidade || 1,
+          placeholder: '1' %>
     </div>
     <div class="col-md-3">
-      <%= f.label :price, 'Preço uni R$', class: 'form-label text-white' %>
+      <%= f.label :price, 'Preço Unitário', class: 'form-label text-white' %>
       <div class="input-group">
         <span class="input-group-text bg-dark border-secondary text-white">R$</span>
-        <%= f.text_field :price, class: 'form-control bg-dark text-white border-secondary price', value: f.object.price, required: true %>
+        <%= f.text_field :price, 
+            class: 'form-control bg-dark text-white border-secondary price', 
+            value: f.object.price,
+            placeholder: '0,00',
+            required: true %>
+      </div>
+    </div>
+    <div class="col-md-1">
+      <%= f.label :subtotal, 'Subtotal', class: 'form-label text-white' %>
+      <div class="input-group">
+        <span class="input-group-text bg-dark border-secondary text-white">R$</span>
+        <input type="text" class="form-control bg-dark text-white border-secondary subtotal" readonly placeholder="0,00">
       </div>
     </div>
     <div class="col-md-1 d-flex align-items-end justify-content-center">
       <% if params[:action] != 'show' %>
-        <%= link_to_remove_association f, class: 'btn btn-outline-danger' do %>
+        <%= link_to_remove_association f, class: 'btn btn-outline-danger btn-sm remove-product-btn', title: 'Remover produto' do %>
           <i class="fas fa-trash"></i>
         <% end %>
+      <% else %>
+        <div class="btn btn-outline-secondary btn-sm disabled">
+          <i class="fas fa-eye"></i>
+        </div>
       <% end %>
     </div>
   </div>
+  
+  <!-- Informações adicionais do produto (ocultas inicialmente) -->
+  <div class="row product-details" style="display: none;">
+    <div class="col-12">
+      <div class="alert alert-info bg-dark border-info text-info">
+        <small>
+          <strong>Código:</strong> <span class="product-code">-</span> |
+          <strong>Unidade:</strong> <span class="product-unit">-</span> |
+          <strong>Preço Sugerido:</strong> R$ <span class="product-suggested-price">0,00</span>
+        </small>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Função para atualizar o preço quando um produto é selecionado
+  function updateProductPrice(selectElement) {
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const container = selectElement.closest('.product-row');
+    const priceInput = container.querySelector('.price');
+    const productDetails = container.parentElement.querySelector('.product-details');
+    
+    if (selectedOption && selectedOption.value) {
+      const suggestedPrice = selectedOption.dataset.price || '0';
+      
+      // Atualiza o preço se estiver vazio
+      if (!priceInput.value || priceInput.value === '0' || priceInput.value === '0,00') {
+        priceInput.value = parseFloat(suggestedPrice).toFixed(2).replace('.', ',');
+      }
+      
+      // Mostra detalhes do produto
+      if (productDetails) {
+        const productCode = container.querySelector('.product-code');
+        const productUnit = container.querySelector('.product-unit');
+        const productSuggestedPrice = container.querySelector('.product-suggested-price');
+        
+        if (productCode) productCode.textContent = selectedOption.text.split(' - ')[1] || '-';
+        if (productUnit) productUnit.textContent = 'UN'; // Você pode adicionar esta informação no data attribute
+        if (productSuggestedPrice) productSuggestedPrice.textContent = parseFloat(suggestedPrice).toFixed(2).replace('.', ',');
+        
+        productDetails.style.display = 'block';
+      }
+    } else {
+      // Limpa o preço e esconde detalhes
+      priceInput.value = '';
+      if (productDetails) {
+        productDetails.style.display = 'none';
+      }
+    }
+    
+    // Recalcula o subtotal
+    updateSubtotal(container);
+  }
+  
+  // Função para atualizar o subtotal de um produto
+  function updateSubtotal(container) {
+    const quantidadeInput = container.querySelector('.quantidade');
+    const priceInput = container.querySelector('.price');
+    const subtotalInput = container.querySelector('.subtotal');
+    
+    if (quantidadeInput && priceInput && subtotalInput) {
+      const quantidade = parseFloat(quantidadeInput.value) || 0;
+      const price = parseFloat(priceInput.value.replace(',', '.')) || 0;
+      const subtotal = quantidade * price;
+      
+      subtotalInput.value = subtotal.toFixed(2).replace('.', ',');
+    }
+  }
+  
+  // Event listeners para produtos existentes
+  document.querySelectorAll('.product-select').forEach(function(select) {
+    // Evento para Select2
+    $(select).on('select2:select', function(e) {
+      updateProductPrice(this);
+    });
+    
+    $(select).on('select2:clear', function(e) {
+      const container = this.closest('.product-row');
+      const priceInput = container.querySelector('.price');
+      const productDetails = container.parentElement.querySelector('.product-details');
+      
+      priceInput.value = '';
+      if (productDetails) {
+        productDetails.style.display = 'none';
+      }
+      updateSubtotal(container);
+    });
+  });
+  
+  // Event listeners para quantidade e preço
+  document.addEventListener('input', function(event) {
+    if (event.target.matches('.quantidade') || event.target.matches('.price')) {
+      const container = event.target.closest('.product-row');
+      updateSubtotal(container);
+    }
+  });
+  
+  // Event listener para novos produtos adicionados via Cocoon
+  $('#order_products').on('cocoon:after-insert', function(e, added_task) {
+    const newProductSelect = added_task.querySelector('.product-select');
+    
+    if (newProductSelect) {
+      // Inicializa o Select2 para o novo campo
+      initializeSelect2(newProductSelect);
+      
+      // Adiciona event listeners para o novo select
+      $(newProductSelect).on('select2:select', function(e) {
+        updateProductPrice(this);
+      });
+      
+      $(newProductSelect).on('select2:clear', function(e) {
+        const container = this.closest('.product-row');
+        const priceInput = container.querySelector('.price');
+        const productDetails = container.parentElement.querySelector('.product-details');
+        
+        priceInput.value = '';
+        if (productDetails) {
+          productDetails.style.display = 'none';
+        }
+        updateSubtotal(container);
+      });
+    }
+  });
+  
+  // Calcula subtotais iniciais
+  document.querySelectorAll('.product-row').forEach(function(container) {
+    updateSubtotal(container);
+  });
+});
+</script>
+
+<style>
+.product-field {
+  background-color: rgba(0, 0, 0, 0.15);
+  border: 1px solid #6c757d;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.product-field:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-color: #0dcaf0;
+}
+
+.product-row {
+  margin-bottom: 0.5rem;
+}
+
+.product-details {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #6c757d;
+}
+
+.remove-product-btn {
+  transition: all 0.3s ease;
+}
+
+.remove-product-btn:hover {
+  transform: scale(1.1);
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.subtotal {
+  font-weight: 600;
+  background-color: rgba(13, 202, 240, 0.1) !important;
+}
+
+.input-group-text {
+  font-weight: 500;
+}
+
+/* Animação para novos campos */
+.product-field.newly-added {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Melhorias visuais para os campos */
+.form-control:focus,
+.form-select:focus {
+  border-color: #0dcaf0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+}
+
+.quantidade {
+  text-align: center;
+  font-weight: 600;
+}
+
+.price {
+  text-align: right;
+  font-weight: 600;
+}
+
+/* Correções específicas para Select2 - Alinhamento */
+.product-field .select2-container--bootstrap-5 .select2-selection--single {
+  height: calc(2.25rem + 2px) !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+  color: #fff !important;
+  line-height: 1.5 !important;
+  padding: 0.375rem 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-selection--single .select2-selection__placeholder {
+  color: #6c757d !important;
+  line-height: 1.5 !important;
+  padding: 0.375rem 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  margin: 0 !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+  height: 100% !important;
+  right: 0.75rem !important;
+  top: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow b {
+  border-color: #fff transparent transparent transparent !important;
+  border-style: solid !important;
+  border-width: 5px 4px 0 4px !important;
+  height: 0 !important;
+  left: 0 !important;
+  margin: 0 !important;
+  position: relative !important;
+  top: 0 !important;
+  width: 0 !important;
+}
+
+.product-field .select2-container--bootstrap-5.select2-container--open .select2-selection--single .select2-selection__arrow b {
+  border-color: transparent transparent #fff transparent !important;
+  border-width: 0 4px 5px 4px !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-selection--single .select2-selection__clear {
+  color: #fff !important;
+  font-size: 1.2em !important;
+  line-height: 1 !important;
+  right: 2rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  position: absolute !important;
+  cursor: pointer !important;
+}
+
+.product-field .select2-container--bootstrap-5.select2-container--focus .select2-selection--single {
+  border-color: #0dcaf0 !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25) !important;
+}
+
+/* Dropdown styling */
+.product-field .select2-container--bootstrap-5 .select2-dropdown {
+  background-color: #212529 !important;
+  border: 1px solid #6c757d !important;
+  color: #fff !important;
+  border-radius: 0.375rem !important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-dropdown .select2-search__field {
+  background-color: #212529 !important;
+  border: 1px solid #6c757d !important;
+  color: #fff !important;
+  border-radius: 0.25rem !important;
+  padding: 0.375rem 0.75rem !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-results__option {
+  color: #fff !important;
+  background-color: #212529 !important;
+  padding: 0.5rem 0.75rem !important;
+  line-height: 1.5 !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-results__option--highlighted {
+  background-color: #0dcaf0 !important;
+  color: #000 !important;
+}
+
+.product-field .select2-container--bootstrap-5 .select2-results__option--selected {
+  background-color: #495057 !important;
+  color: #fff !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .product-field {
+    padding: 0.75rem;
+  }
+  
+  .col-md-5,
+  .col-md-3,
+  .col-md-2,
+  .col-md-1 {
+    margin-bottom: 0.75rem;
+  }
+  
+  .remove-product-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  .product-field .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    font-size: 0.9rem !important;
+  }
+}
+</style>
