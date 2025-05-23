@@ -1,26 +1,344 @@
-<% if defined?(object) && object && object.errors.any? %>
-  <div class="alert alert-danger" role="alert">
-    <ul>
-      <% object.errors.full_messages.each do |message| %>
-        <li><%= message %><button type="button" class="btn-close" style="float:right; margin-top: -18px;" data-bs-dismiss="alert" aria-hidden="true"></button></li>
-      <% end %>
-    </ul>
-  </div>
-<% else %>
-  <% flash.each do |name, msg| %>
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+  <!-- Toasts para erros de validação -->
+  <% if defined?(object) && object && object.errors.any? %>
+    <% object.errors.full_messages.each_with_index do |message, index| %>
+      <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="8000" id="errorToast<%= index %>">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <%= message %>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <!-- Toasts para mensagens flash -->
+  <% flash.each_with_index do |(name, msg), flash_index| %>
     <% if msg.is_a?(String) %>
-      <div class="mt-4 alert alert-<%= name.to_s == 'notice' ? 'success' : 'danger' %>">
-        <%= content_tag :div, msg.html_safe, :id => "flash_#{name}" %><button type="button" class="btn-close" style="float:right; margin-top: -18px;" data-bs-dismiss="alert" aria-hidden="true"></button>
+      <% toast_class = case name.to_s
+                       when 'notice', 'success'
+                         'text-bg-success'
+                       when 'alert', 'error'
+                         'text-bg-danger'
+                       when 'warning'
+                         'text-bg-warning'
+                       when 'info'
+                         'text-bg-info'
+                       else
+                         'text-bg-primary'
+                       end %>
+      
+      <% icon_class = case name.to_s
+                      when 'notice', 'success'
+                        'fas fa-check-circle'
+                      when 'alert', 'error'
+                        'fas fa-exclamation-triangle'
+                      when 'warning'
+                        'fas fa-exclamation-circle'
+                      when 'info'
+                        'fas fa-info-circle'
+                      else
+                        'fas fa-bell'
+                      end %>
+
+      <div class="toast align-items-center <%= toast_class %> border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000" id="flashToast<%= flash_index %>">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="<%= icon_class %> me-2"></i>
+            <%= msg.html_safe %>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
       </div>
     <% elsif msg.is_a?(Array) && msg.any? %>
-      <div class="mt-4 alert alert-danger">
-        <ul>
-          <% msg.each do |message| %>
-            <li><%= message %><button type="button" class="btn-close" style="float:right; margin-top: -18px;" data-bs-dismiss="alert" aria-hidden="true"></button></li>
-          <% end %>
-        </ul>
-      </div>
+      <% msg.each_with_index do |message, msg_index| %>
+        <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="8000" id="arrayToast<%= flash_index %>_<%= msg_index %>">
+          <div class="d-flex">
+            <div class="toast-body">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <%= message %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      <% end %>
     <% end %>
     <% flash.discard(name) %>
   <% end %>
-<% end %>
+</div>
+
+<style>
+/* Estilização personalizada para os toasts */
+.toast-container {
+  max-width: 400px;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 400px;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.toast-body {
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  word-wrap: break-word;
+}
+
+/* Animações personalizadas */
+.toast.showing {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toast.hide {
+  animation: slideOutRight 0.3s ease-in;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Cores personalizadas para melhor contraste */
+.toast.text-bg-success {
+  background-color: rgba(25, 135, 84, 0.95) !important;
+  color: #fff !important;
+}
+
+.toast.text-bg-danger {
+  background-color: rgba(220, 53, 69, 0.95) !important;
+  color: #fff !important;
+}
+
+.toast.text-bg-warning {
+  background-color: rgba(255, 193, 7, 0.95) !important;
+  color: #000 !important;
+}
+
+.toast.text-bg-info {
+  background-color: rgba(13, 202, 240, 0.95) !important;
+  color: #000 !important;
+}
+
+.toast.text-bg-primary {
+  background-color: rgba(13, 110, 253, 0.95) !important;
+  color: #fff !important;
+}
+
+/* Responsividade */
+@media (max-width: 576px) {
+  .toast-container {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 1rem !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    max-width: none !important;
+  }
+  
+  .toast {
+    min-width: auto !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
+
+/* Efeito de empilhamento */
+.toast-container .toast:not(:last-child) {
+  margin-bottom: 0.75rem;
+}
+
+/* Hover effect */
+.toast:hover {
+  transform: translateX(-5px);
+  transition: transform 0.2s ease;
+}
+
+/* Progress bar para toasts com auto-dismiss */
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 0 0 0.5rem 0.5rem;
+  animation: progressBar linear;
+}
+
+.toast.text-bg-success .toast-progress {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.toast.text-bg-danger .toast-progress {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Função para inicializar todos os toasts
+  function initializeToasts() {
+    const toastElements = document.querySelectorAll('.toast');
+    
+    toastElements.forEach(function(toastElement, index) {
+      // Cria uma instância do toast
+      const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: parseInt(toastElement.dataset.bsDelay) || 5000
+      });
+      
+      // Adiciona barra de progresso para toasts com auto-dismiss
+      if (toastElement.dataset.bsDelay) {
+        const progressBar = document.createElement('div');
+        progressBar.className = 'toast-progress';
+        progressBar.style.animationDuration = (parseInt(toastElement.dataset.bsDelay) / 1000) + 's';
+        toastElement.style.position = 'relative';
+        toastElement.appendChild(progressBar);
+      }
+      
+      // Mostra o toast com delay escalonado para múltiplos toasts
+      setTimeout(function() {
+        toast.show();
+      }, index * 200);
+      
+      // Remove o toast do DOM após ser ocultado
+      toastElement.addEventListener('hidden.bs.toast', function() {
+        this.remove();
+      });
+      
+      // Pausa a barra de progresso no hover
+      toastElement.addEventListener('mouseenter', function() {
+        const progressBar = this.querySelector('.toast-progress');
+        if (progressBar) {
+          progressBar.style.animationPlayState = 'paused';
+        }
+      });
+      
+      // Resume a barra de progresso quando sai do hover
+      toastElement.addEventListener('mouseleave', function() {
+        const progressBar = this.querySelector('.toast-progress');
+        if (progressBar) {
+          progressBar.style.animationPlayState = 'running';
+        }
+      });
+    });
+  }
+  
+  // Inicializa os toasts existentes
+  initializeToasts();
+  
+  // Função para criar toasts dinamicamente via JavaScript
+  window.showToast = function(message, type = 'info', delay = 5000) {
+    const toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) return;
+    
+    const toastId = 'dynamicToast_' + Date.now();
+    const iconClasses = {
+      'success': 'fas fa-check-circle',
+      'error': 'fas fa-exclamation-triangle',
+      'warning': 'fas fa-exclamation-circle',
+      'info': 'fas fa-info-circle',
+      'danger': 'fas fa-exclamation-triangle'
+    };
+    
+    const bgClasses = {
+      'success': 'text-bg-success',
+      'error': 'text-bg-danger',
+      'warning': 'text-bg-warning',
+      'info': 'text-bg-info',
+      'danger': 'text-bg-danger'
+    };
+    
+    const toastHTML = `
+      <div class="toast align-items-center ${bgClasses[type] || 'text-bg-info'} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="${delay}" id="${toastId}">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="${iconClasses[type] || 'fas fa-info-circle'} me-2"></i>
+            ${message}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-progress" style="animation-duration: ${delay / 1000}s;"></div>
+      </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+    
+    const newToast = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(newToast, {
+      autohide: true,
+      delay: delay
+    });
+    
+    toast.show();
+    
+    newToast.addEventListener('hidden.bs.toast', function() {
+      this.remove();
+    });
+    
+    // Pausa/resume da barra de progresso no hover
+    newToast.addEventListener('mouseenter', function() {
+      const progressBar = this.querySelector('.toast-progress');
+      if (progressBar) {
+        progressBar.style.animationPlayState = 'paused';
+      }
+    });
+    
+    newToast.addEventListener('mouseleave', function() {
+      const progressBar = this.querySelector('.toast-progress');
+      if (progressBar) {
+        progressBar.style.animationPlayState = 'running';
+      }
+    });
+  };
+  
+  // Função para limpar todos os toasts
+  window.clearAllToasts = function() {
+    const toasts = document.querySelectorAll('.toast');
+    toasts.forEach(function(toast) {
+      const bsToast = bootstrap.Toast.getInstance(toast);
+      if (bsToast) {
+        bsToast.hide();
+      }
+    });
+  };
+});
+
+// Exemplo de uso via JavaScript:
+// showToast('Operação realizada com sucesso!', 'success', 3000);
+// showToast('Erro ao processar solicitação', 'error', 5000);
+// showToast('Atenção: Verifique os dados', 'warning', 4000);
+// showToast('Informação importante', 'info', 3000);
+</script>

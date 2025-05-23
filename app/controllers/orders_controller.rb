@@ -48,6 +48,7 @@ class OrdersController < ApplicationController
 
     @orders = @orders.search(params[:search])
                      .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
+                     .order('created_at DESC')
   end
 
   def show; end

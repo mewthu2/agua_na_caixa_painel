@@ -1,10 +1,112 @@
 <% if order.errors.any? %>
-  <div class="alert alert-warning mt-3" id="error_explanation">
-    <h2><%= pluralize(order.errors.count, "erro") %> impedem que este pedido seja salvo:</h2>
-    <ul>
-      <% order.errors.full_messages.each do |message| %>
-        <li><%= message %><button type="button" class="btn-close" style="float:right; margin-top: -18px;" data-bs-dismiss="alert" aria-hidden="true"></button></li>
-      <% end %>
-    </ul>
+  <!-- Toast Container para erros de pedido -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3 order-errors-container" style="z-index: 1055;">
+    <!-- Toast de resumo de erros -->
+    <div class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000" id="orderErrorSummary">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="fas fa-exclamation-circle me-2"></i>
+          <strong><%= pluralize(order.errors.count, "erro") %> impedem que este pedido seja salvo</strong>
+          <div class="mt-2 pt-2 border-top">
+            <button type="button" class="btn btn-sm btn-warning" id="showErrorDetails">
+              Ver detalhes
+            </button>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+    
+    <!-- Toasts individuais para cada erro (inicialmente ocultos) -->
+    <% order.errors.full_messages.each_with_index do |message, index| %>
+      <div class="toast align-items-center text-bg-danger border-0 error-detail-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="8000" id="orderErrorDetail<%= index %>" style="display: none;">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <%= message %>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    <% end %>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializa o toast de resumo
+      const summaryToast = new bootstrap.Toast(document.getElementById('orderErrorSummary'));
+      summaryToast.show();
+      
+      // Adiciona barra de progresso
+      const progressBar = document.createElement('div');
+      progressBar.className = 'toast-progress';
+      progressBar.style.animationDuration = '10s';
+      document.getElementById('orderErrorSummary').appendChild(progressBar);
+      
+      // Configura o botão para mostrar detalhes
+      document.getElementById('showErrorDetails').addEventListener('click', function() {
+        // Oculta o toast de resumo
+        summaryToast.hide();
+        
+        // Mostra os toasts de detalhes com delay escalonado
+        const detailToasts = document.querySelectorAll('.error-detail-toast');
+        detailToasts.forEach(function(toastElement, index) {
+          // Torna o toast visível antes de inicializar
+          toastElement.style.display = 'block';
+          
+          // Cria uma instância do toast
+          const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 8000
+          });
+          
+          // Adiciona barra de progresso
+          const progressBar = document.createElement('div');
+          progressBar.className = 'toast-progress';
+          progressBar.style.animationDuration = '8s';
+          toastElement.appendChild(progressBar);
+          
+          // Mostra o toast com delay escalonado
+          setTimeout(function() {
+            toast.show();
+          }, index * 300);
+          
+          // Remove o toast do DOM após ser ocultado
+          toastElement.addEventListener('hidden.bs.toast', function() {
+            this.remove();
+          });
+          
+          // Pausa/resume da barra de progresso no hover
+          toastElement.addEventListener('mouseenter', function() {
+            const progressBar = this.querySelector('.toast-progress');
+            if (progressBar) {
+              progressBar.style.animationPlayState = 'paused';
+            }
+          });
+          
+          toastElement.addEventListener('mouseleave', function() {
+            const progressBar = this.querySelector('.toast-progress');
+            if (progressBar) {
+              progressBar.style.animationPlayState = 'running';
+            }
+          });
+        });
+      });
+      
+      // Pausa/resume da barra de progresso no hover para o toast de resumo
+      document.getElementById('orderErrorSummary').addEventListener('mouseenter', function() {
+        const progressBar = this.querySelector('.toast-progress');
+        if (progressBar) {
+          progressBar.style.animationPlayState = 'paused';
+        }
+      });
+      
+      document.getElementById('orderErrorSummary').addEventListener('mouseleave', function() {
+        const progressBar = this.querySelector('.toast-progress');
+        if (progressBar) {
+          progressBar.style.animationPlayState = 'running';
+        }
+      });
+    });
+  </script>
 <% end %>
