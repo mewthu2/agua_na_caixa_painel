@@ -30,6 +30,14 @@ class OrdersController < ApplicationController
   end
 
   def index
+    @all_orders = Order.all
+
+    if current_user.profile_id == 3
+      @all_orders = @all_orders.where(
+        seller_id: [current_user.seller_id_primeiros_passos, current_user.seller_id_agua_na_caixa]
+      )
+    end
+
     @orders = Order.all
 
     if current_user.profile_id == 3

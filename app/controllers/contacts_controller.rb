@@ -4,7 +4,18 @@ class ContactsController < ApplicationController
 
   def index
     @contacts = Contact.search(params[:search])
-                       .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
+    
+    # Filtrar por segmento se fornecido
+    @contacts = @contacts.where(segment: params[:segment]) if params[:segment].present?
+    
+    # Filtrar por situação se fornecida
+    @contacts = @contacts.where(situacao: params[:situacao]) if params[:situacao].present?
+    
+    # Filtrar por origem se fornecida
+    @contacts = @contacts.where(origin: params[:origin]) if params[:origin].present?
+    
+    # Paginação
+    @contacts = @contacts.paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
   def show
@@ -13,6 +24,8 @@ class ContactsController < ApplicationController
 
   def new
     @contact = Contact.new
+    @contact.origin = params[:origin] if params[:origin].present?
+    @contact.situacao = 'A' # Define como ativo por padrão
   end
 
   def edit
@@ -24,6 +37,7 @@ class ContactsController < ApplicationController
     if @contact.save
       redirect_to contacts_path(origin: @contact.origin), notice: 'Contato criado com sucesso.'
     else
+      load_references
       render :new
     end
   end
@@ -32,13 +46,15 @@ class ContactsController < ApplicationController
     if @contact.update(contact_params)
       redirect_to contacts_path(origin: @contact.origin), notice: 'Contato atualizado com sucesso.'
     else
+      load_references
       render :edit
     end
   end
 
   def destroy
+    origin = @contact.origin
     @contact.destroy
-    redirect_to contacts_path(origin: @contact.origin), notice: 'Contato excluído com sucesso.'
+    redirect_to contacts_path(origin: origin), notice: 'Contato excluído com sucesso.'
   end
 
   def fetch_all_contact_orders

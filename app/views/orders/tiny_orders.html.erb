@@ -1,68 +1,692 @@
-<div class="row">
-  <% case params[:kinds] %>
-  <% when 'primeiros_passos' %>
-    <% title 'Pedidos Tiny - Primeiros Passos' %>
-  <% when 'agua_na_caixa' %>
-    <% title 'Pedidos Tiny - Água na Caixa' %>
-  <% end %>
-</div>
+<% 
+  case params[:kinds]
+  when 'primeiros_passos'
+    title 'Dashboard de Pedidos Tiny - Primeiros Passos'
+  when 'agua_na_caixa'
+    title 'Dashboard de Pedidos Tiny - Água na Caixa'
+  end
+%>
 
-<div class="alert alert-dark mb-2"><i class="fa-solid fa-spinner fa-spin text-success"></i> Última atualização: <%= Time.now.strftime('%d/%m/%Y %H:%M') %></div>
+<div class="main-content">
+  <!-- Page Content -->
+  <div class="container-fluid">
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <div class="quick-stats me-4">
+            <span class="stat-label text-light">Total de Pedidos:</span>
+            <span class="stat-value text-info"><%= @all_orders.count %></span>
+          </div>
+          <div class="quick-stats me-4">
+            <span class="stat-label text-light">Aprovados:</span>
+            <span class="stat-value text-success"><%= @all_orders.count { |o| o[:pedido][:situacao] == 'Aprovado' } %></span>
+          </div>
+          <div class="quick-stats">
+            <span class="stat-label text-light">Pendentes:</span>
+            <span class="stat-value text-warning"><%= @all_orders.count { |o| o[:pedido][:situacao] == 'Em aberto' } %></span>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-info text-white" id="refresh-data">
+            <i class="fas fa-sync-alt me-2"></i> Atualizar Dados
+          </button>
+        </div>
+      </div>
+    </div>
 
-<div class="row">
-  <div class="col-12">
-    <table class="table table-dark table-hover table-responsive" style="overflow-x: scroll;" id="attemps-table">
-      <thead>
-        <tr>
-          <th width="50" class="text-center"><i class="fa fa-ellipsis-v"></i></th>
-          <th class="text-center"><%= 'id' %></th>
-          <th class="text-center"><%= 'numero' %></th>
-          <th class="text-center"><%= 'numero_ecommerce' %></th>
-          <th class="text-center"><%= 'data_pedido' %></th>
-          <th class="text-center"><%= 'data_prevista' %></th>
-          <th class="text-center"><%= 'nome' %></th>
-          <th class="text-center"><%= 'valor' %></th>
-          <th class="text-center"><%= 'situacao' %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @all_orders.each do |order| %>
-          <tr>
-            <td class="text-center"><i class="fa fa-ellipsis-v"></i></td>
-            <td class="text-center"><%= order[:pedido][:id] %></td>
-            <td class="text-center"><%= order[:pedido][:numero] %></td>
-            <td class="text-center"><%= order[:pedido][:numero_ecommerce] %></td>
-            <td class="text-center"><%= order[:pedido][:data_pedido] %></td>
-            <td class="text-center"><%= order[:pedido][:data_prevista] %></td>
-            <td class="text-center"><%= order[:pedido][:nome] %></td>
-            <td class="text-center"><%= number_to_currency(order[:pedido][:valor], unit: "R$", separator: ",", delimiter: ".") %></td>
-            <td class="text-center">
-              <%= case order[:pedido][:situacao]
-                when 'Aprovado'
-                  '<span class="badge badge-success">Aprovado</span>'.html_safe
-                when 'Faturado'
-                  '<span class="badge badge-primary">Faturado</span>'.html_safe
-                when 'Cancelado'
-                  '<span class="badge badge-danger">Cancelado</span>'.html_safe
-                when 'Enviado'
-                  '<span class="badge badge-warning">Enviado</span>'.html_safe
-                when 'Em aberto'
-                  '<span class="badge badge-light">Em aberto</span>'.html_safe
-                else
-                  order[:pedido][:situacao]
-                end
-              %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <!-- Stats Cards -->
+    <div class="row stats-cards">
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-primary">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= @all_orders.count %></h3>
+              <p class="stat-label text-white">Total de Pedidos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-success">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= @all_orders.count { |o| o[:pedido][:situacao] == 'Aprovado' || o[:pedido][:situacao] == 'Faturado' } %></h3>
+              <p class="stat-label text-white">Pedidos Aprovados/Faturados</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-warning">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-dark"><%= @all_orders.count { |o| o[:pedido][:situacao] == 'Em aberto' } %></h3>
+              <p class="stat-label text-dark">Pedidos Em Aberto</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-info">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white">
+                <%= number_to_currency(@all_orders.sum { |o| o[:pedido][:valor].to_f }, unit: "R$", precision: 2) %>
+              </h3>
+              <p class="stat-label text-white">Valor Total</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Last Update Alert -->
+    <div class="alert bg-dark border-info text-info mb-4">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-sync-alt fa-spin me-2"></i>
+        <div>
+          <strong>Última atualização:</strong> <%= Time.now.strftime('%d/%m/%Y %H:%M') %>
+          <div class="small text-muted">
+            <% case params[:kinds] %>
+            <% when 'primeiros_passos' %>
+              Dados sincronizados com Tiny - Primeiros Passos
+            <% when 'agua_na_caixa' %>
+              Dados sincronizados com Tiny - Água na Caixa
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card table-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-light">
+          <i class="fas fa-list me-2"></i>
+          Lista de Pedidos Tiny
+          <% case params[:kinds] %>
+          <% when 'primeiros_passos' %>
+            <span class="badge bg-info ms-2">Primeiros Passos</span>
+          <% when 'agua_na_caixa' %>
+            <span class="badge bg-info ms-2">Água na Caixa</span>
+          <% end %>
+        </h5>
+        <div class="table-actions">
+          <button class="btn btn-sm btn-outline-info me-2" title="Exportar para Excel">
+            <i class="fas fa-file-excel me-1"></i> Exportar
+          </button>
+          <button class="btn btn-sm btn-outline-light" title="Atualizar tabela">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="tiny-orders-table">
+            <thead>
+              <tr>
+                <th width="100" class="text-center">Ações</th>
+                <th class="text-center">ID</th>
+                <th class="text-center">Número</th>
+                <th class="text-center">Número E-commerce</th>
+                <th class="text-center">Data Pedido</th>
+                <th class="text-center">Data Prevista</th>
+                <th class="text-center">Cliente</th>
+                <th class="text-center">Valor</th>
+                <th class="text-center">Situação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @all_orders.each do |order| %>
+                <tr>
+                  <td class="text-center">
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-sm btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-dark">
+                        <li>
+                          <a href="https://erp.tiny.com.br/vendas#edit/<%= order[:pedido][:id] %>" target="_blank" class="dropdown-item text-info">
+                            <i class="fas fa-external-link-alt me-2"></i> Abrir no Tiny
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" class="dropdown-item text-light" data-bs-toggle="modal" data-bs-target="#orderDetailsModal<%= order[:pedido][:id] %>">
+                            <i class="fas fa-eye me-2"></i> Detalhes
+                          </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                          <a href="#" class="dropdown-item text-primary">
+                            <i class="fas fa-sync-alt me-2"></i> Sincronizar
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                  <td class="text-center fw-bold text-light">#<%= order[:pedido][:id] %></td>
+                  <td class="text-center text-light"><%= order[:pedido][:numero] %></td>
+                  <td class="text-center text-light"><%= order[:pedido][:numero_ecommerce] %></td>
+                  <td class="text-center text-light"><%= order[:pedido][:data_pedido] %></td>
+                  <td class="text-center text-light"><%= order[:pedido][:data_prevista] %></td>
+                  <td class="text-center text-light"><%= order[:pedido][:nome] %></td>
+                  <td class="text-center text-light"><%= number_to_currency(order[:pedido][:valor], unit: "R$", separator: ",", delimiter: ".") %></td>
+                  <td class="text-center">
+                    <% case order[:pedido][:situacao] %>
+                    <% when 'Aprovado' %>
+                      <span class="badge bg-gradient-success">
+                        <i class="fas fa-check-circle me-1"></i>
+                        Aprovado
+                      </span>
+                    <% when 'Faturado' %>
+                      <span class="badge bg-gradient-primary">
+                        <i class="fas fa-file-invoice me-1"></i>
+                        Faturado
+                      </span>
+                    <% when 'Cancelado' %>
+                      <span class="badge bg-gradient-danger">
+                        <i class="fas fa-ban me-1"></i>
+                        Cancelado
+                      </span>
+                    <% when 'Enviado' %>
+                      <span class="badge bg-gradient-warning">
+                        <i class="fas fa-truck me-1"></i>
+                        Enviado
+                      </span>
+                    <% when 'Em aberto' %>
+                      <span class="badge bg-gradient-secondary">
+                        <i class="fas fa-clock me-1"></i>
+                        Em aberto
+                      </span>
+                    <% else %>
+                      <span class="badge bg-gradient-info">
+                        <%= order[:pedido][:situacao] %>
+                      </span>
+                    <% end %>
+                  </td>
+                </tr>
+                
+                <!-- Modal para detalhes do pedido -->
+                <div class="modal fade" id="orderDetailsModal<%= order[:pedido][:id] %>" tabindex="-1" aria-labelledby="orderDetailsModalLabel<%= order[:pedido][:id] %>" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content bg-dark text-light">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="orderDetailsModalLabel<%= order[:pedido][:id] %>">
+                          Detalhes do Pedido #<%= order[:pedido][:numero] %>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="row mb-3">
+                          <div class="col-md-6">
+                            <h6 class="text-info">Informações do Pedido</h6>
+                            <ul class="list-group list-group-flush bg-dark">
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>ID:</strong> <%= order[:pedido][:id] %>
+                              </li>
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>Número:</strong> <%= order[:pedido][:numero] %>
+                              </li>
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>Data:</strong> <%= order[:pedido][:data_pedido] %>
+                              </li>
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>Valor:</strong> <%= number_to_currency(order[:pedido][:valor], unit: "R$", separator: ",", delimiter: ".") %>
+                              </li>
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>Situação:</strong> <%= order[:pedido][:situacao] %>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="col-md-6">
+                            <h6 class="text-info">Informações do Cliente</h6>
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>Nome:</strong> <%= order[:pedido][:nome] %>
+                              </li>
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>Contato:</strong> <%= order[:pedido][:contato] || 'Não informado' %>
+                              </li>
+                              <li class="list-group-item bg-dark text-light border-secondary">
+                                <strong>Número E-commerce:</strong> <%= order[:pedido][:numero_ecommerce] || 'Não informado' %>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <a href="https://erp.tiny.com.br/vendas#edit/<%= order[:pedido][:id] %>" target="_blank" class="btn btn-info">
+                          <i class="fas fa-external-link-alt me-1"></i> Abrir no Tiny
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<script>
-  $(document).ready(function() {
-      $('.table').DataTable();
-  });
-</script>
+<style>
+:root {
+  --bs-primary: #3a7bd5;
+  --bs-secondary: #495057;
+  --bs-success: #00b09b;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-dark: #212529;
+  --bs-darker: #151515;
+  --bs-light-dark: #2c3034;
+  --bs-border-dark: #373b3e;
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 70px;
+  --header-height: 70px;
+  --transition-speed: 0.3s;
+}
 
+body {
+  background-color: var(--bs-darker);
+  color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  transition: margin var(--transition-speed) ease;
+  padding: 1.5rem;
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Action Bar */
+.action-bar {
+  background-color: var(--bs-light-dark);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quick-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Text Colors */
+.text-light {
+  color: #f8f9fa !important;
+}
+
+.text-light-muted {
+  color: rgba(248, 249, 250, 0.7) !important;
+}
+
+/* Stats Cards */
+.stats-cards {
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .card-body {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  margin-right: 1rem;
+  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-label {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-primary {
+  background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(45deg, #00b09b, #96c93d);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(45deg, #f7971e, #ffd200);
+}
+
+.bg-gradient-info {
+  background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+.bg-gradient-secondary {
+  background: linear-gradient(45deg, #4b6cb7, #182848);
+}
+
+.bg-gradient-danger {
+  background: linear-gradient(45deg, #dc3545, #ff6b6b);
+}
+
+/* Table Card */
+.table-card {
+  background-color: var(--bs-light-dark);
+  border: 1px solid var(--bs-border-dark);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-card .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--bs-border-dark);
+  padding: 1rem 1.5rem;
+}
+
+.table-card .card-footer {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid var(--bs-border-dark);
+  padding: 0.75rem 1.5rem;
+}
+
+/* Table Styling */
+.table {
+  margin-bottom: 0;
+  color: #fff;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border-bottom-width: 1px;
+  border-bottom-color: var(--bs-border-dark);
+}
+
+.table > thead {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.table-row-hover {
+  background-color: rgba(58, 123, 213, 0.1) !important;
+}
+
+/* Badges */
+.badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+/* Button Outlines */
+.btn-outline-info {
+  color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+.btn-outline-info:hover {
+  background-color: var(--bs-info);
+  color: #fff;
+}
+
+.btn-outline-light {
+  color: #f8f9fa;
+  border-color: #f8f9fa;
+}
+
+.btn-outline-light:hover {
+  background-color: #f8f9fa;
+  color: var(--bs-dark);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .quick-stats {
+    margin-bottom: 0.5rem;
+  }
+  
+  .action-bar .d-flex {
+    flex-direction: column;
+  }
+  
+  .action-bar .d-flex > div:first-child {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+  
+  .stats-cards .col-md-3 {
+    margin-bottom: 1rem;
+  }
+  
+  .action-bar {
+    padding: 1rem;
+  }
+  
+  .action-bar .d-flex {
+    flex-direction: column;
+  }
+  
+  .action-bar .d-flex > div:first-child {
+    margin-bottom: 1rem;
+  }
+  
+  .table-actions {
+    display: flex;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Sidebar Collapsed State */
+.sidebar-collapsed .main-content {
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Sidebar Expanded State (Mobile) */
+.sidebar-expanded .main-content {
+  margin-left: var(--sidebar-width);
+}
+
+/* Modal customization */
+.modal-content {
+  border: 1px solid var(--bs-border-dark);
+}
+
+.modal-header, .modal-footer {
+  border-color: var(--bs-border-dark);
+}
+
+/* DataTables Customization for Dark Theme */
+.dataTables_wrapper {
+  color: #f8f9fa !important;
+  background-color: transparent !important;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+  color: #f8f9fa !important;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+  background-color: var(--bs-light-dark) !important;
+  color: #f8f9fa !important;
+  border: 1px solid var(--bs-border-dark) !important;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background-color: var(--bs-dark) !important;
+  color: #f8f9fa !important;
+  border: 1px solid var(--bs-border-dark) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+  border: 1px solid var(--bs-primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+  border: 1px solid var(--bs-primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  background-color: var(--bs-dark) !important;
+  color: var(--bs-secondary) !important;
+  border: 1px solid var(--bs-border-dark) !important;
+}
+
+/* Fix for DataTables buttons */
+.dt-buttons .dt-button {
+  background-color: var(--bs-dark) !important;
+  color: #f8f9fa !important;
+  border: 1px solid var(--bs-border-dark) !important;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  margin-right: 0.25rem;
+}
+
+.dt-buttons .dt-button:hover {
+  background-color: var(--bs-primary) !important;
+  color: #fff !important;
+  border: 1px solid var(--bs-primary) !important;
+}
+
+/* Fix for DataTables search highlight */
+.dataTables_wrapper .dataTable tbody tr.even {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.dataTables_wrapper .dataTable tbody tr.odd {
+  background-color: transparent !important;
+}
+
+.dataTables_wrapper .dataTable tbody tr.even:hover,
+.dataTables_wrapper .dataTable tbody tr.odd:hover {
+  background-color: rgba(58, 123, 213, 0.1) !important;
+}
+
+/* Fix for DataTables sorting icons */
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Inicializa DataTables
+  $('#tiny-orders-table').DataTable({
+    language: {
+      url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Portuguese-Brasil.json'
+    },
+    responsive: true,
+    order: [[4, 'desc']], // Ordena por data do pedido (descendente)
+    pageLength: 25,
+    dom: 'Bfrtip',
+    buttons: [
+      'copy', 'excel', 'pdf', 'print'
+    ],
+    // Adicione estas configurações para tema escuro
+    initComplete: function() {
+      $('.dataTables_wrapper').addClass('bg-dark');
+      $('.dt-buttons').addClass('mb-3');
+      $('.dt-button').addClass('btn-sm');
+    }
+  });
+  
+  // Ativa tooltips
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      boundary: document.body
+    });
+  });
+  
+  // Highlight da linha da tabela
+  document.querySelectorAll('#tiny-orders-table tbody tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+      this.classList.add('table-row-hover');
+    });
+    row.addEventListener('mouseleave', function() {
+      this.classList.remove('table-row-hover');
+    });
+  });
+  
+  // Botão de atualizar dados
+  document.getElementById('refresh-data').addEventListener('click', function() {
+    this.disabled = true;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Atualizando...';
+    window.location.reload();
+  });
+});
+</script>

@@ -5,14 +5,26 @@ class ProductsController < ApplicationController
     redirect_to root_path, alert: 'Parâmetro não permitido.' unless ['primeiros_passos', 'agua_na_caixa'].include?(params[:origin])
 
     @products = Product.where(origin: params[:origin])
-                       .search(params[:search])
-                       .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
+    
+    # Filtrar por situação se fornecida
+    @products = @products.where(situacao: params[:situacao]) if params[:situacao].present?
+    
+    # Filtrar por unidade se fornecida
+    @products = @products.where(unidade: params[:unidade]) if params[:unidade].present?
+    
+    # Pesquisa por texto
+    @products = @products.search(params[:search]) if params[:search].present?
+    
+    # Paginação
+    @products = @products.paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
   def show; end
 
   def new
     @product = Product.new
+    @product.origin = params[:origin]
+    @product.situacao = 'A' # Define como ativo por padrão
   end
 
   def edit; end
@@ -20,23 +32,24 @@ class ProductsController < ApplicationController
   def create
     @product = Product.new(product_params)
     if @product.save
-      redirect_to products_path, notice: 'Produto criado com sucesso.'
+      redirect_to products_path(origin: @product.origin), notice: 'Produto criado com sucesso.'
     else
-      redirect_to new_product_path, alert: @product.errors.full_messages.to_sentence
+      render :new, alert: @product.errors.full_messages.to_sentence
     end
   end
 
   def update
     if @product.update(product_params)
-      redirect_to products_path, notice: 'Produto atualizado com sucesso.'
+      redirect_to products_path(origin: @product.origin), notice: 'Produto atualizado com sucesso.'
     else
-      redirect_to edit_product_path(@product), alert: @product.errors.full_messages.to_sentence
+      render :edit, alert: @product.errors.full_messages.to_sentence
     end
   end
 
   def destroy
+    origin = @product.origin
     @product.destroy
-    redirect_to products_path, notice: 'Produto excluído com sucesso.'
+    redirect_to products_path(origin: origin), notice: 'Produto excluído com sucesso.'
   end
 
   private
@@ -46,6 +59,20 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:data_criacao, :nome, :codigo, :preco, :preco_promocional, :unidade, :gtin, :tipoVariacao, :localizacao, :preco_custo, :preco_custo_medio, :situacao)
+    params.require(:product).permit(
+      :origin,
+      :data_criacao, 
+      :nome, 
+      :codigo, 
+      :preco, 
+      :preco_promocional, 
+      :unidade, 
+      :gtin, 
+      :tipoVariacao, 
+      :localizacao, 
+      :preco_custo, 
+      :preco_custo_medio, 
+      :situacao
+    )
   end
 end

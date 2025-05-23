@@ -1,64 +1,548 @@
-<div class="row">
-  <% title 'Lista de Perfis' %>
-</div>
+<% title 'Dashboard de Perfis' %>
 
-<%= link_to new_profile_path, class: 'btn btn-sm btn-primary text-light mb-lg' do %> 
-  <i class="fa fa-plus"></i> Novo perfil
-<% end %>
-
-<%= form_tag(profiles_path, method: 'get') do %>
-  <div class="card mb-lg advanced-search-form bg-dark text-light" id="filters">
-    <div class="card-header text-info">
-      Pesquisa avançada
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-sm-12">
-          <%= label_tag :search, 'Procurar' %>
-          <%= text_field_tag :search, params[:search], class: 'form-control', placeholder: 'Pesquise por nome, email ou telefone' %>
+<div class="main-content">
+  <!-- Page Content -->
+  <div class="container-fluid">
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <div class="quick-stats me-4">
+            <span class="stat-label text-light">Total de Perfis:</span>
+            <span class="stat-value text-info"><%= @all_profiles.count %></span>
+          </div>
+          <div class="quick-stats me-4">
+            <span class="stat-label text-light">Usuários Ativos:</span>
+            <span class="stat-value text-success"><%= User.joins(:profile).count %></span>
+          </div>
+          <div class="quick-stats">
+            <span class="stat-label text-light">Perfis Recentes:</span>
+            <span class="stat-value text-warning"><%= @all_profiles.select { |p| p.created_at >= 30.days.ago }.count %></span>
+          </div>
+        </div>
+        <div>
+          <%= link_to new_profile_path, class: 'btn btn-primary text-white' do %> 
+            <i class="fa fa-plus me-2"></i> Novo perfil
+          <% end %>
         </div>
       </div>
     </div>
-    <div class="card-footer">
-      <%= button_tag class: 'btn btn-secondary text-info', name: '' do %><i class="fa fa-search text-info"></i> Pesquisar<% end %>
-    </div>
-  </div>
-<% end %>
 
-<div class="row">
-  <div class="col-12">
-    <table class="table table-dark table-hover table-responsive" style="overflow-x: scroll;" id="profiles-table">
-      <thead>
-        <tr>
-          <th width="50" class="text-center"><i class="fa fa-ellipsis-v"></i></th>
-          <th class="text-center"><%= 'ID' %></th>
-          <th class="text-center"><%= Profile.human_attribute_name :name %></th>
-          <th class="text-center"><%= Profile.human_attribute_name :created_at %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @profiles.each do |profile| %>
-          <tr>
-            <td class="text-center">
-              <%= link_to edit_profile_path(profile), class: 'btn btn-sm btn-primary text-light' do %> 
-                <i class="fa fa-pencil-alt"></i>
-              <% end %>
-            </td>
-            <td class="text-center"><%= profile.id %></td>
-            <td class="text-center"><%= profile.name %></td>
-            <td class="text-center"><%= profile.created_at.strftime('%d/%m/%Y %H:%M') %></td>
-          </tr>
+    <!-- Stats Cards -->
+    <div class="row stats-cards">
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-primary">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-id-badge"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= @all_profiles.count %></h3>
+              <p class="stat-label text-white">Total de Perfis</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-success">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= User.joins(:profile).count %></h3>
+              <p class="stat-label text-white">Usuários com Perfil</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-warning">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-dark"><%= User.where(profile_id: 1).count %></h3>
+              <p class="stat-label text-dark">Administradores</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-gradient-info">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= @all_profiles.select { |p| p.created_at >= 30.days.ago }.count %></h3>
+              <p class="stat-label text-white">Novos (30 dias)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Standard Bootstrap Search Form -->
+    <div class="card bg-dark mb-4">
+      <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="fas fa-search me-2"></i>
+          Pesquisa avançada
+        </h5>
+        <button class="btn btn-link text-info" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="true" aria-controls="searchCollapse">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div class="collapse show" id="searchCollapse">
+        <%= form_tag(profiles_path, method: 'get') do %>
+          <div class="card-body bg-dark">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label for="search" class="form-label text-white">Pesquisar</label>
+                <%= text_field_tag :search, params[:search], class: 'form-control bg-dark text-white border-secondary', placeholder: 'Pesquise por nome do perfil' %>
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <%= button_tag class: 'btn btn-info w-100 text-white', name: '' do %>
+                  <i class="fa fa-search me-2"></i> Pesquisar
+                <% end %>
+              </div>
+            </div>
+          </div>
         <% end %>
-      </tbody>
-      <tfoot>
-        <tr>
-          <th colspan="7">
+      </div>
+    </div>
+
+    <!-- Profiles Table -->
+    <div class="card table-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-light">
+          <i class="fas fa-list me-2"></i>
+          Lista de Perfis
+        </h5>
+        <div class="table-actions">
+          <button class="btn btn-sm btn-outline-info me-2" title="Exportar para Excel">
+            <i class="fas fa-file-excel me-1"></i> Exportar
+          </button>
+          <button class="btn btn-sm btn-outline-light" title="Atualizar tabela">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="profiles-table">
+            <thead>
+              <tr>
+                <th width="100" class="text-center">Ações</th>
+                <th class="text-center">ID</th>
+                <th class="text-center">Nome</th>
+                <th class="text-center">Usuários</th>
+                <th class="text-center">Criado em</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @profiles.each do |profile| %>
+                <tr>
+                  <td class="text-center">
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-sm btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-dark">
+                        <li>
+                          <%= link_to edit_profile_path(profile), class: 'dropdown-item text-primary' do %>
+                            <i class="fa fa-pencil-alt me-2"></i> Editar
+                          <% end %>
+                        </li>
+                        <li>
+                          <%= link_to profile_path(profile), class: 'dropdown-item text-light' do %> 
+                            <i class="fa fa-eye me-2"></i> Visualizar
+                          <% end %>
+                        </li>
+                        <% if current_user.profile_id == 1 && profile.users.count == 0 %>
+                          <li><hr class="dropdown-divider"></li>
+                          <li>
+                            <%= button_to profile_path(profile), method: :delete, class: 'dropdown-item text-danger', onclick: "return confirm('Tem certeza que deseja excluir este perfil?')" do %>
+                              <i class="fa fa-trash me-2"></i> Excluir
+                            <% end %>
+                          </li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  </td>
+                  <td class="text-center fw-bold text-light">#<%= profile.id %></td>
+                  <td class="text-center">
+                    <span class="badge bg-gradient-info profile-badge" data-bs-toggle="tooltip" title="Perfil: <%= profile.name %>">
+                      <i class="fas fa-id-badge me-1"></i>
+                      <%= profile.name %>
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <% users_count = profile.users.count %>
+                    <% if users_count > 0 %>
+                      <span class="badge bg-gradient-success">
+                        <i class="fas fa-users me-1"></i>
+                        <%= users_count %> usuário<%= users_count > 1 ? 's' : '' %>
+                      </span>
+                    <% else %>
+                      <span class="badge bg-gradient-secondary">
+                        <i class="fas fa-user-slash me-1"></i>
+                        Nenhum usuário
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="text-center text-light"><%= profile.created_at.strftime('%d/%m/%Y') %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="text-light">
             <%= page_entries_info @profiles %>
-          </th>
-        </tr>
-      </tfoot>
-    </table>
+          </div>
+          <div>
+            <%= will_paginate @profiles, list_classes: %w[pagination pagination-sm mb-0], inner_window: 1, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<%= will_paginate @profiles, list_classes: %w[pagination justify-content-center mt-lg], inner_window: 1 %>
+<style>
+:root {
+  --bs-primary: #3a7bd5;
+  --bs-secondary: #495057;
+  --bs-success: #00b09b;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-dark: #212529;
+  --bs-darker: #151515;
+  --bs-light-dark: #2c3034;
+  --bs-border-dark: #373b3e;
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 70px;
+  --header-height: 70px;
+  --transition-speed: 0.3s;
+}
+
+body {
+  background-color: var(--bs-darker);
+  color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  transition: margin var(--transition-speed) ease;
+  padding: 1.5rem;
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Action Bar */
+.action-bar {
+  background-color: var(--bs-light-dark);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quick-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Text Colors */
+.text-light {
+  color: #f8f9fa !important;
+}
+
+.text-light-muted {
+  color: rgba(248, 249, 250, 0.7) !important;
+}
+
+/* Stats Cards */
+.stats-cards {
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card .card-body {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  margin-right: 1rem;
+  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-label {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-primary {
+  background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(45deg, #00b09b, #96c93d);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(45deg, #f7971e, #ffd200);
+}
+
+.bg-gradient-info {
+  background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+.bg-gradient-secondary {
+  background: linear-gradient(45deg, #4b6cb7, #182848);
+}
+
+/* Table Card */
+.table-card {
+  background-color: var(--bs-light-dark);
+  border: 1px solid var(--bs-border-dark);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-card .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--bs-border-dark);
+  padding: 1rem 1.5rem;
+}
+
+.table-card .card-footer {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid var(--bs-border-dark);
+  padding: 0.75rem 1.5rem;
+}
+
+/* Table Styling */
+.table {
+  margin-bottom: 0;
+  color: #fff;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border-bottom-width: 1px;
+  border-bottom-color: var(--bs-border-dark);
+}
+
+.table > thead {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.table-row-hover {
+  background-color: rgba(58, 123, 213, 0.1) !important;
+}
+
+/* Badges */
+.badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.profile-badge {
+  cursor: help;
+  transition: all 0.3s;
+}
+
+.badge-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 202, 240, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(13, 202, 240, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 202, 240, 0);
+  }
+}
+
+/* Pagination */
+.pagination {
+  margin-bottom: 0;
+}
+
+.page-link {
+  background-color: var(--bs-dark);
+  border-color: var(--bs-border-dark);
+  color: #fff;
+}
+
+.page-link:hover {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff;
+}
+
+.page-item.active .page-link {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+/* Button Outlines */
+.btn-outline-info {
+  color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+.btn-outline-info:hover {
+  background-color: var(--bs-info);
+  color: #fff;
+}
+
+.btn-outline-light {
+  color: #f8f9fa;
+  border-color: #f8f9fa;
+}
+
+.btn-outline-light:hover {
+  background-color: #f8f9fa;
+  color: var(--bs-dark);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .quick-stats {
+    margin-bottom: 0.5rem;
+  }
+  
+  .action-bar .d-flex {
+    flex-direction: column;
+  }
+  
+  .action-bar .d-flex > div:first-child {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+  
+  .stats-cards .col-md-3 {
+    margin-bottom: 1rem;
+  }
+  
+  .action-bar {
+    padding: 1rem;
+  }
+  
+  .action-bar .d-flex {
+    flex-direction: column;
+  }
+  
+  .action-bar .d-flex > div:first-child {
+    margin-bottom: 1rem;
+  }
+  
+  .table-actions {
+    display: flex;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Sidebar Collapsed State */
+.sidebar-collapsed .main-content {
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Sidebar Expanded State (Mobile) */
+.sidebar-expanded .main-content {
+  margin-left: var(--sidebar-width);
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Ativa tooltips
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      boundary: document.body
+    });
+  });
+  
+  // Animação para badges
+  document.querySelectorAll('.profile-badge').forEach(badge => {
+    badge.addEventListener('mouseenter', function() {
+      this.classList.add('badge-pulse');
+    });
+    badge.addEventListener('mouseleave', function() {
+      this.classList.remove('badge-pulse');
+    });
+  });
+
+  // Highlight da linha da tabela
+  document.querySelectorAll('#profiles-table tbody tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+      this.classList.add('table-row-hover');
+    });
+    row.addEventListener('mouseleave', function() {
+      this.classList.remove('table-row-hover');
+    });
+  });
+});
+</script>

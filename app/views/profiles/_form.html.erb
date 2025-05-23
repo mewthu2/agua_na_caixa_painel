@@ -1,20 +1,41 @@
 <%= form_for(profile, html: { autocomplete: 'off' }, data: { disabled: read_only }) do |form| %>
-  <div class="bg-dark p-4 mt-4">
-    <div class="page-header text-primary">
+  <div class="bg-dark p-4 rounded">
+    <div class="page-header text-primary mb-4">
       <h4>
         <%= profile.new_record? ? "Criar Perfil" : "Atualizar Perfil" %>
         <small class="text-secondary"> Informações do perfil</small>
       </h4>
     </div>
 
-    <div class="row">
+    <div class="row mb-3">
       <%= form.label :name, 'Nome', class: 'col-form-label text-secondary' %>
       <div class="col-12">
-        <%= form.text_field :name, class: 'form-control', required: true %>
+        <%= form.text_field :name, class: 'form-control bg-dark text-white border-secondary', required: true, placeholder: 'Digite o nome do perfil' %>
+        <small class="text-muted">Ex: Administrador, Vendedor, Gerente, etc.</small>
       </div>
     </div>
 
-    <div class="panel-buttons bg-secondary">
+    <% unless profile.new_record? %>
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="alert alert-info bg-dark border-info text-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Usuários com este perfil:</strong> <%= profile.users.count %> usuário<%= profile.users.count != 1 ? 's' : '' %>
+            <% if profile.users.any? %>
+              <br>
+              <small class="text-muted">
+                <%= profile.users.limit(3).pluck(:name).join(', ') %>
+                <% if profile.users.count > 3 %>
+                  e mais <%= profile.users.count - 3 %> usuário<%= profile.users.count - 3 > 1 ? 's' : '' %>
+                <% end %>
+              </small>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="panel-buttons bg-secondary p-3 rounded mt-4 d-flex justify-content-between">
       <%= link_to profiles_path, class: 'btn btn-dark btn-lg' do %>
         <i class="fa fa-undo"></i> Voltar
       <% end %>

@@ -29,7 +29,6 @@
   <body>
     <div class="wrapper main-background">
       <% if current_user.present? %>
-        <%= render 'layouts/partials/header' %>
         <%= render 'layouts/partials/sidebar' %>
       <% end %>
       <%= render 'layouts/partials/content' %>

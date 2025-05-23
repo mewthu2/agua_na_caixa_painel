@@ -9,15 +9,15 @@
         <div class="d-flex align-items-center">
           <div class="quick-stats me-4">
             <span class="stat-label text-light">Total de Pedidos:</span>
-            <span class="stat-value text-info"><%= @orders.count %></span>
+            <span class="stat-value text-info"><%= @all_orders.count %></span>
           </div>
           <div class="quick-stats me-4">
             <span class="stat-label text-light">Integrados:</span>
-            <span class="stat-value text-success"><%= @orders.select { |o| o.tiny_order_id.present? }.count %></span>
+            <span class="stat-value text-success"><%= @all_orders.select { |o| o.tiny_order_id.present? }.count %></span>
           </div>
           <div class="quick-stats">
             <span class="stat-label text-light">Pendentes:</span>
-            <span class="stat-value text-warning"><%= @orders.select { |o| !o.tiny_order_id.present? }.count %></span>
+            <span class="stat-value text-warning"><%= @all_orders.select { |o| !o.tiny_order_id.present? }.count %></span>
           </div>
         </div>
         <div>
@@ -37,7 +37,7 @@
               <i class="fas fa-shopping-cart"></i>
             </div>
             <div class="stat-details">
-              <h3 class="stat-number text-white"><%= @orders.count %></h3>
+              <h3 class="stat-number text-white"><%= @all_orders.count %></h3>
               <p class="stat-label text-white">Total de Pedidos</p>
             </div>
           </div>
@@ -50,7 +50,7 @@
               <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-details">
-              <h3 class="stat-number text-white"><%= @orders.select { |o| o.tiny_order_id.present? }.count %></h3>
+              <h3 class="stat-number text-white"><%= @all_orders.select { |o| o.tiny_order_id.present? }.count %></h3>
               <p class="stat-label text-white">Pedidos Integrados</p>
             </div>
           </div>
@@ -63,7 +63,7 @@
               <i class="fas fa-exclamation-triangle"></i>
             </div>
             <div class="stat-details">
-              <h3 class="stat-number text-dark"><%= @orders.select { |o| !o.tiny_order_id.present? }.count %></h3>
+              <h3 class="stat-number text-dark"><%= @all_orders.select { |o| !o.tiny_order_id.present? }.count %></h3>
               <p class="stat-label text-dark">Pedidos Pendentes</p>
             </div>
           </div>
@@ -76,7 +76,7 @@
               <i class="fas fa-user-tie"></i>
             </div>
             <div class="stat-details">
-              <h3 class="stat-number text-white"><%= @orders.map(&:seller_name).compact.uniq.count %></h3>
+              <h3 class="stat-number text-white"><%= @all_orders.map(&:seller_name).compact.uniq.count %></h3>
               <p class="stat-label text-white">Vendedores Ativos</p>
             </div>
           </div>
@@ -106,7 +106,7 @@
               <div class="col-md-3">
                 <label for="seller" class="form-label text-white">Vendedor</label>
                 <%= select_tag :seller, 
-                    options_for_select([['Todos os vendedores', '']] + @orders.map(&:seller_name).compact.uniq.map{|s| [s, s]}, params[:seller]), 
+                    options_for_select([['Todos os vendedores', '']] + @all_orders.map(&:seller_name).compact.uniq.map{|s| [s, s]}, params[:seller]), 
                     class: 'form-select bg-dark text-white border-secondary select2' %>
               </div>
               <div class="col-md-3">

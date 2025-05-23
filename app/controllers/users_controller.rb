@@ -4,7 +4,9 @@ class UsersController < ApplicationController
   before_action :load_refferences, only: %i[show edit new]
 
   def index
-    @users = User.paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
+    @all_users = User.all
+    @users = User.search(params[:search])
+                .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
   def show; end
@@ -18,17 +20,25 @@ class UsersController < ApplicationController
     if @user.save
       redirect_to users_path, notice: 'Usuário criado com sucesso.'
     else
-      redirect_to @user, alert: "Erro na atualização de usuário: #{@user.errors.full_messages.to_sentence}"
+      load_refferences
+      render :new
     end
   end
 
   def edit; end
 
   def update
+    # Remover senha em branco dos parâmetros
+    if params[:user][:password].blank? && params[:user][:password_confirmation].blank?
+      params[:user].delete(:password)
+      params[:user].delete(:password_confirmation)
+    end
+
     if @user.update(user_params)
       redirect_to users_path, notice: 'Usuário atualizado com sucesso.'
     else
-      redirect_to users_path, alert: "Erro na atualização de usuário: #{@user.errors.full_messages.to_sentence}"
+      load_refferences
+      render :edit
     end
   end
 

@@ -1,1 +1,572 @@
-<% title 'Home' %>
+<% title 'Dashboard - Home' %>
+
+<div class="main-content">
+  <div class="container-fluid">
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card welcome-card">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-lg-6">
+                <div class="welcome-message">
+                  <h3 class="text-light mb-3">Olá, <%= current_user.name.split.first %>!</h3>
+                  <p class="text-light mb-3">
+                    Bem-vindo ao seu painel de controle. Aqui você pode gerenciar pedidos, contatos e visualizar estatísticas importantes.
+                  </p>
+                  <div class="d-flex align-items-center">
+                    <div class="welcome-stat me-4">
+                      <span class="stat-value text-info"><%= current_user.profile&.name || 'Sem perfil' %></span>
+                      <span class="stat-label">Seu Perfil</span>
+                    </div>
+                    <div class="welcome-stat">
+                      <span class="stat-value text-success"><%= Time.current.strftime('%d/%m/%Y') %></span>
+                      <span class="stat-label">Data Atual</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 mt-4 mt-lg-0">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <%= link_to orders_path, class: 'btn btn-outline-primary btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center action-btn' do %>
+                      <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                      <span>Novo Pedido</span>
+                    <% end %>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <%= link_to contacts_path, class: 'btn btn-outline-info btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center action-btn' do %>
+                      <i class="fas fa-address-book fa-2x mb-2"></i>
+                      <span>Gerenciar Contatos</span>
+                    <% end %>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <%= link_to users_path, class: 'btn btn-outline-success btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center action-btn' do %>
+                      <i class="fas fa-users fa-2x mb-2"></i>
+                      <span>Usuários</span>
+                    <% end %>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <%= link_to profiles_path, class: 'btn btn-outline-warning btn-lg w-100 h-100 d-flex flex-column align-items-center justify-content-center action-btn' do %>
+                      <i class="fas fa-id-badge fa-2x mb-2"></i>
+                      <span>Perfis</span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row stats-cards mb-4">
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stat-card bg-gradient-primary">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= @total_orders %></h3>
+              <p class="stat-label text-white">Total de Pedidos</p>
+              <small class="text-white-50">
+                <i class="fas fa-calendar-day me-1"></i>
+                Hoje: <%= @orders_today.count %>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stat-card bg-gradient-success">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= @orders_integrated %></h3>
+              <p class="stat-label text-white">Pedidos Integrados</p>
+              <small class="text-white-50">
+                <i class="fas fa-percentage me-1"></i>
+                <%= (@orders_integrated.to_f / @total_orders * 100).round(1) %>% do total
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stat-card bg-gradient-warning">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-dark"><%= @orders_pending %></h3>
+              <p class="stat-label text-dark">Pedidos Pendentes</p>
+              <small class="text-dark-50">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Aguardando integração
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stat-card bg-gradient-info">
+          <div class="card-body">
+            <div class="stat-icon">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-details">
+              <h3 class="stat-number text-white"><%= number_to_currency(@total_revenue) %></h3>
+              <p class="stat-label text-white">Receita Total</p>
+              <small class="text-white-50">
+                <i class="fas fa-chart-line me-1"></i>
+                Todos os pedidos
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row mb-4">
+      <!-- Pedidos por Dia -->
+      <div class="col-lg-8 mb-3">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h5 class="card-title text-light mb-0">
+              <i class="fas fa-chart-line me-2"></i>
+              Pedidos dos Últimos 7 Dias
+            </h5>
+          </div>
+          <div class="card-body">
+            <%= line_chart @orders_by_day, 
+                height: "300px",
+                colors: ["#0dcaf0"],
+                library: {
+                  chart: { background: 'transparent' },
+                  theme: { mode: 'dark' },
+                  grid: { borderColor: '#373b3e' },
+                  xaxis: { 
+                    labels: { style: { colors: '#adb5bd' } },
+                    axisBorder: { color: '#373b3e' },
+                    axisTicks: { color: '#373b3e' }
+                  },
+                  yaxis: { 
+                    labels: { style: { colors: '#adb5bd' } }
+                  },
+                  stroke: { width: 3, curve: 'smooth' },
+                  markers: { size: 6 }
+                } %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Status dos Pedidos (Substituído de pie para bar) -->
+      <div class="col-lg-4 mb-3">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h5 class="card-title text-light mb-0">
+              <i class="fas fa-chart-bar me-2"></i>
+              Status dos Pedidos
+            </h5>
+          </div>
+          <div class="card-body">
+            <%= bar_chart @orders_status,
+                height: "300px",
+                colors: ["#00b09b", "#ffc107"],
+                library: {
+                  chart: { background: 'transparent' },
+                  theme: { mode: 'dark' },
+                  plotOptions: {
+                    bar: {
+                      horizontal: true,
+                      borderRadius: 4,
+                      dataLabels: {
+                        position: 'top'
+                      }
+                    }
+                  },
+                  grid: { borderColor: '#373b3e' },
+                  xaxis: { 
+                    labels: { style: { colors: '#adb5bd' } },
+                    axisBorder: { color: '#373b3e' },
+                    axisTicks: { color: '#373b3e' }
+                  },
+                  yaxis: { 
+                    labels: { style: { colors: '#adb5bd' } }
+                  }
+                } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row mb-4">
+      <!-- Top Vendedores -->
+      <div class="col-lg-6 mb-3">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h5 class="card-title text-light mb-0">
+              <i class="fas fa-user-tie me-2"></i>
+              Top 10 Vendedores
+            </h5>
+          </div>
+          <div class="card-body">
+            <%= column_chart @orders_by_seller,
+                height: "350px",
+                colors: ["#3a7bd5"],
+                library: {
+                  chart: { background: 'transparent' },
+                  theme: { mode: 'dark' },
+                  grid: { borderColor: '#373b3e' },
+                  xaxis: { 
+                    labels: { 
+                      style: { colors: '#adb5bd' },
+                      rotate: -45
+                    },
+                    axisBorder: { color: '#373b3e' },
+                    axisTicks: { color: '#373b3e' }
+                  },
+                  yaxis: { 
+                    labels: { style: { colors: '#adb5bd' } }
+                  },
+                  plotOptions: {
+                    bar: {
+                      borderRadius: 4,
+                      dataLabels: { position: 'top' }
+                    }
+                  }
+                } %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pedidos por Destino (Substituído de pie para column) -->
+      <div class="col-lg-6 mb-3">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h5 class="card-title text-light mb-0">
+              <i class="fas fa-map-marker-alt me-2"></i>
+              Pedidos por Destino
+            </h5>
+          </div>
+          <div class="card-body">
+            <%= column_chart @orders_by_destiny,
+                height: "350px",
+                colors: ["#00b09b", "#96c93d", "#ffc107", "#dc3545"],
+                library: {
+                  chart: { background: 'transparent' },
+                  theme: { mode: 'dark' },
+                  grid: { borderColor: '#373b3e' },
+                  xaxis: { 
+                    labels: { 
+                      style: { colors: '#adb5bd' },
+                      rotate: -45
+                    },
+                    axisBorder: { color: '#373b3e' },
+                    axisTicks: { color: '#373b3e' }
+                  },
+                  yaxis: { 
+                    labels: { style: { colors: '#adb5bd' } }
+                  },
+                  plotOptions: {
+                    bar: {
+                      borderRadius: 4,
+                      columnWidth: '70%',
+                      distributed: true
+                    }
+                  }
+                } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 3 -->
+    <div class="row mb-4">
+      <!-- Receita por Mês -->
+      <div class="col-lg-8 mb-3">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h5 class="card-title text-light mb-0">
+              <i class="fas fa-chart-area me-2"></i>
+              Receita dos Últimos 6 Meses
+            </h5>
+          </div>
+          <div class="card-body">
+            <%= area_chart @revenue_by_month,
+                height: "300px",
+                colors: ["#00b09b"],
+                library: {
+                  chart: { background: 'transparent' },
+                  theme: { mode: 'dark' },
+                  grid: { borderColor: '#373b3e' },
+                  xaxis: { 
+                    labels: { style: { colors: '#adb5bd' } },
+                    axisBorder: { color: '#373b3e' },
+                    axisTicks: { color: '#373b3e' }
+                  },
+                  yaxis: { 
+                    labels: { 
+                      style: { colors: '#adb5bd' },
+                      formatter: 'function(val) { return "R$ " + val.toLocaleString("pt-BR", {minimumFractionDigits: 2}); }'
+                    }
+                  },
+                  fill: {
+                    type: 'gradient',
+                    gradient: {
+                      shadeIntensity: 1,
+                      opacityFrom: 0.7,
+                      opacityTo: 0.3
+                    }
+                  },
+                  stroke: { width: 2 }
+                } %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Métodos de Pagamento -->
+      <div class="col-lg-4 mb-3">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h5 class="card-title text-light mb-0">
+              <i class="fas fa-credit-card me-2"></i>
+              Métodos de Pagamento
+            </h5>
+          </div>
+          <div class="card-body">
+            <%= bar_chart @payment_methods,
+                height: "300px",
+                colors: ["#ffc107"],
+                library: {
+                  chart: { background: 'transparent' },
+                  theme: { mode: 'dark' },
+                  grid: { borderColor: '#373b3e' },
+                  xaxis: { 
+                    labels: { 
+                      style: { colors: '#adb5bd' },
+                      rotate: -45
+                    },
+                    axisBorder: { color: '#373b3e' },
+                    axisTicks: { color: '#373b3e' }
+                  },
+                  yaxis: { 
+                    labels: { style: { colors: '#adb5bd' } }
+                  },
+                  plotOptions: {
+                    bar: {
+                      borderRadius: 4,
+                      horizontal: true
+                    }
+                  }
+                } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+:root {
+  --bs-primary: #3a7bd5;
+  --bs-secondary: #495057;
+  --bs-success: #00b09b;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-dark: #212529;
+  --bs-darker: #151515;
+  --bs-light-dark: #2c3034;
+  --bs-border-dark: #373b3e;
+}
+
+body {
+  background-color: var(--bs-darker);
+  color: #f8f9fa;
+}
+
+.main-content {
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+/* Welcome Card */
+.welcome-card {
+  background: linear-gradient(135deg, var(--bs-dark), rgba(58, 123, 213, 0.15));
+  border: 1px solid var(--bs-border-dark);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-message {
+  padding: 0.5rem 0;
+}
+
+.welcome-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bs-light-dark);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--bs-border-dark);
+}
+
+.welcome-stat .stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.welcome-stat .stat-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
+.action-btn {
+  border-width: 2px;
+  transition: all 0.3s;
+  min-height: 100px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Stats Cards */
+.stats-cards .stat-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  height: 140px;
+}
+
+.stats-cards .stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stats-cards .stat-card .card-body {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.stat-icon {
+  font-size: 2.5rem;
+  margin-right: 1rem;
+  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-label {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-primary {
+  background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(45deg, #00b09b, #96c93d);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(45deg, #f7971e, #ffd200);
+}
+
+.bg-gradient-info {
+  background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+/* Chart Cards */
+.chart-card {
+  background-color: var(--bs-light-dark);
+  border: 1px solid var(--bs-border-dark);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chart-card .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--bs-border-dark);
+  padding: 1rem 1.5rem;
+}
+
+.chart-card .card-body {
+  padding: 1.5rem;
+}
+
+/* Quick Actions */
+.btn-outline-primary,
+.btn-outline-info,
+.btn-outline-success,
+.btn-outline-warning {
+  border-width: 2px;
+  transition: all 0.3s;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-info:hover,
+.btn-outline-success:hover,
+.btn-outline-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .stat-icon {
+    font-size: 2rem;
+  }
+  
+  .welcome-stat {
+    padding: 0.5rem 1rem;
+  }
+  
+  .welcome-stat .stat-value {
+    font-size: 1.5rem;
+  }
+}
+</style>
