@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_22_024851) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_23_180851) do
   create_table "attempts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -108,7 +108,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_22_024851) do
     t.bigint "destiny", default: 0, null: false
     t.integer "seller_id"
     t.string "seller_name"
+    t.bigint "user_id"
     t.index ["contact_id"], name: "index_orders_on_contact_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -177,6 +179,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_22_024851) do
   add_foreign_key "order_products", "orders"
   add_foreign_key "order_products", "products"
   add_foreign_key "orders", "contacts"
+  add_foreign_key "orders", "users"
   add_foreign_key "products", "contacts"
   add_foreign_key "users", "profiles"
 end

@@ -31,24 +31,25 @@ class OrdersController < ApplicationController
 
   def index
     @all_orders = Order.all
-
-    if current_user.profile_id == 3
-      @all_orders = @all_orders.where(
-        seller_id: [current_user.seller_id_primeiros_passos, current_user.seller_id_agua_na_caixa]
-      )
-    end
-
     @orders = Order.all
 
     if current_user.profile_id == 3
-      @orders = @orders.where(
-        seller_id: [current_user.seller_id_primeiros_passos, current_user.seller_id_agua_na_caixa]
-      )
+      seller_ids = [current_user.seller_id_primeiros_passos, current_user.seller_id_agua_na_caixa]
+
+      @all_orders = @all_orders.where('user_id = :user_id OR seller_id IN (:seller_ids)', {
+        user_id: current_user.id,
+        seller_ids: seller_ids
+      })
+
+      @orders = @orders.where('user_id = :user_id OR seller_id IN (:seller_ids)', {
+        user_id: current_user.id,
+        seller_ids: seller_ids
+      })
     end
 
     @orders = @orders.search(params[:search])
-                     .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
-                     .order('created_at DESC')
+                    .paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
+                    .order('created_at DESC')
   end
 
   def show; end
@@ -67,6 +68,7 @@ class OrdersController < ApplicationController
 
   def create
     @order = Order.new(order_params)
+    @order.user = current_user
 
     if validate_amounts(params[:order]) && @order.save
       redirect_to orders_path, notice: 'Pedido criado com sucesso.'
