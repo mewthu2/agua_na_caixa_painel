@@ -6,6 +6,7 @@ class Order < ApplicationRecord
 
   # Associacoes
   belongs_to :contact
+  belongs_to :user
   has_many :order_products, dependent: :destroy
   has_many :order_payments, dependent: :destroy
 
