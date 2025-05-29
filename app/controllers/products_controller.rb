@@ -5,17 +5,13 @@ class ProductsController < ApplicationController
     redirect_to root_path, alert: 'Parâmetro não permitido.' unless ['primeiros_passos', 'agua_na_caixa'].include?(params[:origin])
 
     @products = Product.where(origin: params[:origin])
-    
-    # Filtrar por situação se fornecida
+
     @products = @products.where(situacao: params[:situacao]) if params[:situacao].present?
-    
-    # Filtrar por unidade se fornecida
+
     @products = @products.where(unidade: params[:unidade]) if params[:unidade].present?
-    
-    # Pesquisa por texto
+
     @products = @products.search(params[:search]) if params[:search].present?
-    
-    # Paginação
+
     @products = @products.paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
@@ -24,7 +20,7 @@ class ProductsController < ApplicationController
   def new
     @product = Product.new
     @product.origin = params[:origin]
-    @product.situacao = 'A' # Define como ativo por padrão
+    @product.situacao = 'A'
   end
 
   def edit; end
