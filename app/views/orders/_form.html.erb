@@ -18,7 +18,8 @@
               <%= form.label :seller_id, 'Selecione o vendedor:', class: 'form-label text-light' %>
               <%= form.select :seller_id,
                     options_for_select(
-                        @seller_agua_na_caixa.map { |s| [s['vendedor']['nome'], s['vendedor']['id'], { 'data-seller-name' => s['vendedor']['nome'] }] }, 
+                      (@order.destiny == 'primeiros_passos' ? @seller_primeiros_passos : @seller_agua_na_caixa)
+                        .map { |s| [s['vendedor']['nome'], s['vendedor']['id'], { 'data-seller-name' => s['vendedor']['nome'] }] }, 
                       @order.seller_id
                     ),
                     { include_blank: 'Selecione o vendedor...' },

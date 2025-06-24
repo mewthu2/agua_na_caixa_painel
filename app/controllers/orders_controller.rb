@@ -59,7 +59,11 @@ class OrdersController < ApplicationController
   end
 
   def edit
-    @seller_agua_na_caixa = Tiny::Sellers.search_sellers(ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA'))
+    if @order.destiny == 'primeiros_passos'
+      @seller_primeiros_passos = Tiny::Sellers.search_sellers(ENV.fetch('TOKEN_TINY_PRIMEIROS_PASSOS'))
+    else
+      @seller_agua_na_caixa = Tiny::Sellers.search_sellers(ENV.fetch('TOKEN_TINY_AGUA_NA_CAIXA'))
+    end
   end
 
   def create
