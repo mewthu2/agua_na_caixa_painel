@@ -98,10 +98,7 @@ class OrdersController < ApplicationController
       preco = op['price'].to_f
       (quantidade * preco).round(2)
     end.round(2)
-
-    order_payment_amount = order_params[:order_payments_attributes].values.sum do |op|
-      op['amount'].to_f.round(2)
-    end.round(2)
+    order_payment_amount = order_params[:order_payments_attributes].values.sum { |op| op['amount'].to_f }.round(2)
 
     if product_amount == order_payment_amount
       true

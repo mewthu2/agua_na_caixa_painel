@@ -43,11 +43,11 @@ class HomeController < ApplicationController
       [date.strftime('%d/%m'), orders.count]
     end
   end
-  
+
   def orders_by_seller_data
     orders = Order.where.not(seller_name: [nil, ''])
     orders = orders.where(seller_id: [current_user.seller_id_primeiros_passos, current_user.seller_id_agua_na_caixa]) if current_user.profile_id == 3
-    
+
     orders.group(:seller_name)
           .count
           .map { |seller, count| [seller.truncate(15), count] }

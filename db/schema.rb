@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_23_180851) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_04_050604) do
   create_table "attempts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_23_180851) do
   create_table "order_payments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "order_payment_type_id"
     t.bigint "order_id"
-    t.decimal "amount", precision: 10
+    t.decimal "amount", precision: 10, scale: 2
     t.decimal "days", precision: 10
     t.date "date", null: false
     t.string "note"
