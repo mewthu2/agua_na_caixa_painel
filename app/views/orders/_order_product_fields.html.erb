@@ -53,7 +53,6 @@
     </div>
   </div>
   
-  <!-- Informações adicionais do produto (ocultas inicialmente) -->
   <div class="row product-details" style="display: none;">
     <div class="col-12">
       <div class="alert alert-info bg-dark border-info text-info">
@@ -69,7 +68,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Função para atualizar o preço quando um produto é selecionado
   function updateProductPrice(selectElement) {
     const selectedOption = selectElement.options[selectElement.selectedIndex];
     const container = selectElement.closest('.product-row');
@@ -79,36 +77,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if (selectedOption && selectedOption.value) {
       const suggestedPrice = selectedOption.dataset.price || '0';
       
-      // Atualiza o preço se estiver vazio
       if (!priceInput.value || priceInput.value === '0' || priceInput.value === '0,00') {
         priceInput.value = parseFloat(suggestedPrice).toFixed(2).replace('.', ',');
       }
       
-      // Mostra detalhes do produto
       if (productDetails) {
         const productCode = container.querySelector('.product-code');
         const productUnit = container.querySelector('.product-unit');
         const productSuggestedPrice = container.querySelector('.product-suggested-price');
         
         if (productCode) productCode.textContent = selectedOption.text.split(' - ')[1] || '-';
-        if (productUnit) productUnit.textContent = 'UN'; // Você pode adicionar esta informação no data attribute
+        if (productUnit) productUnit.textContent = 'UN';
         if (productSuggestedPrice) productSuggestedPrice.textContent = parseFloat(suggestedPrice).toFixed(2).replace('.', ',');
         
         productDetails.style.display = 'block';
       }
     } else {
-      // Limpa o preço e esconde detalhes
       priceInput.value = '';
       if (productDetails) {
         productDetails.style.display = 'none';
       }
     }
     
-    // Recalcula o subtotal
     updateSubtotal(container);
   }
   
-  // Função para atualizar o subtotal de um produto
   function updateSubtotal(container) {
     const quantidadeInput = container.querySelector('.quantidade');
     const priceInput = container.querySelector('.price');
@@ -123,9 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Event listeners para produtos existentes
   document.querySelectorAll('.product-select').forEach(function(select) {
-    // Evento para Select2
     $(select).on('select2:select', function(e) {
       updateProductPrice(this);
     });
@@ -143,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  // Event listeners para quantidade e preço
   document.addEventListener('input', function(event) {
     if (event.target.matches('.quantidade') || event.target.matches('.price')) {
       const container = event.target.closest('.product-row');
@@ -151,15 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Event listener para novos produtos adicionados via Cocoon
   $('#order_products').on('cocoon:after-insert', function(e, added_task) {
     const newProductSelect = added_task.querySelector('.product-select');
     
     if (newProductSelect) {
-      // Inicializa o Select2 para o novo campo
-      initializeSelect2(newProductSelect);
-      
-      // Adiciona event listeners para o novo select
       $(newProductSelect).on('select2:select', function(e) {
         updateProductPrice(this);
       });
@@ -178,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Calcula subtotais iniciais
   document.querySelectorAll('.product-row').forEach(function(container) {
     updateSubtotal(container);
   });
@@ -230,7 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
   font-weight: 500;
 }
 
-/* Animação para novos campos */
 .product-field.newly-added {
   animation: slideInFromTop 0.5s ease-out;
 }
@@ -246,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 }
 
-/* Melhorias visuais para os campos */
 .form-control:focus,
 .form-select:focus {
   border-color: #0dcaf0;
@@ -263,7 +245,6 @@ document.addEventListener('DOMContentLoaded', function() {
   font-weight: 600;
 }
 
-/* Correções específicas para Select2 - Alinhamento */
 .product-field .select2-container--bootstrap-5 .select2-selection--single {
   height: calc(2.25rem + 2px) !important;
   padding: 0 !important;
@@ -335,7 +316,6 @@ document.addEventListener('DOMContentLoaded', function() {
   box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25) !important;
 }
 
-/* Dropdown styling */
 .product-field .select2-container--bootstrap-5 .select2-dropdown {
   background-color: #212529 !important;
   border: 1px solid #6c757d !important;
@@ -369,7 +349,6 @@ document.addEventListener('DOMContentLoaded', function() {
   color: #fff !important;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .product-field {
     padding: 0.75rem;

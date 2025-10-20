@@ -1,20 +1,26 @@
 class ContactsController < ApplicationController
-  before_action :set_contact, only: %i[show edit update destroy]
+  before_action :set_contact, only: %i[show edit update destroy check_email]
   before_action :load_references, only: %i[new show edit]
+
+  def check_email
+    has_email = @contact.present? && @contact.email.present? && !@contact.email.strip.empty?
+
+    render json: {
+      has_email:,
+      email: @contact&.email,
+      contact_id: @contact&.id,
+      contact_name: @contact&.nome,
+      edit_url: edit_contact_path(@contact)
+    }
+  end
 
   def index
     @contacts = Contact.search(params[:search])
-    
-    # Filtrar por segmento se fornecido
+
     @contacts = @contacts.where(segment: params[:segment]) if params[:segment].present?
-    
-    # Filtrar por situação se fornecida
     @contacts = @contacts.where(situacao: params[:situacao]) if params[:situacao].present?
-    
-    # Filtrar por origem se fornecida
     @contacts = @contacts.where(origin: params[:origin]) if params[:origin].present?
-    
-    # Paginação
+
     @contacts = @contacts.paginate(page: params[:page], per_page: params_per_page(params[:per_page]))
   end
 
@@ -25,7 +31,7 @@ class ContactsController < ApplicationController
   def new
     @contact = Contact.new
     @contact.origin = params[:origin] if params[:origin].present?
-    @contact.situacao = 'A' # Define como ativo por padrão
+    @contact.situacao = 'A'
   end
 
   def edit

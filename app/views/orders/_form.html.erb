@@ -8,14 +8,33 @@
       <h4 class="text-light">Total do Pedido: <span class="badge bg-primary fs-5">R$ <span id="total_order"></span></span></h4>
     </div>
 
-    <% if action_name == 'edit' %>
-      <div class="row mb-4 justify-content-center">
-        <div class="col-md-6">
-          <div class="card bg-dark border-secondary">
-            <div class="card-body">
-              <h5 class="card-title text-secondary mb-3">Vendedor Responsável</h5>
-              
-              <%= form.label :seller_id, 'Selecione o vendedor:', class: 'form-label text-light' %>
+    <div class="card bg-dark border-secondary mb-4">
+      <div class="card-header bg-dark border-secondary">
+        <h5 class="card-title text-secondary mb-0">
+          <i class="fas fa-user me-2"></i>
+          Informações do Cliente
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-10">
+            <%= form.label :contact_id, 'Cliente:', class: 'form-label text-secondary' %>
+            <%= form.select :contact_id,
+                  options_for_select(@contacts.map { |t| ["#{t.nome} - CPF/CNPJ:#{t.cpf_cnpj}", t.id] }, form.object.contact_id),
+                  { include_blank: 'Selecione o cliente...' },
+                  class: 'form-control bg-dark text-white border-secondary select2', id: 'contact_select' %>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <a href="#" id="edit_contact_link" class="btn btn-outline-secondary" target="_blank" style="display: none;">
+              <i class="fa fa-edit"></i> Editar Cliente
+            </a>
+          </div>
+        </div>
+
+        <% if action_name == 'edit' %>
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <%= form.label :seller_id, 'Vendedor Responsável:', class: 'form-label text-secondary' %>
               <%= form.select :seller_id,
                     options_for_select(
                       (@order.destiny == 'primeiros_passos' ? @seller_primeiros_passos : @seller_agua_na_caixa)
@@ -28,52 +47,33 @@
                       id: 'seller_select',
                       onchange: "updateSellerName(this)"  
                     } %>
-                      
               <%= form.hidden_field :seller_name, id: 'seller_name_field', value: @order.seller_name %>
-              
-              <div class="mt-2">
-                <small class="text-muted">Vendedor selecionado: <span id="seller_name_display"><%= @order.seller_name.presence || 'Nenhum' %></span></small>
-              </div>
+              <small class="text-muted">Vendedor selecionado: <span id="seller_name_display"><%= @order.seller_name.presence || 'Nenhum' %></span></small>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="form-check">
+              <%= form.check_box :use_contact_order, class: 'form-check-input', id: 'use_contact_order' %>
+              <%= form.label :use_contact_order, 'Usar endereço do contato', class: 'form-check-label text-secondary' %>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check">
+              <%= form.check_box :preference_payment, class: 'form-check-input', id: 'preference_payment' %>
+              <%= form.label :preference_payment, 'Usar preferência de pagamento do contato', class: 'form-check-label text-secondary' %>
             </div>
           </div>
         </div>
-      </div>
-    <% end %>
 
-    <div class="row mb-4 justify-content-center">
-      <div class="col-md-10 d-flex">
-        <div class="flex-grow-1">
-          <%= form.label :contact_id, 'Cliente:', class: 'form-label text-secondary' %>
-          <%= form.select :contact_id,
-                options_for_select(@contacts.map { |t| ["#{t.nome} - CPF/CNPJ:#{t.cpf_cnpj}", t.id] }, form.object.contact_id),
-                { include_blank: 'Selecione o cliente...' },
-                class: 'form-control bg-dark text-white border-secondary select2', id: 'contact_select' %>
-          <div class="form-check mt-2">
-            <%= form.check_box :use_contact_order, class: 'form-check-input', id: 'use_contact_order' %>
-            <%= form.label :use_contact_order, 'Usar endereço do contato', class: 'form-check-label text-secondary' %>
-          </div>
-          <div class="form-check mt-2">
-            <%= form.check_box :preference_payment, class: 'form-check-input', id: 'preference_payment' %>
-            <%= form.label :preference_payment, 'Usar preferência de pagamento do contato', class: 'form-check-label text-secondary' %>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2 d-flex align-items-end mb-3">
-        <a href="#" id="edit_contact_link" class="btn btn-outline-secondary" target="_blank" style="display: none;">
-          <i class="fa fa-edit"></i> Editar Cliente
-        </a>
-      </div>
-    </div>
-
-    <div id="div_contact" style="display: none;">
-      <div class="card bg-dark border-secondary mb-4">
-        <div class="card-header bg-dark border-secondary">
-          <h5 class="card-title text-secondary mb-0">
+        <div id="div_contact" style="display: none;">
+          <hr class="border-secondary my-3">
+          <h6 class="text-secondary mb-3">
             <i class="fas fa-map-marker-alt me-2"></i>
-            Endereço de entrega
-          </h5>
-        </div>
-        <div class="card-body">
+            Endereço de Entrega
+          </h6>
           <div class="row mb-3">
             <div class="col-md-4">
               <%= form.label :endereco, 'Endereço', class: 'col-form-label text-secondary' %>
@@ -109,8 +109,33 @@
     <div class="card bg-dark border-secondary mb-4">
       <div class="card-header bg-dark border-secondary">
         <h5 class="card-title text-secondary mb-0">
+          <i class="fas fa-clock me-2"></i>
+          Detalhes do Pedido
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <%= form.label :receiving_time, 'Horário de Recebimento do Cliente *', class: 'form-label text-secondary' %>
+            <%= form.time_field :receiving_time, class: 'form-control bg-dark text-white border-secondary', required: true %>
+            <small class="text-muted">Este horário será incluído automaticamente na observação</small>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <%= form.label :observation, 'Observações Adicionais', class: 'form-label text-secondary' %>
+            <%= form.text_area :observation, class: 'form-control bg-dark text-white border-secondary', rows: 4, placeholder: 'Digite observações adicionais (o horário de recebimento será adicionado automaticamente)' %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-dark border-secondary mb-4">
+      <div class="card-header bg-dark border-secondary">
+        <h5 class="card-title text-secondary mb-0">
           <i class="fas fa-shopping-cart me-2"></i>
-          Itens do pedido
+          Itens do Pedido
         </h5>
       </div>
       <div class="card-body">
@@ -133,7 +158,7 @@
       <div class="card-header bg-dark border-secondary">
         <h5 class="card-title text-secondary mb-0">
           <i class="fas fa-money-bill-wave me-2"></i>
-          Parcelas do pedido
+          Parcelas do Pedido
         </h5>
       </div>
       <div class="card-body">
@@ -159,22 +184,6 @@
       </div>
     </div>
 
-    <div class="card bg-dark border-secondary mb-4">
-      <div class="card-header bg-dark border-secondary">
-        <h5 class="card-title text-secondary mb-0">
-          <i class="fas fa-comment me-2"></i>
-          Observações do Pedido
-        </h5>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-12">
-            <%= form.text_area :observation, class: 'form-control bg-dark text-white border-secondary', rows: 4 %>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="panel-buttons bg-secondary p-3 rounded mt-4 d-flex justify-content-between">
       <%= link_to orders_path, class: 'btn btn-dark btn-lg' do %>
         <i class="fa fa-undo"></i> Voltar
@@ -188,8 +197,38 @@
   </div>
 <% end %>
 
+<div id="emailModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content-custom">
+    <div class="modal-header-custom">
+      <i class="fas fa-exclamation-triangle text-warning"></i>
+      <h3>E-mail não cadastrado</h3>
+    </div>
+    <div class="modal-body-custom">
+      <p>O cliente selecionado não possui e-mail cadastrado.</p>
+      <p>É necessário adicionar um e-mail antes de continuar com o pedido.</p>
+    </div>
+    <div class="modal-footer-custom">
+      <a href="#" id="modal_edit_contact_link" class="btn btn-primary btn-lg" target="_blank">
+        <i class="fa fa-edit"></i> Editar Cadastro do Cliente
+      </a>
+      <button type="button" class="btn btn-secondary btn-lg" onclick="closeEmailModal()">
+        <i class="fa fa-times"></i> Fechar
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
-// Função para inicializar Select2 com configurações corretas
+function closeEmailModal() {
+  document.getElementById('emailModal').style.display = 'none';
+  $('#contact_select').val(null).trigger('change');
+}
+
+function showEmailModal(editUrl) {
+  document.getElementById('modal_edit_contact_link').href = editUrl;
+  document.getElementById('emailModal').style.display = 'flex';
+}
+
 function initializeSelect2(element) {
   if ($(element).hasClass('select2-hidden-accessible')) {
     $(element).select2('destroy');
@@ -219,14 +258,11 @@ function initializeSelect2(element) {
   });
 }
 
-// Configuração do select de vendedores
 document.addEventListener("DOMContentLoaded", function() {
-  // Inicializa todos os selects existentes
   $('.select2').each(function() {
     initializeSelect2(this);
   });
 
-  // Atualiza o campo hidden seller_name quando o select muda
   const sellerSelect = document.getElementById('seller_select');
   const sellerNameField = document.getElementById('seller_name_field');
   
@@ -246,7 +282,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // Configuração do checkbox de preferência de pagamento
   const preferenceCheckbox = document.getElementById('preference_payment');
   const paymentTypeRows = document.querySelectorAll('.payment-type-row');
 
@@ -266,7 +301,6 @@ document.addEventListener("DOMContentLoaded", function() {
     togglePaymentTypeVisibility();
   }
 
-  // Configuração para novas parcelas inseridas
   $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
     const newPaymentTypeRow = added_task.querySelector('.payment-type-row');
     if (newPaymentTypeRow) {
@@ -278,21 +312,18 @@ document.addEventListener("DOMContentLoaded", function() {
         newPaymentTypeDiv.style.display = '';
       }
     }
-    
-    // Reaplica o select2 para novos campos
+
     $(added_task).find("select.select2").each(function() {
       initializeSelect2(this);
     });
   });
 
-  // Configuração para novos produtos inseridos
   $('#order_products').on('cocoon:after-insert', function(e, added_task) {
     $(added_task).find("select.select2").each(function() {
       initializeSelect2(this);
     });
   });
 
-  // Configuração do checkbox de endereço de contato
   const contactCheckbox = document.getElementById('use_contact_order');
   const contactDiv = document.getElementById('div_contact');
 
@@ -309,7 +340,24 @@ document.addEventListener("DOMContentLoaded", function() {
     toggleContactDiv();
   }
 
-  // Configuração do link de edição de contato
+  function checkContactEmail() {
+    const selectedContactId = $(contactSelect).val();
+    
+    if (selectedContactId) {
+      fetch(`/contacts/${selectedContactId}/check_email`)
+        .then(response => response.json())
+        .then(data => {
+          console.log('[v0] Contact email check:', data);
+          if (!data.has_email) {
+            showEmailModal(data.edit_url);
+          }
+        })
+        .catch(error => {
+          console.error('[v0] Erro ao verificar e-mail do contato:', error);
+        });
+    }
+  }
+
   const contactSelect = document.getElementById('contact_select');
   const editContactLink = document.getElementById('edit_contact_link');
 
@@ -318,17 +366,20 @@ document.addEventListener("DOMContentLoaded", function() {
     if (selectedContactId) {
       editContactLink.href = `/contacts/${selectedContactId}/edit`;
       editContactLink.style.display = 'inline-block';
+      checkContactEmail();
     } else {
       editContactLink.style.display = 'none';
     }
   }
 
   if (contactSelect) {
-    $(contactSelect).on('select2:select select2:clear', updateEditLink);
+    $(contactSelect).on('select2:select', updateEditLink);
+    $(contactSelect).on('select2:clear', function() {
+      editContactLink.style.display = 'none';
+    });
     updateEditLink();
   }
 
-  // Preenchimento automático das parcelas
   const paymentInstallmentsField = document.getElementById('payment_installments');
   const orderPaymentsContainer = document.getElementById('order_payments');
   const totalOrderField = document.getElementById('total_order');
@@ -378,7 +429,6 @@ document.addEventListener("DOMContentLoaded", function() {
       `;
       orderPaymentsContainer.appendChild(newField);
       
-      // Inicializa o select2 para o novo campo
       const newSelect = newField.querySelector('select.select2');
       if (newSelect) {
         initializeSelect2(newSelect);
@@ -396,7 +446,6 @@ document.addEventListener("DOMContentLoaded", function() {
     paymentInstallmentsField.addEventListener('input', updateOrderPayments);
   }
 
-  // Cálculo do total do pedido
   function calculateTotal() {
     let total = 0;
 
@@ -482,7 +531,17 @@ function updateSellerName(selectElement) {
   margin-top: 2rem;
 }
 
-/* Select2 Dark Theme Customization */
+#email_warning {
+  font-size: 0.9rem;
+  padding: 0.75rem;
+  border-left: 4px solid #ffc107;
+}
+
+#email_warning .alert-link {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 .select2-container--bootstrap-5 .select2-dropdown {
   background-color: #212529 !important;
   border: 1px solid #6c757d !important;
@@ -571,5 +630,99 @@ function updateSellerName(selectElement) {
 
 .select2-dropdown {
   z-index: 1051 !important;
+}
+
+/* Added modal overlay styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content-custom {
+  background-color: #212529;
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header-custom {
+  background-color: #343a40;
+  padding: 1.5rem;
+  border-bottom: 2px solid #ffc107;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-header-custom i {
+  font-size: 2rem;
+}
+
+.modal-header-custom h3 {
+  color: #fff;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.modal-body-custom {
+  padding: 2rem 1.5rem;
+  color: #fff;
+}
+
+.modal-body-custom p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.modal-body-custom p:last-child {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.modal-footer-custom {
+  padding: 1.5rem;
+  border-top: 1px solid #495057;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  border-radius: 0 0 10px 10px;
+}
+
+.modal-footer-custom .btn {
+  min-width: 150px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.modal-footer-custom .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 </style>

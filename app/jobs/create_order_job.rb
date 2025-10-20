@@ -36,7 +36,7 @@ class CreateOrderJob < ActiveJob::Base
 
       attempt.update(status_code: '200', message:)
       order.update(tiny_order_id:)
-      # TODO: adicionar o id do tiny tanto no attempt quanto na order
+
       3
     else
       message = 'Status de Processamento não reconhecido ou não encontrado.'
@@ -52,7 +52,6 @@ class CreateOrderJob < ActiveJob::Base
     {
       'pedido' => {
         'data_pedido' => order.created_at.strftime('%d/%m/%Y'),
-        'data_prevista' => '',
         'id_vendedor' => order.seller_id,
         'cliente' => {
           'codigo' => order.contact.codigo,

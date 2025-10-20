@@ -1,26 +1,27 @@
 class Order < ApplicationRecord
   enum destiny: [:primeiros_passos, :agua_na_caixa]
 
-  # Callbacks
   after_commit :calculate_destiny, on: [:create, :update]
+  before_save :add_receiving_time_to_observation
 
-  # Associacoes
   belongs_to :contact
   belongs_to :user
   has_many :order_products, dependent: :destroy
   has_many :order_payments, dependent: :destroy
 
-  # Validacoes
   accepts_nested_attributes_for :order_products, allow_destroy: true
   accepts_nested_attributes_for :order_payments, allow_destroy: true
-  # Escopos
+
+  validates :receiving_time, presence: { message: 'O horário de recebimento é obrigatório' }
+
   add_scope :search do |value|
-    where('
-      orders.destiny LIKE :value
-    ', value: "%#{value}%")
+    if Order.destinies.key?(value)
+      where(destiny: value)
+    else
+      none
+    end
   end
 
-  # Metodos estaticos
   def calculate_destiny
     case use_contact_order
     when true
@@ -29,10 +30,22 @@ class Order < ApplicationRecord
       update_column(:destiny, uf == 'SP' ? :agua_na_caixa : :primeiros_passos)
     end
   end
-  # Metodos publicos
-  # Metodos GET
-  # Metodos SET
 
-  # Nota: os metodos somente utilizados em callbacks ou utilizados somente por essa
-  #       propria classe deverao ser privados (remover essa anotacao)
+  private
+
+  def add_receiving_time_to_observation
+    return if receiving_time.blank?
+
+    formatted_time = receiving_time.strftime('%H:%M')
+    time_text = "Horário de recebimento: #{formatted_time}"
+
+    case observation
+    when nil, ''
+      self.observation = time_text
+    when /Horário de recebimento: \d{2}:\d{2}/
+      self.observation = observation.sub(/Horário de recebimento: \d{2}:\d{2}/, time_text)
+    else
+      self.observation = "#{time_text}\n\n#{observation}"
+    end
+  end
 end

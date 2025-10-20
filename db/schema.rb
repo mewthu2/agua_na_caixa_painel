@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_04_050604) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_20_022420) do
   create_table "attempts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "kinds"
     t.bigint "status"
@@ -109,7 +109,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_04_050604) do
     t.integer "seller_id"
     t.string "seller_name"
     t.bigint "user_id"
+    t.integer "id_nota_fiscal"
+    t.text "xml_nota_fiscal"
+    t.time "receiving_time"
     t.index ["contact_id"], name: "index_orders_on_contact_id"
+    t.index ["id_nota_fiscal"], name: "index_orders_on_id_nota_fiscal"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 

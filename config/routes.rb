@@ -19,13 +19,20 @@ Rails.application.routes.draw do
       get :tiny_orders
       get :integrate_orders
     end
+    member do
+      get :fetch_invoice_pdf
+    end
   end
 
   resources :users
   
   resources :profiles
 
-  resources :contacts
+  resources :contacts do
+    member do
+      get :check_email
+    end
+  end
 
   resources :products
 

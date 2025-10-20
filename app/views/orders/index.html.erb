@@ -1,9 +1,7 @@
 <% title 'Dashboard de Pedidos' %>
 
 <div class="main-content">
-  <!-- Page Content -->
   <div class="container-fluid">
-    <!-- Action Bar -->
     <div class="action-bar">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -28,7 +26,6 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="row stats-cards">
       <div class="col-md-3">
         <div class="card stat-card bg-gradient-primary">
@@ -84,7 +81,6 @@
       </div>
     </div>
 
-    <!-- Standard Bootstrap Search Form -->
     <div class="card bg-dark mb-4">
       <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
@@ -100,8 +96,14 @@
           <div class="card-body bg-dark">
             <div class="row g-3">
               <div class="col-md-4">
-                <label for="search" class="form-label text-white">Pesquisar</label>
-                <%= text_field_tag :search, params[:search], class: 'form-control bg-dark text-white border-secondary', placeholder: 'Pesquise por destino ou vendedor' %>
+                <label for="search" class="form-label text-white">Destino</label>
+                <%= select_tag :search, 
+                    options_for_select([
+                      ['Todos os destinos', ''], 
+                      ['Primeiros Passos', 'primeiros_passos'], 
+                      ['Água na Caixa', 'agua_na_caixa']
+                    ], params[:search]), 
+                    class: 'form-select bg-dark text-white border-secondary select2' %>
               </div>
               <div class="col-md-3">
                 <label for="seller" class="form-label text-white">Vendedor</label>
@@ -130,7 +132,6 @@
       </div>
     </div>
 
-    <!-- Orders Table -->
     <div class="card table-card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0 text-light">
@@ -158,6 +159,7 @@
                 <th class="text-center">Cliente</th>
                 <th class="text-center">Pedido</th>
                 <th class="text-center">Tiny ID</th>
+                <th class="text-center">Nota Fiscal</th>
                 <th class="text-center">Criado em</th>
               </tr>
             </thead>
@@ -228,6 +230,19 @@
                       </span>
                     <% end %>
                   </td>
+                  <td class="text-center">
+                    <% if order.id_nota_fiscal.present? %>
+                      <button type="button" class="btn btn-sm btn-success" onclick="openInvoiceModal(<%= order.id %>)" data-bs-toggle="tooltip" title="Ver Nota Fiscal">
+                        <i class="fas fa-file-invoice me-1"></i>
+                        NF-e
+                      </button>
+                    <% else %>
+                      <span class="badge bg-gradient-secondary text-light">
+                        <i class="fas fa-minus-circle me-1"></i>
+                        Sem NF-e
+                      </span>
+                    <% end %>
+                  </td>
                   <td class="text-center text-light"><%= order.created_at.strftime('%d/%m/%Y') %></td>
                 </tr>
               <% end %>
@@ -244,6 +259,39 @@
             <%= will_paginate @orders, list_classes: %w[pagination pagination-sm mb-0], inner_window: 1, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content bg-dark">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white" id="invoiceModalLabel">
+          <i class="fas fa-file-invoice me-2"></i>
+          Nota Fiscal Eletrônica
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="height: 80vh;">
+        <div id="invoiceLoading" class="text-center py-5">
+          <div class="spinner-border text-info" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Carregando...</span>
+          </div>
+          <p class="text-light mt-3">Carregando nota fiscal...</p>
+        </div>
+        <iframe id="invoicePdfFrame" style="width: 100%; height: 100%; border: none; display: none;"></iframe>
+        <div id="invoiceError" class="alert alert-danger" style="display: none;">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <span id="invoiceErrorMessage"></span>
+        </div>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>
+          Fechar
+        </button>
       </div>
     </div>
   </div>
@@ -273,7 +321,6 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   transition: margin var(--transition-speed) ease;
@@ -281,7 +328,6 @@ body {
   min-height: calc(100vh - var(--header-height));
 }
 
-/* Action Bar */
 .action-bar {
   background-color: var(--bs-light-dark);
   border-radius: 10px;
@@ -305,7 +351,6 @@ body {
   font-weight: 600;
 }
 
-/* Text Colors */
 .text-light {
   color: #f8f9fa !important;
 }
@@ -314,7 +359,6 @@ body {
   color: rgba(248, 249, 250, 0.7) !important;
 }
 
-/* Stats Cards */
 .stats-cards {
   margin-bottom: 1.5rem;
 }
@@ -362,7 +406,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Gradient Backgrounds */
 .bg-gradient-primary {
   background: linear-gradient(45deg, #3a7bd5, #00d2ff);
 }
@@ -383,7 +426,6 @@ body {
   background: linear-gradient(45deg, #4b6cb7, #182848);
 }
 
-/* Table Card */
 .table-card {
   background-color: var(--bs-light-dark);
   border: 1px solid var(--bs-border-dark);
@@ -404,7 +446,6 @@ body {
   padding: 0.75rem 1.5rem;
 }
 
-/* Table Styling */
 .table {
   margin-bottom: 0;
   color: #fff;
@@ -425,7 +466,6 @@ body {
   background-color: rgba(58, 123, 213, 0.1) !important;
 }
 
-/* Badges */
 .badge {
   padding: 0.5em 0.75em;
   font-weight: 500;
@@ -453,7 +493,6 @@ body {
   }
 }
 
-/* Tiny Link */
 .tiny-link {
   text-decoration: none;
   transition: all 0.3s;
@@ -464,7 +503,6 @@ body {
   box-shadow: 0 0 10px rgba(58, 123, 213, 0.5);
 }
 
-/* Pagination */
 .pagination {
   margin-bottom: 0;
 }
@@ -486,7 +524,6 @@ body {
   border-color: var(--bs-primary);
 }
 
-/* Button Outlines */
 .btn-outline-info {
   color: var(--bs-info);
   border-color: var(--bs-info);
@@ -507,9 +544,11 @@ body {
   color: var(--bs-dark);
 }
 
-/* Responsive */
+.modal-backdrop.show {
+  opacity: 0.8;
+}
+
 @media (max-width: 992px) {
-  
   .quick-stats {
     margin-bottom: 0.5rem;
   }
@@ -551,12 +590,10 @@ body {
   }
 }
 
-/* Sidebar Collapsed State */
 .sidebar-collapsed .main-content {
   margin-left: var(--sidebar-collapsed-width);
 }
 
-/* Sidebar Expanded State (Mobile) */
 .sidebar-expanded .main-content {
   margin-left: var(--sidebar-width);
 }
@@ -564,7 +601,6 @@ body {
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // Ativa tooltips
   const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl, {
@@ -572,7 +608,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
   
-  // Inicializa select2 para o filtro de vendedores
   $('.select2').select2({
     theme: 'bootstrap-5',
     dropdownParent: $('#searchCollapse'),
@@ -580,7 +615,6 @@ document.addEventListener("DOMContentLoaded", function() {
     language: 'pt-BR'
   });
 
-  // Animação para badges
   document.querySelectorAll('.seller-badge').forEach(badge => {
     badge.addEventListener('mouseenter', function() {
       this.classList.add('badge-pulse');
@@ -590,7 +624,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-  // Highlight da linha da tabela
   document.querySelectorAll('#orders-table tbody tr').forEach(row => {
     row.addEventListener('mouseenter', function() {
       this.classList.add('table-row-hover');
@@ -600,4 +633,40 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 });
+
+function openInvoiceModal(orderId) {
+  const modal = new bootstrap.Modal(document.getElementById('invoiceModal'));
+  const loading = document.getElementById('invoiceLoading');
+  const iframe = document.getElementById('invoicePdfFrame');
+  const error = document.getElementById('invoiceError');
+  const errorMessage = document.getElementById('invoiceErrorMessage');
+  
+  loading.style.display = 'block';
+  iframe.style.display = 'none';
+  error.style.display = 'none';
+  
+  modal.show();
+  
+  fetch(`/orders/${orderId}/fetch_invoice_pdf`)
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(data => {
+          throw new Error(data.error || 'Erro ao carregar nota fiscal');
+        });
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      iframe.src = url;
+      loading.style.display = 'none';
+      iframe.style.display = 'block';
+    })
+    .catch(err => {
+      console.error('[v0] Erro ao carregar nota fiscal:', err);
+      loading.style.display = 'none';
+      errorMessage.textContent = err.message;
+      error.style.display = 'block';
+    });
+}
 </script>

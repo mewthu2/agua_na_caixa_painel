@@ -35,7 +35,6 @@
 </div>
 
 <style>
-/* Estilo para os campos de pagamento */
 .payment-field {
   background-color: rgba(0, 0, 0, 0.15);
   border: 1px solid #6c757d;
@@ -61,7 +60,6 @@
   color: white;
 }
 
-/* Correções específicas para Select2 nos campos de pagamento */
 .payment-field .select2-container--bootstrap-5 .select2-selection--single {
   height: calc(2.25rem + 2px) !important;
   padding: 0 !important;
@@ -133,7 +131,6 @@
   box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25) !important;
 }
 
-/* Dropdown styling */
 .payment-field .select2-container--bootstrap-5 .select2-dropdown {
   background-color: #212529 !important;
   border: 1px solid #6c757d !important;
@@ -167,7 +164,6 @@
   color: #fff !important;
 }
 
-/* Animação para novos campos */
 .payment-field.newly-added {
   animation: slideInFromTop 0.5s ease-out;
 }
@@ -183,7 +179,6 @@
   }
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .payment-field {
     padding: 0.75rem;
@@ -225,24 +220,3 @@
   line-height: 1.5 !important;
 }
 </style>
-
-<script>
-// Inicializar Select2 para novos campos de pagamento
-document.addEventListener('DOMContentLoaded', function() {
-  // Event listener para novos pagamentos adicionados via Cocoon
-  $('#order_payments').on('cocoon:after-insert', function(e, added_task) {
-    const newPaymentSelect = added_task.querySelector('.payment-type-select');
-    
-    if (newPaymentSelect) {
-      // Inicializa o Select2 para o novo campo
-      initializeSelect2(newPaymentSelect);
-    }
-    
-    // Adiciona a classe para animação
-    added_task.classList.add('newly-added');
-    setTimeout(function() {
-      added_task.classList.remove('newly-added');
-    }, 500);
-  });
-});
-</script>
